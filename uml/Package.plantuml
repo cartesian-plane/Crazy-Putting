@@ -1,0 +1,74 @@
+@startuml Package Diagram
+
+rectangle "Math Mode" {
+
+    rectangle "User Input" as UserInput {
+        class Lexer
+        class Token
+        class Parser
+
+        Lexer -- "*" Token
+
+    }
+
+    rectangle "ODE Solver" as ODESolver {
+        class "ODE Solver" as ODES
+        abstract "ODE Solver Method" as ODEM
+        class "Euler's Method" as EM
+        class "Improved Euler's Method" as IEM
+        class "3rd Method" as M3
+
+        ODES *-right- "1" ODEM
+        ODEM <|-- EM
+        ODEM <|-- IEM
+        ODEM <|-- M3
+    }
+
+    UserInput -down- ODEInput
+
+    interface "ODE Solver Input" as ODEInput {
+        class ODESystem
+    }
+
+    ODEInput -down- ODESolver
+
+    interface "ODE Solver Output" as ODEOutput {
+        class Solution
+    }
+
+    ODESolver -down- ODEOutput
+
+    rectangle "Physics Engine" as PhysicsEngine {
+        class Class5
+        class Class6
+    }
+
+    PhysicsEngine -left- ODEInput
+
+    rectangle "UI" {
+        rectangle "Input UI" as UIIn {
+            class InputUI
+            class InputController
+        }
+
+        UIIn -down- UserInput
+
+        rectangle "Output UI" as UIOut {
+            class OutputUI
+            class OutputController
+        }
+
+        UIOut -down- ODEOutput
+    }
+
+    rectangle "Tester" {
+        class Tester
+    }
+
+    Tester -up- ODEInput
+    Tester -down- ODEOutput
+    Tester -left- UIOut
+}
+
+
+@enduml

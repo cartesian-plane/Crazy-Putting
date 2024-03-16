@@ -1,0 +1,12 @@
+@startuml Use Cases
+left to right direction
+
+actor User as U
+
+rectangle Game {
+
+}
+
+rectangle 
+
+@enduml
