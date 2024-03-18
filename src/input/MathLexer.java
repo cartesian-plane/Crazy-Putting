@@ -1,117 +1,173 @@
 package input;
 
-import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static input.TokenType.*;
 
-/**
- * Scans the input string and breaks it down into tokens.
- */
 public class MathLexer {
-    private String source; 
-    private ArrayList<Token> tokens = new ArrayList<Token>();
 
     public static void main(String[] args) {
-        MathLexer lexer = new MathLexer("");
-        lexer.scanTokens().forEach(System.out::println);
+        String source = "ln(2, 0.5) ";
+        MathLexer lexer = new MathLexer(source);
+        ArrayList<Token> tokens = lexer.scanTokens();
+        for (Token token : tokens) {
+            System.out.println(token);
+        }
     }
-    
-    public MathLexer(String source){
+
+    private static final HashMap<String, TokenType> keywords;
+    static {
+        keywords = new HashMap<>();
+        keywords.put("log", LOG);
+        keywords.put("root", ROOT);
+        keywords.put("ln", LN);
+        keywords.put("exp", EXP);
+        keywords.put("abs", ABS);
+        keywords.put("pow", POW);
+        keywords.put("factorial", FACTORIAL);
+        keywords.put("sin", SINE);
+        keywords.put("cos", COSINE);
+        keywords.put("tan", TANGENT);
+        keywords.put("sec", SECANT);
+        keywords.put("csc", COSECANT);
+        keywords.put("cot", COTANGENT);
+    }
+
+    private final String source;
+    private final ArrayList<Token> tokens = new ArrayList<>();
+
+    private int start = 0;
+    private int current = 0;
+
+    public MathLexer(String source) {
         this.source = source;
     }
 
-    private int start = 0; //token start offset
-    private int current = 0; //source index of currently read char
-    
-    // private static final HashMap<String, TokenType> keywords = HashMap.ofEntries(
-    //     new HashMap.SimpleEntry<String, TokenType>("and", CONJUNCTION),
-    //     new HashMap.SimpleEntry<String, TokenType>("or", INCLUSIVE_DISJUNCTION),
-    //     new HashMap.SimpleEntry<String, TokenType>("xor", EXCLUSIVE_DISJUNCTION),
-    //     new HashMap.SimpleEntry<String, TokenType>("then", IMPLICATION),
-    //     new HashMap.SimpleEntry<String, TokenType>("iff", BIDIRECTIONAL_IMPLICATION),
-    //     new HashMap.SimpleEntry<String, TokenType>("true", TRUE),
-    //     new HashMap.SimpleEntry<String, TokenType>("false", FALSE)
-    // );
-
-    public ArrayList<Token> scanTokens(){
-        while(current < source.length()){
+    // > scan-tokens
+    ArrayList<Token> scanTokens() {
+        while (!isAtEnd()) {
+            // We are at the beginning of the next lexeme.
             start = current;
-            char c = source.charAt(current++);
-            switch(c){
-                //single character tokens
-                case ')': addToken(RIGHT_PARENTHESIS); break;
-                case '(': addToken(LEFT_PARENTHESIS); break;
-                case '+': addToken(ADDITION); break;
-                case '*': addToken(MULTIPLICATION); break;
-                case '/': addToken(DIVISION); break;
-                case ';': addToken(END_OF_STATEMENT); break;
-                
-                //multicharacter tokens
-                case '-':
-                    if(source.charAt(current) == '>'){
-                        addToken(IMPLICATION);
-                        current++;
-                    }
-                    break;
-                case '<': 
-                    if(source.charAt(current) == '-')
-                        if(current+1 < source.length() && source.charAt(current+1) == '>'){
-                            addToken(IMPLICATION);
-                            current+=2;
-                        }
-                    break;
-                
-                //ignore
-                case ' ':  //whitespace
-                case '\r': //carriage return
-                case '\t': //tab
-                    break;
-                case '\n': //newline
-                    line++;
-                    break;
-                
-                default:
-                    if(c >= 'a' && c <= 'z') //isAlpha
-                        if (current >= source.length() || source.charAt(current) < 'a' || source.charAt(current) > 'z')
-                            addToken(ATOMIC_PROPOSITION);
-                        else {
-                            while(current < source.length() && source.charAt(current) >= 'a' && source.charAt(current) <= 'z') current++;
-                            String text = source.substring(start, current);
-                            TokenType type = keywords.get(text);
-                            if (type == null) Logic.error(line, "Unknown identifier '"+text+"'");
-                            else addToken(type, text, null, line);
-                        } 
-                    else {
-                        Logic.error(line, "Unexpected character '"+c+"'");
-                    }
-            }            
+            scanToken();
         }
 
-        addToken(EOF);
+        tokens.add(new Token(END_OF_STATEMENT, "", null));
         return tokens;
     }
-    
-    //number
-    private void number() {
-        while (isDigit(peek())) advance();
+    private void scanToken() {
+        char c = advance();
+        switch (c) {
+            // single character tokens
+            case '(':
+                addToken(LEFT_PARENTHESIS);
+                break;
+            case ')':
+                addToken(RIGHT_PARENTHESIS);
+                break;
+            case '-':
+                addToken(MINUS);
+                break;
+            case '+':
+                addToken(PLUS);
+                break;
+            case '*':
+                addToken(STAR);
+                break;
+            case '/':
+                addToken(SLASH);
+                break;
+            case '!':
+                addToken(FACTORIAL);
+                break;
 
+            // ignore whitespace
+            case ' ':
+            case '\r':
+            case '\t':
+            case '\n':
+            case ',': // ignore commas
+                break;
+
+            default:
+              if (isDigit(c)) {
+                    number();
+                } else if (isAlpha(c)) {
+                    identifier();
+                } else {
+                    throw new IllegalArgumentException("Unexpected Character");
+                }
+                    break;
+        }
+    }
+
+    private void identifier() {
+        while (isAlphaNumeric(peek()))
+            advance();
+        String text = source.substring(start, current);
+        // See if the identifier is a reserved word.
+        TokenType type = keywords.get(text);
+        // If it's not, it's a variable.
+        if (type == null)
+            type = VARIABLE;
+        addToken(type);
+    }
+
+    private void number() {
+        while (isDigit(peek()))
+            advance();
+        
         // Look for a fractional part.
         if (peek() == '.' && isDigit(peekNext())) {
             // Consume the "."
             advance();
+            while (isDigit(peek()))
+                advance();
+        }
 
-        while (isDigit(peek())) advance();
+        addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
     }
 
-    addToken(NUMBER,
-        Double.parseDouble(source.substring(start, current)));
+    private char peek() {
+        if (isAtEnd())
+            return '\0';
+        return source.charAt(current);
     }
-    
+
+    private char peekNext() {
+        if (current + 1 >= source.length())
+            return '\0';
+        return source.charAt(current + 1);
+    }
+
+    private boolean isAlpha(char c) {
+        return (c >= 'a' && c <= 'z') ||
+            (c >= 'A' && c <= 'Z') ||
+            c == '_';
+    }
+
+    private boolean isAlphaNumeric(char c) {
+        return isAlpha(c) || isDigit(c);
+    }
+
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
+    }
+
+    private boolean isAtEnd() {
+        return current >= source.length();
+    }
+
+    private char advance() {
+        return source.charAt(current++);
+    }
+
     private void addToken(TokenType type) {
-        tokens.add(new Token(null, type));
+        addToken(type, null);
     }
-    private void addToken(String text, TokenType type) {
-        tokens.add(new Token(text, type));
+
+    private void addToken(TokenType type, Object literal) {
+        String text = source.substring(start, current);
+        tokens.add(new Token(type, text, literal));
     }
 }

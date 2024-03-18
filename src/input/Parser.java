@@ -1,10 +1,8 @@
-package logic;
+package input;
 
 import java.util.List;
 
-import interpreter.Lox;
-
-import static logic.TokenType.*;
+import static input.TokenType.*;
 
 class Parser {
 

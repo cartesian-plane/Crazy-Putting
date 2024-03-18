@@ -10,7 +10,7 @@ public enum TokenType
     SQRT, LN, EXP, ABS, POW, FACTORIAL,
     
     //binary operators
-    SUBTRACTION, ADDITION, MULTIPLICATION, DIVISION,
+    MINUS, PLUS, STAR, SLASH,
     LOG, ROOT,
 
     //objects
