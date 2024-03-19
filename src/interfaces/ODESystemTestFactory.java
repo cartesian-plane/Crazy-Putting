@@ -11,13 +11,13 @@ public class ODESystemTestFactory {
         ArrayList<Number> initialStateVector = new ArrayList<>();
         ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
 
-        Number[] vars = {1, 2, 3};
+        ArrayList<vars> = {1, 2, 3};
 
         initialStateVector.add(vars[0]);
         initialStateVector.add(vars[1]);
         initialStateVector.add(vars[2]);
 
-        functions.add( (varss) -> {return varss[1]; });
+        functions.add( (varss) -> {return varss.get(1).doubleValue(); });
         functions.add( (varss) -> {return varss[2]; });
         functions.add( (varss) -> {return - varss[0].doubleValue() -2*varss[1].doubleValue() - varss[2].doubleValue(); });
 
