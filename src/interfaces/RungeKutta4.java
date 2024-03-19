@@ -28,6 +28,8 @@ public class RungeKutta4 extends ODESolverMethod {
         time.add(t);
         stateVectors.add(stateVector);
 
+        long computationStartTime = System.nanoTime();
+
         while (t <= endTime) {
             t += stepSize;
 
@@ -56,6 +58,9 @@ public class RungeKutta4 extends ODESolverMethod {
             time.add(t);
             stateVector = updatedStateVector;
         }
+
+        long elapsedComputationTime = System.nanoTime() - computationStartTime;
+        solution.setTimeTaken(elapsedComputationTime);
 
         return solution;
     }
