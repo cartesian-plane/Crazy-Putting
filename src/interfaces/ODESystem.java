@@ -35,4 +35,12 @@ public class ODESystem {
                 // ", functions=" + functions +
                 '}';
     }
+
+    public ArrayList<Number> getInitialStateVector() {
+        return initialStateVector;
+    }
+
+    public ArrayList<IFunc<Number, Number>> getFunctions() {
+        return functions;
+    }
 }
