@@ -6,23 +6,22 @@ import interfaces.ODESystem;
 
 import java.util.ArrayList;
 
-public class EulerMethod extends ODESolverMethod {
+public class RungeKutta2 extends ODESolverMethod {
 
     /**
-     * Initialize the Euler solver.
+     * Initialize the Runge Kutta 2 solver.
      * Inherited from {@link ODESolverMethod}
      *
      * @param system   the system of equations to solve
      * @param stepSize step size used by the solver
      * @param endTime the end point of the interval to solve, namely: [initialValue, endPoint]
      */
-    public EulerMethod(ODESystem system, double stepSize, double startTime, double endTime) {
+    public RungeKutta2(ODESystem system, double stepSize, double startTime, double endTime) {
         super(system, stepSize, startTime, endTime);
     }
 
     @Override
     public ODESolution solve() {
-
         ArrayList<Number> time = new ArrayList<>();
         ArrayList<ArrayList<Number>> stateVectors = new ArrayList<>();
         ODESolution solution = new ODESolution(time, stateVectors);
@@ -37,13 +36,29 @@ public class EulerMethod extends ODESolverMethod {
             t += stepSize;
 
             ArrayList<Number> updatedStateVector = new ArrayList<>();
+
             int i = 0;
             for (Number x : stateVector) {
+
+
+                // build the intermediate state vector
+                ArrayList<Number> intermediateStateVector = new ArrayList<>();
+                int j = 0;
+                for (Number y : stateVector) {
+                    IFunc<Number, Number> function2 = this.system.getFunctions().get(j);
+                    double halfStepSize = stepSize / 2;
+                    double newY = y + halfStepSize * function2.apply(stateVector);
+                    intermediateStateVector.add(newY);
+                }
+
                 IFunc<Number, Number> function = this.system.getFunctions().get(i);
-                double newX = (double) x + stepSize * function.apply(stateVector).doubleValue();
+                double newX = x + stepSize * function.apply(updatedStateVector);
+
                 updatedStateVector.add(newX);
                 i++;
+
             }
+
             stateVectors.add(updatedStateVector);
             time.add(t);
             stateVector = updatedStateVector;
@@ -51,5 +66,4 @@ public class EulerMethod extends ODESolverMethod {
 
         return solution;
     }
-
 }
