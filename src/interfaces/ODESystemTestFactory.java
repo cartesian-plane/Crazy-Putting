@@ -1,5 +1,9 @@
 package interfaces;
 
+import odesolver.ODESolver;
+import odesolver.methods.EulerMethod;
+import odesolver.methods.ODESolverMethod;
+
 import java.util.ArrayList;
 
 public class ODESystemTestFactory {
@@ -31,5 +35,14 @@ public class ODESystemTestFactory {
         ODESystemTestFactory factory = new ODESystemTestFactory();
         ODESystem syst = factory.testSyst();
         System.out.println(syst + "\n" + syst.derivative());
+
+        ODESolver solverContext = new ODESolver();
+        ODESolverMethod eulerSolver = new EulerMethod(syst, 0.00001, 0, 100);
+        solverContext.setStrategy(eulerSolver);
+        ODESolution solution = solverContext.solve();
+        System.out.println("Initial state vector");
+        System.out.println(solution.stateVectors.get(2));
+
+
     }
 }

@@ -47,12 +47,12 @@ public class RungeKutta2 extends ODESolverMethod {
                 for (Number y : stateVector) {
                     IFunc<Number, Number> function2 = this.system.getFunctions().get(j);
                     double halfStepSize = stepSize / 2;
-                    double newY = y + halfStepSize * function2.apply(stateVector);
+                    double newY = (double)y + halfStepSize * function2.apply(stateVector).doubleValue();
                     intermediateStateVector.add(newY);
                 }
 
                 IFunc<Number, Number> function = this.system.getFunctions().get(i);
-                double newX = x + stepSize * function.apply(updatedStateVector);
+                double newX = (double)x + stepSize * function.apply(updatedStateVector).doubleValue();
 
                 updatedStateVector.add(newX);
                 i++;
