@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class RungeKutta4 extends ODESolverMethod {
 
     /**
-     * Initialize the Runge Kutta 2 solver.
+     * Initialize the Runge Kutta 4 solver.
      * Inherited from {@link ODESolverMethod}
      *
      * @param system   the system of equations to solve
