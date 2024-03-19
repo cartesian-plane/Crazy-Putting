@@ -2,23 +2,32 @@ package input;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import static input.TokenType.*;
 
 public class MathLexer {
 
+    private static class LexError extends RuntimeException {
+        LexError(Token token, String message) {
+            super(message + " at " + token);
+        }
+    }
+
     public static void main(String[] args) {
         // TODO:allowing NUMBER VARIABLE with no STAR in between -> intuitiveness, but more complicated parser
         // String source = "ln(2, 0.5)";
         // String source = "1x^3 - 3*x*y"; //NUMBER VARIABLE POW NUMBER MINUS NUMBER STAR VARIABLE STAR VARIABLE
-        String source = "1x_1^3 - 3*(x*y)/3 + 4";
+        // String source = "y''' = 1*x_1''^3 - 3*(x*y)/3 + log(4)";
+        String source = "x'' = 1*x_1^3 - 3*(x*y)/3 + 4";
         // TODO: Find a way to keep track of the variables in a system table or sth
         // TODO: Only validate a set of statements if each variable has an expression for its derivative
         MathLexer lexer = new MathLexer(source);
-        ArrayList<Token> tokens = lexer.scanTokens();
-        for (Token token : tokens) {
+        System.out.println();
+        for (Token token : lexer.tokens) {
             System.out.println(token);
         }
+        System.out.println(lexer.variables);
     }
 
     private static final HashMap<String, TokenType> keywords;
@@ -39,17 +48,46 @@ public class MathLexer {
     }
 
     private final String source;
+    private final HashSet<String> variables = new HashSet<>();
     private final ArrayList<Token> tokens = new ArrayList<>();
+    private String lambdaVar;
 
     private int start = 0;
     private int current = 0;
 
     public MathLexer(String source) {
         this.source = source;
+        scanTokens();
+        compileVariables();
+        compileLambdaVar();
+    }
+
+    private void compileLambdaVar() {
+        this.lambdaVar = tokens.get(0).lexeme.substring(0, tokens.get(0).lexeme.length() - 1);
+    }
+
+    /**
+     * Compiles a hashset of variables from the tokens. Every time a derivative is encountered, the variable whose derivative it is is also added to the hashset, and the variable and DERIV tokens are replace with a single variable token with the derivative as variable + "'" (e.g. x' for the derivative of x)."
+     * TODO: write better documentation.
+     * @return
+     */
+    private void compileVariables() {
+        for (int i = 0; i < tokens.size(); i++) {
+            Token token = tokens.get(i);
+            while (token.type == DERIV) {    
+                tokens.remove(i);
+                tokens.set(i-1, new Token(VARIABLE, tokens.get(i - 1).lexeme + "'", null));
+                variables.add(tokens.get(i - 1).lexeme);
+                token = tokens.get(i);
+            }
+            if (token.type == VARIABLE) {
+                variables.add(token.lexeme);
+            }
+        }
     }
 
     // > scan-tokens
-    ArrayList<Token> scanTokens() {
+    private void scanTokens() {
         while (!isAtEnd()) {
             // We are at the beginning of the next lexeme.
             start = current;
@@ -57,7 +95,6 @@ public class MathLexer {
         }
 
         tokens.add(new Token(END_OF_STATEMENT, "", null));
-        return tokens;
     }
     private void scanToken() {
         char c = advance();
@@ -86,6 +123,21 @@ public class MathLexer {
                 break;
             case '^':
                 addToken(POW);
+                break;
+            case '\'':
+                if(tokens.getLast().type == VARIABLE || tokens.getLast().type == DERIV){
+                    addToken(DERIV, null);
+                } else {
+                    throw new LexError(tokens.getLast(), "Derivative must be preceded by a variable.");
+                }
+                break;
+            case '=':
+                for(Token t: tokens){
+                    if(t.type == EQUALS){
+                        throw new LexError(t, "Only one equals sign allowed.");
+                    }
+                }
+                addToken(EQUALS);
                 break;
 
             // ignore whitespace
@@ -176,5 +228,17 @@ public class MathLexer {
     private void addToken(TokenType type, Object literal) {
         String text = source.substring(start, current);
         tokens.add(new Token(type, text, literal));
+    }
+
+    public ArrayList<Token> getTokens() {
+        return tokens;
+    }
+
+    public HashSet<String> getVariables() {
+        return variables;
+    }
+
+    public String getLambdaVar() {
+        return lambdaVar;
     }
 }

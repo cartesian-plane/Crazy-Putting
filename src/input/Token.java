@@ -11,7 +11,16 @@ public class Token {
         this.literal = literal;
     }
 
+    @Override
     public String toString(){
         return "[Type: "+type+", Lexeme: "+lexeme+", Literal: "+literal+"]";
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if (obj == this) return true;
+        if (!(obj instanceof Token)) return false;
+        Token token = (Token) obj;
+        return token.type == type && token.lexeme.equals(lexeme) && token.literal.equals(literal);
     }
 }
