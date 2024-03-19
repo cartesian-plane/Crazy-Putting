@@ -7,7 +7,6 @@ import java.util.HashSet;
 public class ODESystem {
     ArrayList<Number> initialStateVector;
     ArrayList<IFunc<Number, Number>> functions;
-
     HashSet<String> variables;
     HashMap<String, Integer> variableIndices;
 
