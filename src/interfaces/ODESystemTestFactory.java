@@ -7,7 +7,7 @@ public class ODESystemTestFactory {
         return new ODESystem(initialStateVector, functions);
     }
 
-    public static void main(String[] args) {
+    ODESystem testSyst() {
         ArrayList<Number> initialStateVector = new ArrayList<>();
         ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
 
@@ -19,11 +19,14 @@ public class ODESystemTestFactory {
 
         functions.add( (varss) -> {return varss[1]; });
         functions.add( (varss) -> {return varss[2]; });
-        functions.add( (varss) -> {return - varss[0].doubleValue() - varss[2].doubleValue(); });
+        functions.add( (varss) -> {return - varss[0].doubleValue() -2*varss[1].doubleValue() - varss[2].doubleValue(); });
 
+        return new ODESystem(initialStateVector, functions);
+    }
+
+    public static void main(String[] args) {
         ODESystemTestFactory factory = new ODESystemTestFactory();
-        ODESystem syst = factory.system(initialStateVector, functions);
-
+        ODESystem syst = factory.testSyst();
         System.out.println(syst + "\n" + syst.derivative());
     }
 }

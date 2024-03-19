@@ -1,5 +1,6 @@
 package input;
 
+import java.util.HashSet;
 import java.util.List;
 
 import interfaces.IFunc;
@@ -8,15 +9,21 @@ import static input.TokenType.*;
 
 class MathParser {
 
+    private final List<Token> tokens;
+    private final HashSet<String> vars;
+    private final Expr expression;
+    private int current = 0;
+
     public static void main(String[] args) {
         // String source = "1x^3 - 3*x*y"; //NUMBER VARIABLE POW NUMBER MINUS NUMBER STAR VARIABLE STAR VARIABLE
         String source = "1*x_1^3 - 3*(x*y)/3 + 4";
         MathLexer lexer = new MathLexer(source);
         List<Token> tokens = lexer.scanTokens();
         MathParser parser = new MathParser(tokens);
-        Expr expression = parser.parse();
+        Expr expression = parser.getExpression();
         System.out.println(expression);
-        // IFunc func = expression.toFunction();
+        ExprPrinter printer = new ExprPrinter();
+        System.out.println(printer.print(expression));
     }
 
     private static class ParseError extends RuntimeException {
@@ -25,14 +32,23 @@ class MathParser {
         }
     }
     
-    private final List<Token> tokens;
-    private int current = 0;
-    
     MathParser(List<Token> tokens) {
         this.tokens = tokens;
+        this.expression = parse();
+        this.vars = findVariables();
     }
 
-    Expr parse() {
+    private HashSet<String> findVariables() {
+        HashSet<String> vars = new HashSet<>();
+        for (Token token : tokens) {
+            if (token.type == VARIABLE) {
+                vars.add(token.lexeme);
+            }
+        }
+        return vars;
+    }
+
+    private Expr parse() {
         try {
             return parseExpression();
         } catch (ParseError error) {
@@ -140,5 +156,13 @@ class MathParser {
     }
     private Token previous() {
         return tokens.get(current - 1);
+    }
+
+    Expr getExpression() {
+        return expression;
+    }
+
+    HashSet<String> getVars() {
+        return vars;
     }
 }
