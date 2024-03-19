@@ -19,10 +19,11 @@ public class ODESystem {
         this.functions = functions;
     }
 
+    @Deprecated
     public ArrayList<Number> derivative() {
         ArrayList<Number> derivative = new ArrayList<>();
         for (int i = 0; i < initialStateVector.size(); i++) {
-            derivative.add(functions.get(i).apply(initialStateVector.toArray(new Number[0])));
+            derivative.add(functions.get(i).apply(initialStateVector));
         }
         return derivative;
     }
