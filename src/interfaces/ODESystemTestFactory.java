@@ -38,6 +38,5 @@ public class ODESystemTestFactory {
         System.out.println("Initial state vector");
         System.out.println(solution.stateVectors.get(100000));
 
-
     }
 }
