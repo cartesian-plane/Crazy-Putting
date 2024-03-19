@@ -32,12 +32,11 @@ public class ODESystemTestFactory {
         System.out.println(syst + "\n" + syst.derivative());
 
         ODESolver solverContext = new ODESolver();
-        ODESolverMethod strat = new RungeKutta2(syst, 0.00001, 0, 100);
+        ODESolverMethod strat = new RungeKutta4(syst, 0.00001, 0, 100);
         solverContext.setStrategy(strat);
         ODESolution solution = solverContext.solve();
         System.out.println("Initial state vector");
         System.out.println(solution.stateVectors.get(100000));
-
 
     }
 }
