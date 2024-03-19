@@ -8,7 +8,12 @@ import static input.TokenType.*;
 public class MathLexer {
 
     public static void main(String[] args) {
-        String source = "ln(2, 0.5) ";
+        // TODO:allowing NUMBER VARIABLE with no STAR in between -> intuitiveness, but more complicated parser
+        // String source = "ln(2, 0.5)";
+        // String source = "1x^3 - 3*x*y"; //NUMBER VARIABLE POW NUMBER MINUS NUMBER STAR VARIABLE STAR VARIABLE
+        String source = "1x_1^3 - 3*(x*y)/3 + 4";
+        // TODO: Find a way to keep track of the variables in a system table or sth
+        // TODO: Only validate a set of statements if each variable has an expression for its derivative
         MathLexer lexer = new MathLexer(source);
         ArrayList<Token> tokens = lexer.scanTokens();
         for (Token token : tokens) {
@@ -24,7 +29,6 @@ public class MathLexer {
         keywords.put("ln", LN);
         keywords.put("exp", EXP);
         keywords.put("abs", ABS);
-        keywords.put("pow", POW);
         keywords.put("factorial", FACTORIAL);
         keywords.put("sin", SINE);
         keywords.put("cos", COSINE);
@@ -79,6 +83,9 @@ public class MathLexer {
                 break;
             case '!':
                 addToken(FACTORIAL);
+                break;
+            case '^':
+                addToken(POW);
                 break;
 
             // ignore whitespace

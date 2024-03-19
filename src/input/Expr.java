@@ -1,17 +1,10 @@
 package input;
 
-import java.util.List;
-
+/**
+ * Represents an expression in the form of a syntax tree.
+ * 
+ */
 abstract class Expr {
-
-    interface Visitor<R> {
-        R visitBinaryExpr(Binary expr);
-        R visitGroupingExpr(Grouping expr);
-        R visitLiteralExpr(Literal expr);
-        R visitUnaryExpr(Unary expr);
-    }
-
-    abstract <R> R accept(Visitor<R> visitor);
 
     static class Binary extends Expr {
         Binary(Expr left, Token operator, Expr right) {
@@ -20,51 +13,82 @@ abstract class Expr {
             this.right = right;
         }
 
-        @Override
-        <R> R accept(Visitor<R> visitor) {
-        return visitor.visitBinaryExpr(this);
-        }
-
         final Expr left;
         final Token operator;
         final Expr right;
+
+        @Override
+        public String toString() {
+            return "( " + left.toString() + " " + operator.type + " " + right.toString() + " )";
+        }
     }
+
     static class Grouping extends Expr {
         Grouping(Expr expression) {
             this.expression = expression;
         }
 
-        @Override
-        <R> R accept(Visitor<R> visitor) {
-        return visitor.visitGroupingExpr(this);
-        }
-
         final Expr expression;
+
+        @Override
+        public String toString() {
+            return "( " + expression.toString() + " )";
+        }
     }
+
     static class Literal extends Expr {
         Literal(Object value) {
             this.value = value;
-        }
-
-        @Override
-        <R> R accept(Visitor<R> visitor) {
-        return visitor.visitLiteralExpr(this);
-        }
+        } 
 
         final Object value;
+
+        @Override
+        public String toString() {
+            return value.toString();
+        }
     }
-    static class Unary extends Expr {
-        Unary(Token operator, Expr right) {
+
+    static class Variable extends Expr {
+        Variable(Token var) {
+            this.var = var;
+        }
+
+        final Token var;
+
+        @Override
+        public String toString() {
+            return "( " + var.lexeme + " )";
+        }
+    }
+
+    static class PrefixUnary extends Expr {
+        PrefixUnary(Token operator, Expr right) {
             this.operator = operator;
             this.right = right;
         }
 
-        @Override
-        <R> R accept(Visitor<R> visitor) {
-        return visitor.visitUnaryExpr(this);
-        }
-
         final Token operator;
         final Expr right;
+        
+        @Override
+        public String toString() {
+            return "(" + operator.type + " " + right.toString() + ")";
+        }
+    }
+
+    static class PostfixUnary extends Expr {
+        PostfixUnary(Expr left, Token operator) {
+            this.left = left;
+            this.operator = operator;
+        }
+
+        final Expr left;
+        final Token operator;
+
+        @Override
+        public String toString() {
+            return "(" + left.toString() + " " + operator.type + ")";
+        }
     }
 }
