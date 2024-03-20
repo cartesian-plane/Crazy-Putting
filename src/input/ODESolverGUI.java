@@ -1,5 +1,6 @@
 //////////////////// IMPORTS //////////////////////////////////////////////
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
@@ -31,6 +32,8 @@ public class ODESolverGUI {
     private JTextField stepSizeField, timeField; // fields for inputting step size and time
     private JCheckBox graphCheckBox, phaseSpaceCheckBox, tableCheckBox; // checkboxes for options
     private JComboBox<String> solverTypeComboBox; // comboBox to select the type of solver
+    private JPanel equationsPanel; // Panel for equations and add button
+
 //////////////////// INITIALIZATIONS //////////////////////////////////////////////
 
 
@@ -56,19 +59,24 @@ public class ODESolverGUI {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
+        equationsPanel = new JPanel();
+        equationsPanel.setLayout(new BoxLayout(equationsPanel, BoxLayout.Y_AXIS));
+        mainPanel.add(equationsPanel);
+
+
         //adding new ones
         addButton = new JButton("+");
         addButton.setFont(largerFont);
         addButton.addActionListener(e -> {
             if (formulaFields.size() < MAX_EQUATIONS) {
-                addEquationInput(true);
+                addEquationInput(true, true);
                 frame.pack();
             }
         });
 
-        addEquationInput(false); // this adds the first non-removable equation field
-        mainPanel.add(addButton);
-//////////////////// creating the structure //////////////////////////////////////////////
+        addEquationInput(false, false); // this adds the first non-removable equation field
+        equationsPanel.add(addButton); 
+        //////////////////// creating the structure //////////////////////////////////////////////
 
 
 
@@ -78,8 +86,25 @@ public class ODESolverGUI {
 
 
 ////////////////////  Creating fields, buttons and naming them //////////////////////////////////////////////
-        stepSizeField = createPlaceholderTextField("Step size (e.g. 0.1)", 12, largerFont);
-        timeField = createPlaceholderTextField("Time (e.g. 10.0)", 12, largerFont);
+        stepSizeField = createNumberField(largerFont);
+        JPanel stepSizePanel = new JPanel();
+        stepSizePanel.setLayout(new BoxLayout(stepSizePanel, BoxLayout.Y_AXIS));
+        JLabel stepSizeLabel = new JLabel("Step size");
+        stepSizeLabel.setFont(largerFont);
+        stepSizePanel.add(stepSizeLabel);
+        stepSizePanel.add(stepSizeField);
+
+
+
+        timeField = createNumberField(largerFont);
+        JPanel timePanel = new JPanel();
+        timePanel.setLayout(new BoxLayout(timePanel, BoxLayout.Y_AXIS));
+        JLabel timeLabel = new JLabel("Time");
+        timeLabel.setFont(largerFont);
+        timePanel.add(timeLabel);
+        timePanel.add(timeField);
+
+
         graphCheckBox = new JCheckBox("Graph");
         graphCheckBox.setFont(largerFont);
         phaseSpaceCheckBox = new JCheckBox("Phase space");
@@ -93,6 +118,10 @@ public class ODESolverGUI {
         solverTypeComboBox.setFont(largerFont);
         generateButton = new JButton("GENERATE");
         generateButton.setFont(largerFont);
+
+        
+
+
 ////////////////////  Creating fields, buttons and naming them //////////////////////////////////////////////
 
 
@@ -101,13 +130,17 @@ public class ODESolverGUI {
 
 ////////////////////  COntrol panel //////////////////////////////////////////////
         JPanel controlsPanel = new JPanel();
+        controlsPanel.add(stepSizePanel);
         controlsPanel.add(stepSizeField);
+        controlsPanel.add(timePanel);
         controlsPanel.add(timeField);
         controlsPanel.add(graphCheckBox);
         controlsPanel.add(phaseSpaceCheckBox);
         controlsPanel.add(tableCheckBox);
         controlsPanel.add(solverTypeComboBox);
         controlsPanel.add(generateButton);
+        
+      
 
         mainPanel.add(controlsPanel);
 
@@ -162,12 +195,13 @@ public class ODESolverGUI {
 
 
 
-    // Method to add a new equation input field
-    private void addEquationInput(boolean removable) {
+    // method to add a new equation input field
+    private void addEquationInput(boolean removable, boolean shift) {
         Font largerFont = new Font("SansSerif", Font.PLAIN, 20);
+        
 
-        // Placeholder text fields for formula, variable, and initial value
-        JTextField formulaField = createPlaceholderTextField("y + x", 20, largerFont);  // change intials text and size of window
+      
+        JTextField formulaField = createPlaceholderTextField("V = x + y", 20, largerFont);  // change intials text and size of window
     //    JTextField variableField = createVariableField(largerFont);
         JTextField initialValueField = createNumberField(largerFont);
 
@@ -179,7 +213,7 @@ public class ODESolverGUI {
         JPanel equationPanel = new JPanel();
         equationPanel.add(new JLabel("⊕"));
        // equationPanel.add(variableField);  ///////////////// IF YOU WANT TO ADD THE INITIAL VALUE FIELD BACK
-        equationPanel.add(new JLabel("="));
+        //equationPanel.add(new JLabel("="));
         equationPanel.add(formulaField);
         equationPanel.add(new JLabel("Initial Value"));
         equationPanel.add(initialValueField);
@@ -196,7 +230,16 @@ public class ODESolverGUI {
             equationPanel.add(removeButton);
         }
 
-        mainPanel.add(equationPanel, mainPanel.getComponentCount() - 1);
+        //shift the following equations to the left
+        if (shift) {
+            int leftPadding = 45; // adjust this value to increase or decrease the padding
+            Border padding = BorderFactory.createEmptyBorder(0, leftPadding, 0, 0);
+            equationPanel.setBorder(padding);
+    }
+
+
+
+        equationsPanel.add(equationPanel, equationsPanel.getComponentCount() - 1); 
     }
 
 
@@ -221,7 +264,7 @@ public class ODESolverGUI {
     private void removeEquationInput(JPanel equationPanel, JTextField formulaField, JTextField initialValueField) {
         formulaFields.remove(formulaField);
         initialFields.remove(initialValueField);
-        mainPanel.remove(equationPanel);
+        equationsPanel.remove(equationPanel); 
     }
 
 
@@ -229,6 +272,7 @@ public class ODESolverGUI {
  
  
     // Method to create a text field for variable input that allows only one alphabetical character   NOT USED RIGHT NOW 
+    /* 
     private JTextField createVariableField(Font font) {
         JTextField variableField = new JTextField("X", 2);
         variableField.setFont(font);
@@ -247,13 +291,13 @@ public class ODESolverGUI {
     }
 
 
-
+*/
 
 
 
     // Method that creates a text field for numeric input only
     private JTextField createNumberField(Font font) {
-        JTextField numberField = new JTextField("TEST", 7);
+        JTextField numberField = new JTextField("X", 7);
         numberField.setFont(font);
         numberField.setDocument(new PlainDocument() {
             @Override
