@@ -5,7 +5,7 @@ rectangle "Math Mode" {
     rectangle "User Input" as UserInput {
         class Lexer
         class Token
-        class Parser
+        class Parser 
 
         Lexer -- "*" Token
 

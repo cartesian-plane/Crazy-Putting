@@ -16,7 +16,7 @@ public class UserInput {
     public final boolean phase;
     public final SolverMethodType methodType;
 
-    public UserInput(HashMap<String, Number> initialValuesMap, ArrayList<String> equations, double stepSize, double startTime, double endTime, boolean graph, boolean table, boolean phase, SolverMethodType methodType) {
+    public UserInput(ArrayList<String> equations, HashMap<String, Number> initialValuesMap, double stepSize, double startTime, double endTime, boolean graph, boolean table, boolean phase, SolverMethodType methodType) {
         this.initialValuesMap = initialValuesMap;
         this.equations = equations;
         this.stepSize = stepSize;

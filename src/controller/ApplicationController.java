@@ -1,4 +1,4 @@
-import input.ODESolverGUI;
+package controller;
 import input.ODESystemFactory;
 import interfaces.ODESolution;
 import interfaces.ODESystem;
@@ -7,6 +7,7 @@ import odesolver.ODESolver;
 import odesolver.methods.EulerMethod;
 import odesolver.methods.ODESolverMethod;
 import odesolver.methods.RungeKutta4;
+import ui.InputPage;
 
 public class ApplicationController {
     
@@ -17,13 +18,16 @@ public class ApplicationController {
     }
 
     private void run() {
-        ODESolverGUI InputPage = new ODESolverGUI();
+        InputPage InputPage = new InputPage(this);
     }
 
-    private void onGenerate(UserInput input) {
+    public void onGenerate(UserInput input) {
         ODESystemFactory gen = new ODESystemFactory(input.initialValuesMap, input.equations);
         ODESystem syst = gen.getSyst();
         ODESolver solver = new ODESolver();
+
+        System.out.println(syst);
+
         ODESolverMethod strategy;
         switch(input.methodType) {
             case EULER:

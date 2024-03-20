@@ -1,4 +1,4 @@
-package odesolver;
+package ui;
 
 //////////////////// IMPORTS //////////////////////////////////////////////
 import javax.swing.*;
@@ -10,6 +10,13 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import controller.ApplicationController;
+import input.MathLexer;
+import interfaces.UserInput;
+import odesolver.methods.SolverMethodType;
+
 //////////////////// IMPORTS //////////////////////////////////////////////
 
 
@@ -18,7 +25,7 @@ import java.util.ArrayList;
 
 
 //////////////////// CLASS //////////////////////////////////////////////
-public class ODESolverGUI {
+public class InputPage {
 
 
 
@@ -35,6 +42,7 @@ public class ODESolverGUI {
     private JCheckBox graphCheckBox, phaseSpaceCheckBox, tableCheckBox; // checkboxes for options
     private JComboBox<String> solverTypeComboBox; // comboBox to select the type of solver
     private JPanel equationsPanel; // Panel for equations and add button
+    private final ApplicationController app; // reference to the application controller
 
 //////////////////// INITIALIZATIONS //////////////////////////////////////////////
 
@@ -48,8 +56,9 @@ public class ODESolverGUI {
 
 
  ////////////////////  GUI CONSTRUCTOR //////////////////////////////////////////////
-    public ODESolverGUI() {
+    public InputPage(ApplicationController app) {
         Font largerFont = new Font("SansSerif", Font.PLAIN, 18); //font
+        this.app = app;
 
 
 
@@ -115,7 +124,7 @@ public class ODESolverGUI {
         tableCheckBox.setFont(largerFont);
 
         // ComboBox for solvers and final BUTTON
-        String[] solvers = {"Euler", "Runge-Kutta"};
+        String[] solvers = {"Euler", "Runge-Kutta 2", "Runge-Kutta 4"};
         solverTypeComboBox = new JComboBox<>(solvers);
         solverTypeComboBox.setFont(largerFont);
 
@@ -132,21 +141,52 @@ public class ODESolverGUI {
                     equations.add(field.getText());
                 }
         
-                ArrayList<Double> initialValues = new ArrayList<>();
-                for (JTextField field : initialFields) {
-                    String text = field.getText();
-                    double initialValue = text.isEmpty() ? 0.0 : Double.parseDouble(text);
-                    initialValues.add(initialValue);
+                // ArrayList<Double> initialValues = new ArrayList<>();
+                // for (JTextField field : initialFields) {
+                //     String text = field.getText();
+                //     double initialValue = text.isEmpty() ? 0.0 : Double.parseDouble(text);
+                //     initialValues.add(initialValue);
+                // }
+
+                HashMap<String, Number> initialValuesMap = new HashMap<>();
+                for (int i = 0; i < formulaFields.size(); i++) {
+                    String equation = formulaFields.get(i).getText();
+                    // REALLY UGLY lex them here to get the varaiable names
+                    MathLexer lexer = new MathLexer(equation);
+                    String variable = lexer.getLambdaVar();
+                    double initialValue = Double.parseDouble(initialFields.get(i).getText());
+                    initialValuesMap.put(variable, initialValue);
+                }
+                for (String key : initialValuesMap.keySet()) {
+                    System.out.println(key + " : " + initialValuesMap.get(key));
                 }
         
                 double stepSize = !stepSizeField.getText().isEmpty() ? Double.parseDouble(stepSizeField.getText()) : 0.0;
                 double time = !timeField.getText().isEmpty() ? Double.parseDouble(timeField.getText()) : 0.0;
+                
                 boolean graph = graphCheckBox.isSelected();
                 boolean phaseSpace = phaseSpaceCheckBox.isSelected();
                 boolean table = tableCheckBox.isSelected();
-                String solverType = (String) solverTypeComboBox.getSelectedItem();
+
+                SolverMethodType solverType;
+                String solverText = (String) solverTypeComboBox.getSelectedItem();
+                switch (solverText) {
+                    case "Euler":
+                        solverType = SolverMethodType.EULER;
+                        break;
+                    case "Runge-Kutta 2":
+                        solverType = SolverMethodType.RUNGE_KUTTA_2;
+                        break;
+                    case "Runge-Kutta 4":
+                        solverType = SolverMethodType.RUNGE_KUTTA_4;
+                        break;
+                    default:
+                        //unreachable
+                        solverType = null;
+                }
         
-                SolverInput input = new SolverInput(equations, initialValues, stepSize, time, graph, phaseSpace, table, solverType);
+                UserInput userInput = new UserInput(equations, initialValuesMap, stepSize, 0, time, graph, phaseSpace, table, solverType);
+                app.onGenerate(userInput);
         
             } catch (NumberFormatException nfe) {
                 JOptionPane.showMessageDialog(frame, "Please enter valid numbers", "Input error", JOptionPane.ERROR_MESSAGE);
@@ -364,7 +404,11 @@ public class ODESolverGUI {
 
 //////////////////// MAIn //////////////////////////////////////////////
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(ODESolverGUI::new);
+
+        SwingUtilities.invokeLater(() -> {
+            ApplicationController app = new ApplicationController();
+            InputPage InputPage = new InputPage(app);
+        });
     }
 //////////////////// MAIN //////////////////////////////////////////////
 
