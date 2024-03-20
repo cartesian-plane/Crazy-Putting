@@ -1,10 +1,13 @@
 package input;
 
+import static input.tokens.TokenType.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static input.TokenType.*;
+import input.tokens.Token;
+import input.tokens.TokenType;
 
 public class MathLexer {
 

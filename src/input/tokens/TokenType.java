@@ -1,4 +1,4 @@
-package input;
+package input.tokens;
 
 public enum TokenType
 {

@@ -1,36 +1,38 @@
-package input;
+package input.expressions;
+
+import input.tokens.Token;
 
 /**
  * Represents an expression in the form of a parse tree.
  */
-abstract class Expr {
+public abstract class Expr {
 
     //TODO:Replace the infix toString() methods with Visitor classes //currently we only have prefix toString() visitor
 
     interface Visitor<R> {
-        R visitBinaryExpr(Binary expr);
-        R visitGroupingExpr(Grouping expr);
-        R visitLiteralExpr(Literal expr);
-        R visitVariableExpr(Variable expr);
-        R visitPrefixUnaryExpr(PrefixUnary expr);
-        R visitPostfixUnaryExpr(PostfixUnary expr);
+        public R visitBinaryExpr(Binary expr);
+        public R visitGroupingExpr(Grouping expr);
+        public R visitLiteralExpr(Literal expr);
+        public R visitVariableExpr(Variable expr);
+        public R visitPrefixUnaryExpr(PrefixUnary expr);
+        public R visitPostfixUnaryExpr(PostfixUnary expr);
     }
 
     abstract <R> R accept(Visitor<R> visitor);
 
-    static class Binary extends Expr {
-        Binary(Expr left, Token operator, Expr right) {
+    public static class Binary extends Expr {
+        public Binary(Expr left, Token operator, Expr right) {
             this.left = left;
             this.operator = operator;
             this.right = right;
         }
 
-        final Expr left;
-        final Token operator;
-        final Expr right;
+        public final Expr left;
+        public final Token operator;
+        public final Expr right;
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitBinaryExpr(this);
         }
 
@@ -40,15 +42,15 @@ abstract class Expr {
         }
     }
 
-    static class Grouping extends Expr {
-        Grouping(Expr expression) {
+    public static class Grouping extends Expr {
+        public Grouping(Expr expression) {
             this.expression = expression;
         }
 
-        final Expr expression;
+        public final Expr expression;
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitGroupingExpr(this);
         }
 
@@ -59,15 +61,15 @@ abstract class Expr {
 
     }
 
-    static class Literal extends Expr {
-        Literal(Object value) {
+    public static class Literal extends Expr {
+        public Literal(Object value) {
             this.value = value;
         }
 
-        final Object value;
+        public final Object value;
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitLiteralExpr(this);
         }
 
@@ -77,15 +79,15 @@ abstract class Expr {
         }
     }
 
-    static class Variable extends Expr {
-        Variable(Token var) {
+    public static class Variable extends Expr {
+        public Variable(Token var) {
             this.var = var;
         }
 
-        final Token var;
+        public final Token var;
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitVariableExpr(this);
         }
 
@@ -95,17 +97,17 @@ abstract class Expr {
         }
     }
 
-    static class PrefixUnary extends Expr {
-        PrefixUnary(Token operator, Expr right) {
+    public static class PrefixUnary extends Expr {
+        public PrefixUnary(Token operator, Expr right) {
             this.operator = operator;
             this.right = right;
         }
 
-        final Token operator;
-        final Expr right;
+        public final Token operator;
+        public final Expr right;
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitPrefixUnaryExpr(this);
         }
 
@@ -115,17 +117,17 @@ abstract class Expr {
         }
     }
 
-    static class PostfixUnary extends Expr {
-        PostfixUnary(Expr left, Token operator) {
+    public static class PostfixUnary extends Expr {
+        public PostfixUnary(Expr left, Token operator) {
             this.left = left;
             this.operator = operator;
         }
 
-        final Expr left;
-        final Token operator;
+        public final Expr left;
+        public final Token operator;
 
         @Override
-        <R> R accept(Visitor<R> visitor) {
+        public <R> R accept(Visitor<R> visitor) {
             return visitor.visitPostfixUnaryExpr(this);
         }
 

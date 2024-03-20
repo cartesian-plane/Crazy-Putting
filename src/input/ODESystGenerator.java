@@ -1,54 +1,135 @@
 package input;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import input.expressions.Expr;
+import input.expressions.ExprLambdaComposer;
 import interfaces.IFunc;
+import interfaces.ODESystem;
 
 public class ODESystGenerator {
 
     private final ArrayList<String> lambdaVars; // The variables for which the lambda functions will be used
     private final HashSet<String> vars; // The full set of variables
     private final HashSet<String> vecVars; // The state vector variables
+    private final HashMap<Integer, String> reverseVarOrder = new HashMap<>();
     private final HashMap<String, Integer> varOrder; // The order of the variables
     private final ArrayList<Expr> expressions; // The expressions of the derivatives
-    private final ArrayList<IFunc> lambdas; // The lambda functions
+    private final ArrayList<IFunc<Number, Number>> lambdas; // The lambda functions
+    private final ODESystem system; // The system of ODEs
 
+    // let's hope to god it works
     public static void main(String[] args) {
+        // TODO: In this example below, some equations are stated in terms of the derivatives of other equations. Does this always work with this code?
         String expression1 = "x2' = x1 + x2";
         String expression2 = "x1' = x2 + x3";
-        String expression3 = "x3'' = -x1 - 2*x2' - x3";
-        ODESystGenerator generator = new ODESystGenerator(expression1, expression2, expression3);
+        String expression3 = "x3' = -x1'";
+        String expression4 = "x3'' = -x1 - 2*x2' - x3";
+        HashMap<String, Number> initialState = new HashMap<>(){
+            {
+                put("x1", 1.0);
+                put("x2", 2.0);
+                put("x3", 3.0);
+                put("x1'", 4.0);
+                put("x2'", 5.0);
+            }
+        };
+        ODESystGenerator generator = new ODESystGenerator(initialState, expression1, expression2, expression3, expression4);
     }
 
-    public ODESystGenerator(String... sources) {
+    public ODESystGenerator(HashMap<String, Number> initialState, String... sources) {
         // Lex and parse the sources
         ArrayList<MathLexer> lexers = new ArrayList<>();
         ArrayList<MathParser> parsers = new ArrayList<>();
         for (String expression : sources) {
             lexers.add(new MathLexer(expression));
             parsers.add(new MathParser(lexers.getLast().getTokens()));
+            System.out.println(parsers.getLast().getExprVars());
         }
 
-        // Get the lambdaVars
         this.lambdaVars = lambdaVars(lexers);
-        // Get the sources
         this.expressions = expressions(parsers);
-        // Find the full set of variables
         this.vars = vars(lexers);
-        // Find the state vector variables (i.e. the variables that are derivatives of other variables)
-        this.vecVars = removeLastDerivatives((HashSet<String>)vars.clone());
+        this.vecVars = generateVecVars(parsers);
         // Assign an arbitrary order to the variables
             // There are other ways of doing this, e.g. by using a predefined order on the variable names - then we wouldn't need to store the order as well, but it would be less flexible, and I don't want my colleagues to have to know such implementation details.
         this.varOrder = varOrder(vecVars);
         printInit();
         //Compose the lambda functions
         this.lambdas = lambdas(expressions, vecVars, varOrder);
+        // Create the functions for the system
+        ArrayList<IFunc<Number, Number>> functions = createFunctions(lambdas, lambdaVars, vecVars, varOrder);
+        // Create the initial state vector
+        ArrayList<Number> initialStateVector = createInitialStateVector(initialState, vecVars, reverseVarOrder);
+        System.out.println("initialStateVector: " + initialStateVector);
+        // Create the ODESystem
+        this.system = new ODESystem(initialStateVector, functions);
     }
 
-    private ArrayList<IFunc> lambdas(ArrayList<Expr> expressions, HashSet<String> vecVars, HashMap<String, Integer> varOrder) {
-        return null;
+    private ArrayList<Number> createInitialStateVector(HashMap<String, Number> initialState, HashSet<String> vecVars,
+            HashMap<Integer, String> reverseVarOrder) {
+        ArrayList<Number> initialStateVector = new ArrayList<>();
+        for (int i = 0; i < vecVars.size(); i++) {
+            initialStateVector.add(initialState.get(reverseVarOrder.get(i)));
+        }
+        return initialStateVector;
+    }
+
+    private HashSet<String> generateVecVars(ArrayList<MathParser> parsers) {
+        HashSet<String> vecVars = new HashSet<>();
+        for (MathParser parser : parsers) {
+            vecVars.addAll(parser.getExprVars());
+        }
+        return vecVars;
+    }
+
+    private ArrayList<IFunc<Number, Number>> createFunctions(ArrayList<IFunc<Number, Number>> lambdas, ArrayList<String> lambdaVars, HashSet<String> vecVars,
+            HashMap<String, Integer> varOrder) {
+        ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
+        for (String vecVar : vecVars) {
+            boolean exists = false;
+            for(int i = 0; i < lambdaVars.size(); i++) {
+                if (vecVar.equals(lambdaVars.get(i))) {
+                    exists = true;
+                    functions.add(lambdas.get(i));
+                }
+            }
+
+            // if the var doesn't have a lambda function, we create a lambda function that returns the variable whose derivative it is
+            if (!exists) {
+                functions.add(new IFunc<Number, Number>() {
+                    @Override
+                    public Number apply(ArrayList<Number> t) {
+                        return t.get(findAntiderivative(vecVar, vecVars, varOrder));
+                    }
+                });
+            }
+        }
+        return functions;
+    }
+
+    protected int findAntiderivative(String vecVar, HashSet<String> vecVars, HashMap<String, Integer> varOrder) {
+        if (!vecVar.endsWith("'"))
+            throw new IllegalArgumentException("The variable must be a derivative.");
+        
+        String antiderivative = vecVar.substring(0, vecVar.length() - 1);
+        for (String var : vecVars) {
+            if (var.equals(antiderivative))
+                return varOrder.get(var);
+        }
+        throw new IllegalArgumentException("Missing information about " + vecVar + " in the system.");
+    }
+
+    private ArrayList<IFunc<Number, Number>> lambdas(ArrayList<Expr> expressions, HashSet<String> vecVars, HashMap<String, Integer> varOrder) {
+        ArrayList<IFunc<Number, Number>> lambdas = new ArrayList<>();
+        for (Expr expression : expressions) {
+            ExprLambdaComposer composer = new ExprLambdaComposer(expression, vecVars, varOrder);
+            lambdas.add(composer.getLambda());
+        }
+        return lambdas;
     }
 
     private ArrayList<Expr> expressions(ArrayList<MathParser> parsers) {
@@ -60,9 +141,28 @@ public class ODESystGenerator {
     }
 
     private HashMap<String, Integer> varOrder(HashSet<String> vecVars) {
+        ArrayList<String> varList = new ArrayList<>(vecVars);
+        for (String var : vecVars) {
+            varList.add(var);
+        }
+
+        // eliminate duplicates
+        HashSet<String> uniqueVars = new HashSet<>(varList);
+        varList.clear();
+        varList.addAll(uniqueVars);
+        
+        // sort the list lexicographically
+            // This is a bit of a hack, but it works. It is because the variables are evaluated in the varOrder, to always compute the variables themselves before the derivatives
+        Collections.sort(varList); 
+        System.out.println("idk: "+ varList);
+
+        
+
+        // create the hashmap with the order of the variables
         HashMap<String, Integer> varOrder = new HashMap<>();
         int i = 0;
-        for (String var : vecVars) {
+        for (String var : varList) {
+            reverseVarOrder.put(i, var);
             varOrder.put(var, i++);
         }
         return varOrder;
@@ -87,8 +187,12 @@ public class ODESystGenerator {
     /**
      * Really, really, really inefficient method to exclude the highest order derivatives from the hashset. But it works.
      * But seriously, this is a really bad way to do this.wtf.
+     * Moreover, it doesn't work! ffs.
+     * This ought to be cut off, but I'm keeping it for you, to wonder at the stupidity behind it.
      */
-    private HashSet<String> removeLastDerivatives(HashSet<String> vars) {
+    @Deprecated
+    private HashSet<String> removeHighestDerivatives(HashSet<String> vars, ArrayList<MathParser> parsers) {
+        //remove all highest order derivatives
         HashSet<String> temp = new HashSet<>();
         for(String var : vars) {
             boolean isHighestDerivative = true;
@@ -106,6 +210,9 @@ public class ODESystGenerator {
             if (!isHighestDerivative) temp.add(var);
         }
         vars.removeAll(temp);
+
+        //add back the derivatives that appear in expressions
+        parsers.getLast().getExprVars().forEach(vars::add); // I like this code, but it's hard to debug.
         return vars;
     }
 

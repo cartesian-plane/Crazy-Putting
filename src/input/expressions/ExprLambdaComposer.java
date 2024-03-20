@@ -1,19 +1,23 @@
-package input;
+package input.expressions;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import input.MathLexer;
+import input.MathParser;
 import interfaces.IFunc;
 
 public class ExprLambdaComposer implements Expr.Visitor<IFunc<Number, Number>> {
 
-    private final HashSet<String> vars;
+    private final HashSet<String> vecVars; 
     private final HashMap<String, Integer> varOrder;
     private final IFunc<Number, Number> lambda;
 
     public static void main(String[] args) {
-        String source = "x' = x - 2*x*y";
+        // String source = "x' = x - 2*x*y";
+        String source = "x'' = 1*x_1^2 - 3*(x*y)/2 + 4";
         MathLexer lexer = new MathLexer(source);
         MathParser parser = new MathParser(lexer.getTokens());
         String lambdaVar = lexer.getLambdaVar();
@@ -29,7 +33,7 @@ public class ExprLambdaComposer implements Expr.Visitor<IFunc<Number, Number>> {
             varOrder.put(var, i++);
         }
 
-        ArrayList<Number> values = new ArrayList<Number>(){{add(2.0); add(3.0); add (5.0); add (7.0);}};
+        ArrayList<Number> values = new ArrayList<Number>(){{add(1.0); add(2.0); add (3.0); add (4.0);}};
         
         ExprLambdaComposer composer = new ExprLambdaComposer(expression, lexer.getVariables(), varOrder);
         System.out.println(composer.lambda.apply(values));
@@ -37,8 +41,8 @@ public class ExprLambdaComposer implements Expr.Visitor<IFunc<Number, Number>> {
 
     }
 
-    public ExprLambdaComposer(Expr expr, HashSet<String> vars, HashMap<String, Integer> varOrder) {
-        this.vars = vars;
+    public ExprLambdaComposer(Expr expr, HashSet<String> vecVars, HashMap<String, Integer> varOrder) {
+        this.vecVars = vecVars;
         this.varOrder = varOrder;
         this.lambda = compose(expr);
     }
@@ -83,7 +87,14 @@ public class ExprLambdaComposer implements Expr.Visitor<IFunc<Number, Number>> {
                     public Number apply(ArrayList<Number> t) {
                         return expr.left.accept(ExprLambdaComposer.this).apply(t).doubleValue() / expr.right.accept(ExprLambdaComposer.this).apply(t).doubleValue();
                     }
-                };                
+                };
+            case POW:
+                return new IFunc<Number, Number>() {
+                    @Override
+                    public Number apply(ArrayList<Number> t) {
+                        return Math.pow(expr.left.accept(ExprLambdaComposer.this).apply(t).doubleValue(), expr.right.accept(ExprLambdaComposer.this).apply(t).doubleValue());
+                    }
+                };
             default:
                 throw new CompositionError("Invalid binary operator");
         }
@@ -148,5 +159,9 @@ public class ExprLambdaComposer implements Expr.Visitor<IFunc<Number, Number>> {
             default:
                 throw new CompositionError("Invalid unary operator");
         }
-    }    
+    }
+
+    public IFunc<Number, Number> getLambda() {
+        return lambda;
+    }
 }

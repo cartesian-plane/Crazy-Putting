@@ -1,16 +1,22 @@
 package input;
 
+import static input.tokens.TokenType.*;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import input.expressions.Expr;
+import input.expressions.ExprPrinter;
+import input.tokens.Token;
+import input.tokens.TokenType;
 import interfaces.IFunc;
 
-import static input.TokenType.*;
-
-class MathParser {
+public class MathParser {
 
     private final List<Token> tokens;
-    private final String lambdaVar;
+    private final String lambdaVar; //unused
+    private final ArrayList<String> exprVars;
     private final HashSet<String> vars;
     private final Expr expression;
     private int current = 0;
@@ -43,13 +49,24 @@ class MathParser {
      * WARNING: This means that the user will have to input equations of the form <highest derivative of one variable> = <expression of the other derivatives>.
      * @param tokens
      */
-    MathParser(List<Token> tokens) {
+    public MathParser(List<Token> tokens) {
         this.tokens = tokens;
         this.lambdaVar = tokens.get(0).lexeme;
         tokens.remove(0);
         tokens.remove(0);
+        this.exprVars = findExprVars();
         this.expression = parse();
         this.vars = findVariables();
+    }
+
+    private ArrayList<String> findExprVars() {
+        ArrayList<String> exprVars = new ArrayList<>();
+        for (Token token : tokens) {
+            if (token.type == VARIABLE) {
+                exprVars.add(token.lexeme);
+            }
+        }
+        return exprVars;
     }
 
     private HashSet<String> findVariables() {
@@ -178,5 +195,9 @@ class MathParser {
 
     public HashSet<String> getVars() {
         return vars;
+    }
+
+    public ArrayList<String> getExprVars() {
+        return exprVars;
     }
 }
