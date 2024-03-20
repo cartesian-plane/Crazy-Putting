@@ -1,3 +1,5 @@
+package odesolver;
+
 //////////////////// IMPORTS //////////////////////////////////////////////
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -116,8 +118,42 @@ public class ODESolverGUI {
         String[] solvers = {"Euler", "Runge-Kutta"};
         solverTypeComboBox = new JComboBox<>(solvers);
         solverTypeComboBox.setFont(largerFont);
+
+
+        //button stuff
+        
+
         generateButton = new JButton("GENERATE");
         generateButton.setFont(largerFont);
+        generateButton.addActionListener(e -> {
+            try {
+                ArrayList<String> equations = new ArrayList<>();
+                for (JTextField field : formulaFields) {
+                    equations.add(field.getText());
+                }
+        
+                ArrayList<Double> initialValues = new ArrayList<>();
+                for (JTextField field : initialFields) {
+                    String text = field.getText();
+                    double initialValue = text.isEmpty() ? 0.0 : Double.parseDouble(text);
+                    initialValues.add(initialValue);
+                }
+        
+                double stepSize = !stepSizeField.getText().isEmpty() ? Double.parseDouble(stepSizeField.getText()) : 0.0;
+                double time = !timeField.getText().isEmpty() ? Double.parseDouble(timeField.getText()) : 0.0;
+                boolean graph = graphCheckBox.isSelected();
+                boolean phaseSpace = phaseSpaceCheckBox.isSelected();
+                boolean table = tableCheckBox.isSelected();
+                String solverType = (String) solverTypeComboBox.getSelectedItem();
+        
+                SolverInput input = new SolverInput(equations, initialValues, stepSize, time, graph, phaseSpace, table, solverType);
+        
+            } catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(frame, "Please enter valid numbers", "Input error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
+        
 
         
 

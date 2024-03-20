@@ -4,11 +4,12 @@ import odesolver.ODESolver;
 import odesolver.methods.EulerMethod;
 import odesolver.methods.ODESolverMethod;
 import odesolver.methods.RungeKutta2;
+import odesolver.methods.RungeKutta4;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import input.ODESystGenerator;
+import input.ODESystemFactory;
 
 public class ODESystemTestFactory {
     ODESystem system(ArrayList<Number> initialStateVector, ArrayList<IFunc<Number, Number>> functions) {
@@ -195,18 +196,22 @@ public class ODESystemTestFactory {
         // System.out.println(solution.stateVectors.get(100000));
         // ex 2
 
-        String ex1 = "x' = 1";
-        String ex2 = "y' = 2";
+        ArrayList<String> ex = new ArrayList<>(){
+            {
+                add("x' = x-x*y");
+                add("y' = y-2*x*y");
+            }
+        };
         ArrayList<Number> init = new ArrayList<>();
         init.add(10);
         init.add(20);
         HashMap<String, Number> in = new HashMap<>();
-        in.put("x", 3.0);
-        in.put("y", 1.0);
-        ODESystGenerator gen = new ODESystGenerator(in, ex1, ex2);
+        in.put("x", 10.0);
+        in.put("y", 20.0);
+        ODESystemFactory gen = new ODESystemFactory(in, ex);
         gen.getSyst();
         ODESolver solv = new ODESolver();
-        ODESolverMethod stra = new EulerMethod(gen.getSyst(), 0.01, 0, 10);
+        ODESolverMethod stra = new RungeKutta2(gen.getSyst(), 0.000001, 0, 5);
         solv.setStrategy(stra);
         System.out.println(solv.solve());
     }

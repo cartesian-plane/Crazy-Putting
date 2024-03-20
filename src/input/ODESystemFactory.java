@@ -10,7 +10,7 @@ import input.expressions.ExprLambdaComposer;
 import interfaces.IFunc;
 import interfaces.ODESystem;
 
-public class ODESystGenerator {
+public class ODESystemFactory {
 
     private final ArrayList<String> lambdaVars; // The variables for which the lambda functions will be used
     private final HashSet<String> vars; // The full set of variables
@@ -24,10 +24,14 @@ public class ODESystGenerator {
     // let's hope to god it works
     public static void main(String[] args) {
         // TODO: In this example below, some equations are stated in terms of the derivatives of other equations. Does this always work with this code?
-        String ex1 = "x2' = x1 + x2";
-        String ex2 = "x1' = x2 + x3";
-        String ex3 = "x3' = -x1'";
-        String ex4 = "x3'' = -x1 - 2*x2' - x3";
+        ArrayList<String> ex = new ArrayList<>(){
+            {
+                add("x2' = x1 + x2");
+                add("x1' = x2 + x3");
+                add("x3' = -x1'");
+                add("x3'' = -x1 - 2*x2' - x3");
+            }
+        };
         HashMap<String, Number> initialState = new HashMap<>(){
             {
                 put("x1", 1.0);
@@ -47,10 +51,10 @@ public class ODESystGenerator {
         //     }
         // };
 
-        ODESystGenerator generator = new ODESystGenerator(initialState, ex1, ex2, ex3, ex4);
+        ODESystemFactory generator = new ODESystemFactory(initialState, ex);
     }
 
-    public ODESystGenerator(HashMap<String, Number> initialState, String... sources) {
+    public ODESystemFactory(HashMap<String, Number> initialState, ArrayList<String> sources) {
         // Lex and parse the sources
         ArrayList<MathLexer> lexers = new ArrayList<>();
         ArrayList<MathParser> parsers = new ArrayList<>();
