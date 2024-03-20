@@ -22,4 +22,11 @@ public class ODESolution {
     public void setTimeTaken(long timeTaken) {
         this.timeTaken = timeTaken;
     }
+
+    @Override
+    public String toString() {
+        String s = "Time taken: " + timeTaken + "\n";
+        s += "Final state: " + stateVectors.get(stateVectors.size()-1) + "";
+        return s;
+    }
 }
