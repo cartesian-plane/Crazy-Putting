@@ -21,17 +21,19 @@ public class ODESystemTestFactory {
         ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
 
         // initial conditions
-        ArrayList<Number> vars = new ArrayList<>();
-        vars.add(initialX);
-        vars.add(initialY);
+        ArrayList<Number> initialValues = new ArrayList<>();
+        initialValues.add(initialX);
+        initialValues.add(initialY);
 
-        initialStateVector.add(vars.get(0));
-        initialStateVector.add(vars.get(1));
+        initialStateVector.add(initialValues.get(0));
+        initialStateVector.add(initialValues.get(1));
 
-        functions.add( (varss) -> {return alpha*varss.get(0).doubleValue() - beta*varss.get(0).doubleValue()
-                *varss.get(1).doubleValue(); });
-        functions.add( (varss) -> {return delta*varss.get(0).doubleValue()*varss.get(1).doubleValue() -
-                gamma*varss.get(1).doubleValue(); });
+
+        functions.add( (systemVars) -> {return alpha*systemVars.get(0).doubleValue() - beta*systemVars.get(0).doubleValue()
+                *systemVars.get(1).doubleValue(); });
+
+        functions.add( (systemVars) -> {return delta*systemVars.get(0).doubleValue()*systemVars.get(1).doubleValue() -
+                gamma*systemVars.get(1).doubleValue(); });
 
         return new ODESystem(initialStateVector, functions);
     }
@@ -53,20 +55,23 @@ public class ODESystemTestFactory {
         ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
 
         // initial conditions
-        ArrayList<Number> vars = new ArrayList<>();
-        vars.add(initialS);
-        vars.add(initialI);
-        vars.add(initialR);
+        ArrayList<Number> initialValues = new ArrayList<>();
+        initialValues.add(initialS);
+        initialValues.add(initialI);
+        initialValues.add(initialR);
 
-        initialStateVector.add(vars.get(0));
-        initialStateVector.add(vars.get(1));
-        initialStateVector.add(vars.get(2));
+        initialStateVector.add(initialValues.get(0));
+        initialStateVector.add(initialValues.get(1));
+        initialStateVector.add(initialValues.get(2));
 
-        functions.add( (varss) -> {return -k*varss.get(0).doubleValue()*varss.get(1).doubleValue() +
-                mu*(1 - varss.get(0).doubleValue()); });
-        functions.add( (varss) -> {return k*varss.get(0).doubleValue()*varss.get(1).doubleValue() -
-                (gamma + mu) * varss.get(1).doubleValue(); });
-        functions.add( (varss) -> {return gamma*varss.get(1).doubleValue() - mu*varss.get(2).doubleValue(); });
+
+        functions.add( (systemVars) -> {return -k*systemVars.get(0).doubleValue()*systemVars.get(1).doubleValue() +
+                mu*(1 - systemVars.get(0).doubleValue()); });
+
+        functions.add( (systemVars) -> {return k*systemVars.get(0).doubleValue()*systemVars.get(1).doubleValue() -
+                (gamma + mu) * systemVars.get(1).doubleValue(); });
+
+        functions.add( (systemVars) -> {return gamma*systemVars.get(1).doubleValue() - mu*systemVars.get(2).doubleValue(); });
 
         return new ODESystem(initialStateVector, functions);
 
