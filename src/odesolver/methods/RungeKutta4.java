@@ -1,8 +1,10 @@
-package interfaces;
-
-import odesolver.methods.ODESolverMethod;
+package odesolver.methods;
 
 import java.util.ArrayList;
+
+import interfaces.IFunc;
+import interfaces.ODESolution;
+import interfaces.ODESystem;
 
 public class RungeKutta4 extends ODESolverMethod {
 
@@ -46,7 +48,7 @@ public class RungeKutta4 extends ODESolverMethod {
                 // build the intermediate state vector
 
                 IFunc<Number, Number> function = this.system.getFunctions().get(i);
-                double newX = (double) x + stepSize / 6 * (function.apply(stateVector).doubleValue() +
+                double newX = (double)x + stepSize / 6 * (function.apply(stateVector).doubleValue() +
                         2 * function.apply(k2).doubleValue() +
                         2 * function.apply(k3).doubleValue() +
                         function.apply(k4).doubleValue());
