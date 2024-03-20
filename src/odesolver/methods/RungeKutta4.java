@@ -1,5 +1,8 @@
-package interfaces;
+package odesolver.methods;
 
+import interfaces.IFunc;
+import interfaces.ODESolution;
+import interfaces.ODESystem;
 import odesolver.methods.ODESolverMethod;
 
 import java.util.ArrayList;
