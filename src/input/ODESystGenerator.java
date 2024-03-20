@@ -24,10 +24,10 @@ public class ODESystGenerator {
     // let's hope to god it works
     public static void main(String[] args) {
         // TODO: In this example below, some equations are stated in terms of the derivatives of other equations. Does this always work with this code?
-        String expression1 = "x2' = x1 + x2";
-        String expression2 = "x1' = x2 + x3";
-        String expression3 = "x3' = -x1'";
-        String expression4 = "x3'' = -x1 - 2*x2' - x3";
+        String ex1 = "x2' = x1 + x2";
+        String ex2 = "x1' = x2 + x3";
+        String ex3 = "x3' = -x1'";
+        String ex4 = "x3'' = -x1 - 2*x2' - x3";
         HashMap<String, Number> initialState = new HashMap<>(){
             {
                 put("x1", 1.0);
@@ -37,7 +37,17 @@ public class ODESystGenerator {
                 put("x2'", 5.0);
             }
         };
-        ODESystGenerator generator = new ODESystGenerator(initialState, expression1, expression2, expression3, expression4);
+
+        // String ex1 = "y' = 1";
+        // String ex2 = "x' = 2";
+        // HashMap<String, Number> initialState = new HashMap<>() {
+        //     {
+        //         put("x", 1.0);
+        //         put("y", 2.0);
+        //     }
+        // };
+
+        ODESystGenerator generator = new ODESystGenerator(initialState, ex1, ex2, ex3, ex4);
     }
 
     public ODESystGenerator(HashMap<String, Number> initialState, String... sources) {
@@ -53,7 +63,7 @@ public class ODESystGenerator {
         this.lambdaVars = lambdaVars(lexers);
         this.expressions = expressions(parsers);
         this.vars = vars(lexers);
-        this.vecVars = generateVecVars(parsers);
+        this.vecVars = generateVecVars(vars, lexers, parsers);
         // Assign an arbitrary order to the variables
             // There are other ways of doing this, e.g. by using a predefined order on the variable names - then we wouldn't need to store the order as well, but it would be less flexible, and I don't want my colleagues to have to know such implementation details.
         this.varOrder = varOrder(vecVars);
@@ -65,12 +75,11 @@ public class ODESystGenerator {
         // Create the initial state vector
         ArrayList<Number> initialStateVector = createInitialStateVector(initialState, vecVars, reverseVarOrder);
         System.out.println("initialStateVector: " + initialStateVector);
-        // Create the ODESystem
+        // Create the ODESystem  
         this.system = new ODESystem(initialStateVector, functions);
     }
 
-    private ArrayList<Number> createInitialStateVector(HashMap<String, Number> initialState, HashSet<String> vecVars,
-            HashMap<Integer, String> reverseVarOrder) {
+    private ArrayList<Number> createInitialStateVector(HashMap<String, Number> initialState, HashSet<String> vecVars, HashMap<Integer, String> reverseVarOrder) {
         ArrayList<Number> initialStateVector = new ArrayList<>();
         for (int i = 0; i < vecVars.size(); i++) {
             initialStateVector.add(initialState.get(reverseVarOrder.get(i)));
@@ -78,11 +87,15 @@ public class ODESystGenerator {
         return initialStateVector;
     }
 
-    private HashSet<String> generateVecVars(ArrayList<MathParser> parsers) {
-        HashSet<String> vecVars = new HashSet<>();
+    private HashSet<String> generateVecVars(HashSet<String> vars, ArrayList<MathLexer> lexers, ArrayList<MathParser> parsers) {
+        HashSet<String> vecVars = (HashSet<String>)vars.clone();
+        for(MathLexer lexer : lexers)
+            vecVars.remove(lexer.getLambdaVar()+"\'");
+        //System.out.println(vecVars);
         for (MathParser parser : parsers) {
             vecVars.addAll(parser.getExprVars());
         }
+        //System.out.println(vecVars);
         return vecVars;
     }
 
@@ -111,7 +124,7 @@ public class ODESystGenerator {
         return functions;
     }
 
-    protected int findAntiderivative(String vecVar, HashSet<String> vecVars, HashMap<String, Integer> varOrder) {
+    private int findAntiderivative(String vecVar, HashSet<String> vecVars, HashMap<String, Integer> varOrder) {
         if (!vecVar.endsWith("'"))
             throw new IllegalArgumentException("The variable must be a derivative.");
         
@@ -228,5 +241,9 @@ public class ODESystGenerator {
         System.out.println("vars: " + vars);
         System.out.println("vecVars: " + vecVars);
         System.out.println("varOrder: " + varOrder);
+    }
+
+    public ODESystem getSyst() {
+        return system;
     }
 }
