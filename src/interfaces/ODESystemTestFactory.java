@@ -16,7 +16,7 @@ public class ODESystemTestFactory {
         return new ODESystem(initialStateVector, functions);
     }
 
-    private ODESystem LotkaVolterra(double initialX, double initialY, double alpha, double beta,
+    public ODESystem LotkaVolterra(double initialX, double initialY, double alpha, double beta,
                                     double delta, double gamma) {
 
         if (alpha <= 0 || beta <= 0 || gamma <= 0 || delta <= 0) {
@@ -48,7 +48,7 @@ public class ODESystemTestFactory {
         return new ODESystem(initialStateVector, functions);
     }
 
-    private ODESystem LotkaVolterra(double initialX, double initialY) {
+    public ODESystem LotkaVolterra(double initialX, double initialY) {
 
         double alpha = 1;
         double beta = 1;
@@ -79,7 +79,7 @@ public class ODESystemTestFactory {
         return new ODESystem(initialStateVector, functions);
     }
 
-    private ODESystem FitzHughNagumo() {
+    public ODESystem FitzHughNagumo() {
         ArrayList<Number> initialStateVector = new ArrayList<>();
         ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
         ArrayList<Number> vars = new ArrayList<>();
@@ -95,7 +95,7 @@ public class ODESystemTestFactory {
         return new ODESystem(initialStateVector, functions);
     }
 
-    private ODESystem SIR(double initialS, double initialI, double initialR, double k, double mu, double gamma) {
+    public ODESystem SIR(double initialS, double initialI, double initialR, double k, double mu, double gamma) {
         ArrayList<Number> initialStateVector = new ArrayList<>();
         ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
 
@@ -128,7 +128,7 @@ public class ODESystemTestFactory {
 
     }
 
-    private ODESystem SIR(double initialS, double initialI, double initialR) {
+    public ODESystem SIR(double initialS, double initialI, double initialR) {
 
         double k = 3;
         double mu = 0.001;
@@ -167,7 +167,7 @@ public class ODESystemTestFactory {
     }
 
 
-    ODESystem testSyst() {
+    public ODESystem testSyst() {
         ArrayList<Number> initialStateVector = new ArrayList<>();
         ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
 
