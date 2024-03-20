@@ -2,6 +2,7 @@ package odesolver.testing;
 
 import interfaces.ODESolution;
 import interfaces.ODESystem;
+import interfaces.ODESystemTestFactory;
 import odesolver.ODESolver;
 import odesolver.methods.EulerMethod;
 
@@ -21,7 +22,7 @@ public class Tester {
     private static ODESystem numericalSystem;
 
     public static void main(String[] args) {
-        numericalSystem = ;
+        numericalSystem = new ODESystemTestFactory().testSyst();
         ODESolver solver = new ODESolver(new EulerMethod(numericalSystem, 0.001, 0, 1));
         ODESolution numericalSolution = solver.solve();
 
