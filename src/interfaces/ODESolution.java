@@ -15,6 +15,10 @@ public class ODESolution {
         this.stateVectors = stateVectors;
     }
 
+    public ArrayList<ArrayList<Number>> getStateVectors() {
+        return stateVectors;
+    }
+
     public long getTimeTaken() {
         return timeTaken;
     }

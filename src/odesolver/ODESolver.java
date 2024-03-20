@@ -12,6 +12,14 @@ public class ODESolver {
      */
     private ODESolverMethod strategy;
 
+    public ODESolver(ODESolverMethod strategy) {
+        this.strategy = strategy;
+    }
+
+    public ODESolver() {
+
+    }
+
     /**
      * Set the Context's strategy.
      * @param strategy A concrete strategy (Euler, RK, etc.).
