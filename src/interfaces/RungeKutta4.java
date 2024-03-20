@@ -41,7 +41,7 @@ public class RungeKutta4 extends ODESolverMethod {
             int j1 = 0;
             for (Number y : stateVector) {
                 IFunc<Number, Number> function2 = this.system.getFunctions().get(j1);
-                double newY = (double) y + stepSize * function2.apply(stateVector).doubleValue();
+                double newY = y.doubleValue() + stepSize * function2.apply(stateVector).doubleValue();
                 k1.add(newY);
                 j1++;
             }
@@ -50,7 +50,7 @@ public class RungeKutta4 extends ODESolverMethod {
             for (Number y : stateVector) {
                 IFunc<Number, Number> function2 = this.system.getFunctions().get(j2);
                 double halfStepSize = stepSize / 2;
-                double newY = (double) y + halfStepSize/2 * function2.apply(k1).doubleValue();
+                double newY = y.doubleValue() + halfStepSize/2 * function2.apply(k1).doubleValue();
                 k2.add(newY);
                 j2++;
             }
@@ -60,7 +60,7 @@ public class RungeKutta4 extends ODESolverMethod {
             for (Number y : stateVector) {
                 IFunc<Number, Number> function2 = this.system.getFunctions().get(j3);
                 double halfStepSize = stepSize / 2;
-                double newY = (double) y + halfStepSize/2 * function2.apply(k2).doubleValue();
+                double newY = y.doubleValue() + halfStepSize/2 * function2.apply(k2).doubleValue();
                 k3.add(newY);
                 j3++;
             }
@@ -68,7 +68,7 @@ public class RungeKutta4 extends ODESolverMethod {
             int j4 = 0;
             for (Number y : stateVector) {
                 IFunc<Number, Number> function2 = this.system.getFunctions().get(j4);
-                double newY = (double) y + stepSize * function2.apply(k3).doubleValue();
+                double newY = y.doubleValue() + stepSize * function2.apply(k3).doubleValue();
                 k4.add(newY);
                 j4++;
             }
@@ -77,7 +77,7 @@ public class RungeKutta4 extends ODESolverMethod {
             int i = 0;
             for (Number x : stateVector) {
                 IFunc<Number, Number> function = this.system.getFunctions().get(i);
-                double newX = (double) x + stepSize/6 * (function.apply(k1).doubleValue() + 2*function.apply(k2).doubleValue() + 2*function.apply(k3).doubleValue() + function.apply(k4).doubleValue());
+                double newX = x.doubleValue() + stepSize/6 * (function.apply(k1).doubleValue() + 2*function.apply(k2).doubleValue() + 2*function.apply(k3).doubleValue() + function.apply(k4).doubleValue());
                 updatedStateVector.add(newX);
                 i++;
             }
