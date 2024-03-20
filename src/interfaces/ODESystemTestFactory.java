@@ -34,11 +34,15 @@ public class ODESystemTestFactory {
         initialStateVector.add(initialValues.get(1));
 
 
-        functions.add( (systemVars) -> {return alpha*systemVars.get(0).doubleValue() - beta*systemVars.get(0).doubleValue()
-                *systemVars.get(1).doubleValue(); });
+        functions.add((systemVars) -> {
+            return alpha * systemVars.get(0).doubleValue() - beta * systemVars.get(0).doubleValue()
+                    * systemVars.get(1).doubleValue();
+        });
 
-        functions.add( (systemVars) -> {return delta*systemVars.get(0).doubleValue()*systemVars.get(1).doubleValue() -
-                gamma*systemVars.get(1).doubleValue(); });
+        functions.add((systemVars) -> {
+            return delta * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() -
+                    gamma * systemVars.get(1).doubleValue();
+        });
 
         return new ODESystem(initialStateVector, functions);
     }
@@ -61,11 +65,15 @@ public class ODESystemTestFactory {
         initialStateVector.add(initialValues.get(1));
 
 
-        functions.add( (systemVars) -> {return alpha*systemVars.get(0).doubleValue() - beta*systemVars.get(0).doubleValue()
-                *systemVars.get(1).doubleValue(); });
+        functions.add((systemVars) -> {
+            return alpha * systemVars.get(0).doubleValue() - beta * systemVars.get(0).doubleValue()
+                    * systemVars.get(1).doubleValue();
+        });
 
-        functions.add( (systemVars) -> {return delta*systemVars.get(0).doubleValue()*systemVars.get(1).doubleValue() -
-                gamma*systemVars.get(1).doubleValue(); });
+        functions.add((systemVars) -> {
+            return delta * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() -
+                    gamma * systemVars.get(1).doubleValue();
+        });
 
         return new ODESystem(initialStateVector, functions);
     }
@@ -77,8 +85,12 @@ public class ODESystemTestFactory {
         vars.add(1.0);
         vars.add(0.0);
         initialStateVector.add(vars.get(0));
-        functions.add( (systemVars) -> {return systemVars.getFirst().doubleValue() - Math.pow(systemVars.getFirst().doubleValue(),3)/3 - systemVars.get(1).doubleValue() + 0.1;});
-        functions.add( (systemVars) -> {return 0.05*(systemVars.getFirst().doubleValue() + 0.95 - 0.91*systemVars.get(1).doubleValue() + 0.1);});
+        functions.add((systemVars) -> {
+            return systemVars.getFirst().doubleValue() - Math.pow(systemVars.getFirst().doubleValue(), 3) / 3 - systemVars.get(1).doubleValue() + 0.1;
+        });
+        functions.add((systemVars) -> {
+            return 0.05 * (systemVars.getFirst().doubleValue() + 0.95 - 0.91 * systemVars.get(1).doubleValue() + 0.1);
+        });
         return new ODESystem(initialStateVector, functions);
     }
 
@@ -97,13 +109,19 @@ public class ODESystemTestFactory {
         initialStateVector.add(initialValues.get(2));
 
 
-        functions.add( (systemVars) -> {return -k*systemVars.get(0).doubleValue()*systemVars.get(1).doubleValue() +
-                mu*(1 - systemVars.get(0).doubleValue()); });
+        functions.add((systemVars) -> {
+            return -k * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() +
+                    mu * (1 - systemVars.get(0).doubleValue());
+        });
 
-        functions.add( (systemVars) -> {return k*systemVars.get(0).doubleValue()*systemVars.get(1).doubleValue() -
-                (gamma + mu) * systemVars.get(1).doubleValue(); });
+        functions.add((systemVars) -> {
+            return k * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() -
+                    (gamma + mu) * systemVars.get(1).doubleValue();
+        });
 
-        functions.add( (systemVars) -> {return gamma*systemVars.get(1).doubleValue() - mu*systemVars.get(2).doubleValue(); });
+        functions.add((systemVars) -> {
+            return gamma * systemVars.get(1).doubleValue() - mu * systemVars.get(2).doubleValue();
+        });
 
         return new ODESystem(initialStateVector, functions);
 
@@ -129,18 +147,23 @@ public class ODESystemTestFactory {
         initialStateVector.add(initialValues.get(2));
 
 
-        functions.add( (systemVars) -> {return -k*systemVars.get(0).doubleValue()*systemVars.get(1).doubleValue() +
-                mu*(1 - systemVars.get(0).doubleValue()); });
+        functions.add((systemVars) -> {
+            return -k * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() +
+                    mu * (1 - systemVars.get(0).doubleValue());
+        });
 
-        functions.add( (systemVars) -> {return k*systemVars.get(0).doubleValue()*systemVars.get(1).doubleValue() -
-                (gamma + mu) * systemVars.get(1).doubleValue(); });
+        functions.add((systemVars) -> {
+            return k * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() -
+                    (gamma + mu) * systemVars.get(1).doubleValue();
+        });
 
-        functions.add( (systemVars) -> {return gamma*systemVars.get(1).doubleValue() - mu*systemVars.get(2).doubleValue(); });
+        functions.add((systemVars) -> {
+            return gamma * systemVars.get(1).doubleValue() - mu * systemVars.get(2).doubleValue();
+        });
 
         return new ODESystem(initialStateVector, functions);
 
     }
-
 
 
     ODESystem testSyst() {
@@ -152,7 +175,9 @@ public class ODESystemTestFactory {
 
         initialStateVector.add(vars.get(0));
 
-        functions.add( (varss) -> {return 2*varss.get(0).doubleValue(); });
+        functions.add((varss) -> {
+            return 2 * varss.get(0).doubleValue();
+        });
 
         return new ODESystem(initialStateVector, functions);
     }
@@ -173,7 +198,8 @@ public class ODESystemTestFactory {
         String ex1 = "x' = 1";
         String ex2 = "y' = 2";
         ArrayList<Number> init = new ArrayList<>();
-        init.add(10); init.add(20);
+        init.add(10);
+        init.add(20);
         HashMap<String, Number> in = new HashMap<>();
         in.put("x", 3.0);
         in.put("y", 1.0);
