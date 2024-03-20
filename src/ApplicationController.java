@@ -23,7 +23,7 @@ public class ApplicationController {
     private void onGenerate(UserInput input) {
         ODESystemFactory gen = new ODESystemFactory(input.initialValuesMap, input.equations);
         ODESystem syst = gen.getSyst();
-        ODESolver solv = new ODESolver();
+        ODESolver solver = new ODESolver();
         ODESolverMethod strategy;
         switch(input.methodType) {
             case EULER:
@@ -39,7 +39,7 @@ public class ApplicationController {
                 //unreachable
                 strategy = null;
         }
-        solv.setStrategy(strategy);
-        ODESolution solution = solv.solve();
+        solver.setStrategy(strategy);
+        ODESolution solution = solver.solve();
     }
 }
