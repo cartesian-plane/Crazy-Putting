@@ -8,13 +8,13 @@ import odesolver.methods.EulerMethod;
 import odesolver.methods.ODESolverMethod;
 import odesolver.methods.RungeKutta4;
 import ui.InputPage;
-import ui.PhaseSpace;
-import ui.Table;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
 
 public class ApplicationController {
-       
-    private PhaseSpace phaseSpace;
-    //private final GraphPanel graphPanel;
+    
 
     public static void main(String[] args) {
         ApplicationController app = new ApplicationController();
@@ -26,7 +26,6 @@ public class ApplicationController {
     }
 
     public void onGenerate(UserInput input) {
-
         ODESystemFactory gen = new ODESystemFactory(input.initialValuesMap, input.equations);
         ODESystem syst = gen.getSyst();
         ODESolver solver = new ODESolver();
@@ -48,21 +47,20 @@ public class ApplicationController {
                 //unreachable
                 strategy = null;
         }
-
         solver.setStrategy(strategy);
         ODESolution solution = solver.solve();
-        System.out.println(solution);
 
-        if(input.graph) {
-            //
-        }
-        if (input.table) {
-            new Table(syst.getVariables(), solution);
-        }
-        //System.out.println(input.phase);
-        if (input.phase) {
-            phaseSpace = new PhaseSpace(syst, solution);
-            phaseSpace.setVisible(true);
+        ArrayList<Double> timeValues = solution.getTime();
+        ArrayList<ArrayList<Double>> stateVectors = solution.getStateVectors();
+
+        try (PrintWriter writer = new PrintWriter("data/plot.csv")) {
+            for (int i = 0; i < timeValues.size(); i++) {
+                Double time = timeValues.get(i);
+                ArrayList<Double> stateVector = stateVectors.get(i);
+                writer.println(time + "," + stateVector.toString());
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to the CSV file: " + e.getMessage());
         }
     }
 }
