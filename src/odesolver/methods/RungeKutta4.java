@@ -23,11 +23,11 @@ public class RungeKutta4 extends ODESolverMethod {
 
     @Override
     public ODESolution solve() {
-        ArrayList<Number> time = new ArrayList<>();
-        ArrayList<ArrayList<Number>> stateVectors = new ArrayList<>();
+        ArrayList<Double> time = new ArrayList<>();
+        ArrayList<ArrayList<Double>> stateVectors = new ArrayList<>();
         ODESolution solution = new ODESolution(time, stateVectors);
         double t = startTime;
-        ArrayList<Number> stateVector = system.getInitialStateVector();
+        ArrayList<Double> stateVector = system.getInitialStateVector();
         time.add(t);
         stateVectors.add(stateVector);
 
@@ -36,22 +36,22 @@ public class RungeKutta4 extends ODESolverMethod {
         while (t <= endTime) {
             t += stepSize;
 
-            ArrayList<Number> k1 = new ArrayList<>();
-            ArrayList<Number> k2 = new ArrayList<>();
-            ArrayList<Number> k3 = new ArrayList<>();
-            ArrayList<Number> k4 = new ArrayList<>();
+            ArrayList<Double> k1 = new ArrayList<>();
+            ArrayList<Double> k2 = new ArrayList<>();
+            ArrayList<Double> k3 = new ArrayList<>();
+            ArrayList<Double> k4 = new ArrayList<>();
 
             int j1 = 0;
-            for (Number y : stateVector) {
-                IFunc<Number, Number> function2 = this.system.getFunctions().get(j1);
+            for (Double y : stateVector) {
+                IFunc<Double, Double> function2 = this.system.getFunctions().get(j1);
                 double newY = y.doubleValue() + stepSize * function2.apply(stateVector).doubleValue();
                 k1.add(newY);
                 j1++;
             }
 
             int j2 = 0;
-            for (Number y : stateVector) {
-                IFunc<Number, Number> function2 = this.system.getFunctions().get(j2);
+            for (Double y : stateVector) {
+                IFunc<Double, Double> function2 = this.system.getFunctions().get(j2);
                 double halfStepSize = stepSize / 2;
                 double newY = y.doubleValue() + halfStepSize/2 * function2.apply(k1).doubleValue();
                 k2.add(newY);
@@ -60,8 +60,8 @@ public class RungeKutta4 extends ODESolverMethod {
             // all values of k2 have to be divided by 2 before function is applied?
 
             int j3 = 0;
-            for (Number y : stateVector) {
-                IFunc<Number, Number> function2 = this.system.getFunctions().get(j3);
+            for (Double y : stateVector) {
+                IFunc<Double, Double> function2 = this.system.getFunctions().get(j3);
                 double halfStepSize = stepSize / 2;
                 double newY = y.doubleValue() + halfStepSize/2 * function2.apply(k2).doubleValue();
                 k3.add(newY);
@@ -69,17 +69,17 @@ public class RungeKutta4 extends ODESolverMethod {
             }
 
             int j4 = 0;
-            for (Number y : stateVector) {
-                IFunc<Number, Number> function2 = this.system.getFunctions().get(j4);
+            for (Double y : stateVector) {
+                IFunc<Double, Double> function2 = this.system.getFunctions().get(j4);
                 double newY = y.doubleValue() + stepSize * function2.apply(k3).doubleValue();
                 k4.add(newY);
                 j4++;
             }
 
-            ArrayList<Number> updatedStateVector = new ArrayList<>();
+            ArrayList<Double> updatedStateVector = new ArrayList<>();
             int i = 0;
-            for (Number x : stateVector) {
-                IFunc<Number, Number> function = this.system.getFunctions().get(i);
+            for (Double x : stateVector) {
+                IFunc<Double, Double> function = this.system.getFunctions().get(i);
                 double newX = x.doubleValue() + stepSize/6 * (function.apply(k1).doubleValue() + 2*function.apply(k2).doubleValue() + 2*function.apply(k3).doubleValue() + function.apply(k4).doubleValue());
                 updatedStateVector.add(newX);
                 i++;

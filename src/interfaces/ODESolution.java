@@ -3,19 +3,19 @@ package interfaces;
 import java.util.ArrayList;
 
 public class ODESolution {
-    ArrayList<Number> time;
-    ArrayList<ArrayList<Number>> stateVectors;
+    ArrayList<Double> time;
+    ArrayList<ArrayList<Double>> stateVectors;
     /**
      * The time taken (in ms) to compute the solution.
      */
     private long timeTaken;
 
-    public ODESolution(ArrayList<Number> time, ArrayList<ArrayList<Number>> stateVectors) {
+    public ODESolution(ArrayList<Double> time, ArrayList<ArrayList<Double>> stateVectors) {
         this.time = time;
         this.stateVectors = stateVectors;
     }
 
-    public ArrayList<ArrayList<Number>> getStateVectors() {
+    public ArrayList<ArrayList<Double>> getStateVectors() {
         return stateVectors;
     }
 

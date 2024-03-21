@@ -18,7 +18,7 @@ public class ODESystemFactory {
     private final HashMap<Integer, String> reverseVarOrder = new HashMap<>();
     private final HashMap<String, Integer> varOrder; // The order of the variables
     private final ArrayList<Expr> expressions; // The expressions of the derivatives
-    private final ArrayList<IFunc<Number, Number>> lambdas; // The lambda functions
+    private final ArrayList<IFunc<Double, Double>> lambdas; // The lambda functions
     private final ODESystem system; // The system of ODEs
 
     // let's hope to god it works
@@ -32,7 +32,7 @@ public class ODESystemFactory {
                 add("x3'' = -x1 - 2*x2' - x3");
             }
         };
-        HashMap<String, Number> initialState = new HashMap<>(){
+        HashMap<String, Double> initialState = new HashMap<>(){
             {
                 put("x1", 1.0);
                 put("x2", 2.0);
@@ -44,7 +44,7 @@ public class ODESystemFactory {
 
         // String ex1 = "y' = 1";
         // String ex2 = "x' = 2";
-        // HashMap<String, Number> initialState = new HashMap<>() {
+        // HashMap<String, Double> initialState = new HashMap<>() {
         //     {
         //         put("x", 1.0);
         //         put("y", 2.0);
@@ -54,7 +54,7 @@ public class ODESystemFactory {
         ODESystemFactory generator = new ODESystemFactory(initialState, ex);
     }
 
-    public ODESystemFactory(HashMap<String, Number> initialState, ArrayList<String> sources) {
+    public ODESystemFactory(HashMap<String, Double> initialState, ArrayList<String> sources) {
         // Lex and parse the sources
         ArrayList<MathLexer> lexers = new ArrayList<>();
         ArrayList<MathParser> parsers = new ArrayList<>();
@@ -75,16 +75,16 @@ public class ODESystemFactory {
         //Compose the lambda functions
         this.lambdas = lambdas(expressions, vecVars, varOrder);
         // Create the functions for the system
-        ArrayList<IFunc<Number, Number>> functions = createFunctions(lambdas, lambdaVars, vecVars, varOrder);
+        ArrayList<IFunc<Double, Double>> functions = createFunctions(lambdas, lambdaVars, vecVars, varOrder);
         // Create the initial state vector
-        ArrayList<Number> initialStateVector = createInitialStateVector(initialState, vecVars, reverseVarOrder);
+        ArrayList<Double> initialStateVector = createInitialStateVector(initialState, vecVars, reverseVarOrder);
         System.out.println("initialStateVector: " + initialStateVector);
         // Create the ODESystem  
         this.system = new ODESystem(initialStateVector, functions);
     }
 
-    private ArrayList<Number> createInitialStateVector(HashMap<String, Number> initialState, HashSet<String> vecVars, HashMap<Integer, String> reverseVarOrder) {
-        ArrayList<Number> initialStateVector = new ArrayList<>();
+    private ArrayList<Double> createInitialStateVector(HashMap<String, Double> initialState, HashSet<String> vecVars, HashMap<Integer, String> reverseVarOrder) {
+        ArrayList<Double> initialStateVector = new ArrayList<>();
         for (int i = 0; i < vecVars.size(); i++) {
             initialStateVector.add(initialState.get(reverseVarOrder.get(i)));
         }
@@ -103,9 +103,9 @@ public class ODESystemFactory {
         return vecVars;
     }
 
-    private ArrayList<IFunc<Number, Number>> createFunctions(ArrayList<IFunc<Number, Number>> lambdas, ArrayList<String> lambdaVars, HashSet<String> vecVars,
+    private ArrayList<IFunc<Double, Double>> createFunctions(ArrayList<IFunc<Double, Double>> lambdas, ArrayList<String> lambdaVars, HashSet<String> vecVars,
             HashMap<String, Integer> varOrder) {
-        ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
+        ArrayList<IFunc<Double, Double>> functions = new ArrayList<>();
         for (String vecVar : vecVars) {
             boolean exists = false;
             for(int i = 0; i < lambdaVars.size(); i++) {
@@ -117,9 +117,9 @@ public class ODESystemFactory {
 
             // if the var doesn't have a lambda function, we create a lambda function that returns the variable whose derivative it is
             if (!exists) {
-                functions.add(new IFunc<Number, Number>() {
+                functions.add(new IFunc<Double, Double>() {
                     @Override
-                    public Number apply(ArrayList<Number> t) {
+                    public Double apply(ArrayList<Double> t) {
                         return t.get(findAntiderivative(vecVar, vecVars, varOrder));
                     }
                 });
@@ -140,8 +140,8 @@ public class ODESystemFactory {
         throw new IllegalArgumentException("Missing information about " + vecVar + " in the system.");
     }
 
-    private ArrayList<IFunc<Number, Number>> lambdas(ArrayList<Expr> expressions, HashSet<String> vecVars, HashMap<String, Integer> varOrder) {
-        ArrayList<IFunc<Number, Number>> lambdas = new ArrayList<>();
+    private ArrayList<IFunc<Double, Double>> lambdas(ArrayList<Expr> expressions, HashSet<String> vecVars, HashMap<String, Integer> varOrder) {
+        ArrayList<IFunc<Double, Double>> lambdas = new ArrayList<>();
         for (Expr expression : expressions) {
             ExprLambdaComposer composer = new ExprLambdaComposer(expression, vecVars, varOrder);
             lambdas.add(composer.getLambda());

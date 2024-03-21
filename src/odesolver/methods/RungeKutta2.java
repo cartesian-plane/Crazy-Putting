@@ -21,11 +21,11 @@ public class RungeKutta2 extends ODESolverMethod {
 
     @Override
     public ODESolution solve() {
-        ArrayList<Number> time = new ArrayList<>();
-        ArrayList<ArrayList<Number>> stateVectors = new ArrayList<>();
+        ArrayList<Double> time = new ArrayList<>();
+        ArrayList<ArrayList<Double>> stateVectors = new ArrayList<>();
         ODESolution solution = new ODESolution(time, stateVectors);
         double t = startTime;
-        ArrayList<Number> stateVector = system.getInitialStateVector();
+        ArrayList<Double> stateVector = system.getInitialStateVector();
         time.add(t);
         stateVectors.add(stateVector);
 
@@ -33,11 +33,11 @@ public class RungeKutta2 extends ODESolverMethod {
 
         while (t <= endTime) {
             t += stepSize;
-            ArrayList<Number> updatedStateVector = new ArrayList<>();
+            ArrayList<Double> updatedStateVector = new ArrayList<>();
             int i = 0;
-            ArrayList<Number> intermediateStateVector = update(stateVector, stepSize / 2);
-            for (Number x : stateVector) {
-                IFunc<Number, Number> function = this.system.getFunctions().get(i);
+            ArrayList<Double> intermediateStateVector = update(stateVector, stepSize / 2);
+            for (Double x : stateVector) {
+                IFunc<Double, Double> function = this.system.getFunctions().get(i);
                 double newX = x.doubleValue() + stepSize * function.apply(intermediateStateVector).doubleValue();
                 updatedStateVector.add(newX);
                 i++;
@@ -53,12 +53,12 @@ public class RungeKutta2 extends ODESolverMethod {
         return solution;
     }
 
-    private ArrayList<Number> update(ArrayList<Number> stateVector, double stepSize) {
+    private ArrayList<Double> update(ArrayList<Double> stateVector, double stepSize) {
 
         int i = 0;
-        ArrayList<Number> intermediateStateVector = new ArrayList<>();
-        for (Number x : stateVector) {
-            IFunc<Number, Number> function2 = this.system.getFunctions().get(i);
+        ArrayList<Double> intermediateStateVector = new ArrayList<>();
+        for (Double x : stateVector) {
+            IFunc<Double, Double> function2 = this.system.getFunctions().get(i);
             double newY = x.doubleValue() + stepSize * function2.apply(stateVector).doubleValue();
             intermediateStateVector.add(newY);
         }

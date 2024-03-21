@@ -1,10 +1,8 @@
 package interfaces;
 
 import odesolver.ODESolver;
-import odesolver.methods.EulerMethod;
 import odesolver.methods.ODESolverMethod;
 import odesolver.methods.RungeKutta2;
-import odesolver.methods.RungeKutta4;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +10,7 @@ import java.util.HashMap;
 import input.ODESystemFactory;
 
 public class ODESystemTestFactory {
-    ODESystem system(ArrayList<Number> initialStateVector, ArrayList<IFunc<Number, Number>> functions) {
+    ODESystem system(ArrayList<Double> initialStateVector, ArrayList<IFunc<Double, Double>> functions) {
         return new ODESystem(initialStateVector, functions);
     }
 
@@ -23,11 +21,11 @@ public class ODESystemTestFactory {
             throw new IllegalArgumentException("alpha, beta, gamma, and delta must be positive");
         }
 
-        ArrayList<Number> initialStateVector = new ArrayList<>();
-        ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
+        ArrayList<Double> initialStateVector = new ArrayList<>();
+        ArrayList<IFunc<Double, Double>> functions = new ArrayList<>();
 
         // initial conditions
-        ArrayList<Number> initialValues = new ArrayList<>();
+        ArrayList<Double> initialValues = new ArrayList<>();
         initialValues.add(initialX);
         initialValues.add(initialY);
 
@@ -54,11 +52,11 @@ public class ODESystemTestFactory {
         double beta = 1;
         double delta = 1;
         double gamma = 1;
-        ArrayList<Number> initialStateVector = new ArrayList<>();
-        ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
+        ArrayList<Double> initialStateVector = new ArrayList<>();
+        ArrayList<IFunc<Double, Double>> functions = new ArrayList<>();
 
         // initial conditions
-        ArrayList<Number> initialValues = new ArrayList<>();
+        ArrayList<Double> initialValues = new ArrayList<>();
         initialValues.add(initialX);
         initialValues.add(initialY);
 
@@ -80,9 +78,9 @@ public class ODESystemTestFactory {
     }
 
     public ODESystem FitzHughNagumo() {
-        ArrayList<Number> initialStateVector = new ArrayList<>();
-        ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
-        ArrayList<Number> vars = new ArrayList<>();
+        ArrayList<Double> initialStateVector = new ArrayList<>();
+        ArrayList<IFunc<Double, Double>> functions = new ArrayList<>();
+        ArrayList<Double> vars = new ArrayList<>();
         vars.add(1.0);
         vars.add(0.0);
         initialStateVector.add(vars.get(0));
@@ -96,11 +94,11 @@ public class ODESystemTestFactory {
     }
 
     public ODESystem SIR(double initialS, double initialI, double initialR, double k, double mu, double gamma) {
-        ArrayList<Number> initialStateVector = new ArrayList<>();
-        ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
+        ArrayList<Double> initialStateVector = new ArrayList<>();
+        ArrayList<IFunc<Double, Double>> functions = new ArrayList<>();
 
         // initial conditions
-        ArrayList<Number> initialValues = new ArrayList<>();
+        ArrayList<Double> initialValues = new ArrayList<>();
         initialValues.add(initialS);
         initialValues.add(initialI);
         initialValues.add(initialR);
@@ -134,11 +132,11 @@ public class ODESystemTestFactory {
         double mu = 0.001;
         double gamma = 2;
 
-        ArrayList<Number> initialStateVector = new ArrayList<>();
-        ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
+        ArrayList<Double> initialStateVector = new ArrayList<>();
+        ArrayList<IFunc<Double, Double>> functions = new ArrayList<>();
 
         // initial conditions
-        ArrayList<Number> initialValues = new ArrayList<>();
+        ArrayList<Double> initialValues = new ArrayList<>();
         initialValues.add(initialS);
         initialValues.add(initialI);
         initialValues.add(initialR);
@@ -168,10 +166,10 @@ public class ODESystemTestFactory {
 
 
     public ODESystem testSyst() {
-        ArrayList<Number> initialStateVector = new ArrayList<>();
-        ArrayList<IFunc<Number, Number>> functions = new ArrayList<>();
+        ArrayList<Double> initialStateVector = new ArrayList<>();
+        ArrayList<IFunc<Double, Double>> functions = new ArrayList<>();
 
-        ArrayList<Number> vars = new ArrayList<>();
+        ArrayList<Double> vars = new ArrayList<>();
         vars.add(1.0);
 
         initialStateVector.add(vars.get(0));
@@ -202,10 +200,7 @@ public class ODESystemTestFactory {
                 add("y' = y-2*x*y");
             }
         };
-        ArrayList<Number> init = new ArrayList<>();
-        init.add(10);
-        init.add(20);
-        HashMap<String, Number> in = new HashMap<>();
+        HashMap<String, Double> in = new HashMap<>();
         in.put("x", 10.0);
         in.put("y", 20.0);
         ODESystemFactory gen = new ODESystemFactory(in, ex);

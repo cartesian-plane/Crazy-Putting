@@ -23,12 +23,12 @@ public class EulerMethod extends ODESolverMethod {
     @Override
     public ODESolution solve() {
 
-        ArrayList<Number> time = new ArrayList<>();
-        ArrayList<ArrayList<Number>> stateVectors = new ArrayList<>();
+        ArrayList<Double> time = new ArrayList<>();
+        ArrayList<ArrayList<Double>> stateVectors = new ArrayList<>();
         ODESolution solution = new ODESolution(time, stateVectors);
 
         double t = startTime;
-        ArrayList<Number> stateVector = system.getInitialStateVector();
+        ArrayList<Double> stateVector = system.getInitialStateVector();
 
         time.add(t);
         stateVectors.add(stateVector);
@@ -38,10 +38,10 @@ public class EulerMethod extends ODESolverMethod {
         while (t <= endTime) {
             t += stepSize;
 
-            ArrayList<Number> updatedStateVector = new ArrayList<>();
+            ArrayList<Double> updatedStateVector = new ArrayList<>();
             int i = 0;
-            for (Number x : stateVector) {
-                IFunc<Number, Number> function = this.system.getFunctions().get(i);
+            for (Double x : stateVector) {
+                IFunc<Double, Double> function = this.system.getFunctions().get(i);
                 double newX = (double) x + stepSize * function.apply(stateVector).doubleValue();
                 updatedStateVector.add(newX);
                 i++;

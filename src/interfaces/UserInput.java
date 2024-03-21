@@ -6,7 +6,7 @@ import java.util.HashMap;
 import odesolver.methods.SolverMethodType;
 
 public class UserInput {
-    public final HashMap<String, Number> initialValuesMap;
+    public final HashMap<String, Double> initialValuesMap;
     public final ArrayList<String> equations;
     public final double stepSize;
     public final double startTime;
@@ -16,7 +16,7 @@ public class UserInput {
     public final boolean phase;
     public final SolverMethodType methodType;
 
-    public UserInput(ArrayList<String> equations, HashMap<String, Number> initialValuesMap, double stepSize, double startTime, double endTime, boolean graph, boolean table, boolean phase, SolverMethodType methodType) {
+    public UserInput(ArrayList<String> equations, HashMap<String, Double> initialValuesMap, double stepSize, double startTime, double endTime, boolean graph, boolean table, boolean phase, SolverMethodType methodType) {
         this.initialValuesMap = initialValuesMap;
         this.equations = equations;
         this.stepSize = stepSize;

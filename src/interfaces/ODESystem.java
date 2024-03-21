@@ -5,12 +5,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class ODESystem {
-    ArrayList<Number> initialStateVector;
-    ArrayList<IFunc<Number, Number>> functions;
+    ArrayList<Double> initialStateVector;
+    ArrayList<IFunc<Double, Double>> functions;
     HashSet<String> variables;
     HashMap<String, Integer> variableIndices;
 
-    public ODESystem(ArrayList<Number> initialStateVector, ArrayList<IFunc<Number, Number>> functions) {
+    public ODESystem(ArrayList<Double> initialStateVector, ArrayList<IFunc<Double, Double>> functions) {
         if (initialStateVector.size() != functions.size()) {
             throw new IllegalArgumentException("The size of the state vector must be equal to the number of functions.");
         }
@@ -19,19 +19,19 @@ public class ODESystem {
     }
 
     //untested
-    public ArrayList<Number> derivative() {
-        ArrayList<Number> derivative = new ArrayList<>();
+    public ArrayList<Double> derivative() {
+        ArrayList<Double> derivative = new ArrayList<>();
         for (int i = 0; i < initialStateVector.size(); i++) {
             derivative.add(functions.get(i).apply(initialStateVector));
         }
         return derivative;
     }
 
-    public ArrayList<Number> derivative(ArrayList<Number> stateVector) {
+    public ArrayList<Double> derivative(ArrayList<Double> stateVector) {
         if (stateVector.size() != initialStateVector.size()) {
             throw new IllegalArgumentException("The size of the state vector must be equal to the number of functions.");
         }
-        ArrayList<Number> derivative = new ArrayList<>();
+        ArrayList<Double> derivative = new ArrayList<>();
         for (int i = 0; i < stateVector.size(); i++) {
             derivative.add(functions.get(i).apply(stateVector));
         }
@@ -46,11 +46,11 @@ public class ODESystem {
                 '}';
     }
 
-    public ArrayList<Number> getInitialStateVector() {
+    public ArrayList<Double> getInitialStateVector() {
         return initialStateVector;
     }
 
-    public ArrayList<IFunc<Number, Number>> getFunctions() {
+    public ArrayList<IFunc<Double, Double>> getFunctions() {
         return functions;
     }
 }

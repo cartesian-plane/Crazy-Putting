@@ -42,9 +42,9 @@ public class Tester {
             ODESolver solver = new ODESolver(new RungeKutta4(numericalSystem, stepSize, 0, endTime));
             ODESolution numericalSolution = solver.solve();
 
-            ArrayList<Number> tValues = new ArrayList<>();
+            ArrayList<Double> tValues = new ArrayList<>();
             tValues.add(t);
-            ArrayList<Number> yValues = new ArrayList<>();
+            ArrayList<Double> yValues = new ArrayList<>();
             yValues.add(func.apply(t));
 
             double y;
@@ -69,13 +69,13 @@ public class Tester {
 
     }
 
-    public static double getGlobalError(ODESolution solution, ArrayList<Number> tValues, ArrayList<Number> yValues) {
+    public static double getGlobalError(ODESolution solution, ArrayList<Double> tValues, ArrayList<Double> yValues) {
         double sum = 0;
 
-        ArrayList<ArrayList<Number>> vectors = solution.getStateVectors();
+        ArrayList<ArrayList<Double>> vectors = solution.getStateVectors();
 
         int i = 0;
-        for (ArrayList<Number> vector : vectors) {
+        for (ArrayList<Double> vector : vectors) {
             double numerical_y = vector.getFirst().doubleValue();
             double true_y = yValues.get(i).doubleValue();
 

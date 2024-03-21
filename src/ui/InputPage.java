@@ -148,7 +148,7 @@ public class InputPage {
                 //     initialValues.add(initialValue);
                 // }
 
-                HashMap<String, Number> initialValuesMap = new HashMap<>();
+                HashMap<String, Double> initialValuesMap = new HashMap<>();
                 for (int i = 0; i < formulaFields.size(); i++) {
                     String equation = formulaFields.get(i).getText();
                     // REALLY UGLY lex them here to get the varaiable names
