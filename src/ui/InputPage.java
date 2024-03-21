@@ -41,6 +41,9 @@ public class InputPage {
     private JTextField stepSizeField, timeField; // fields for inputting step size and time
     private JCheckBox graphCheckBox, phaseSpaceCheckBox, tableCheckBox; // checkboxes for options
     private JComboBox<String> solverTypeComboBox; // comboBox to select the type of solver
+
+    private JComboBox<String> equationselectComboBox; // comboBox to select the equation to graph
+
     private JPanel equationsPanel; // Panel for equations and add button
     private final ApplicationController app; // reference to the application controller
 
@@ -128,6 +131,11 @@ public class InputPage {
         solverTypeComboBox = new JComboBox<>(solvers);
         solverTypeComboBox.setFont(largerFont);
 
+        // ComboBox for equations
+        String[] equationss = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+        equationselectComboBox = new JComboBox<>(equationss);
+        equationselectComboBox.setFont(largerFont);
+
 
         //button stuff
         
@@ -168,6 +176,8 @@ public class InputPage {
                 boolean phaseSpace = phaseSpaceCheckBox.isSelected();
                 boolean table = tableCheckBox.isSelected();
 
+                String equationsType = (String) equationselectComboBox.getSelectedItem();
+
                 SolverMethodType solverType;
                 String solverText = (String) solverTypeComboBox.getSelectedItem();
                 switch (solverText) {
@@ -185,7 +195,7 @@ public class InputPage {
                         solverType = null;
                 }
         
-                UserInput userInput = new UserInput(equations, initialValuesMap, stepSize, 0, time, graph, table, phaseSpace, solverType);
+                UserInput userInput = new UserInput(equations, initialValuesMap, stepSize, 0, time, graph, table, phaseSpace, solverType, equationsType);
                 app.onGenerate(userInput);
         
             } catch (NumberFormatException nfe) {
