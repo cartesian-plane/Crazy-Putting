@@ -8,13 +8,14 @@ import odesolver.methods.EulerMethod;
 import odesolver.methods.ODESolverMethod;
 import odesolver.methods.RungeKutta4;
 import ui.InputPage;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
+import ui.PhaseSpace;
+import ui.Table;
 
 public class ApplicationController {
-    
+       
+    private PhaseSpace phaseSpace;
+    private Table table;
+    //private final GraphPanel graphPanel;
 
     public static void main(String[] args) {
         ApplicationController app = new ApplicationController();
@@ -26,6 +27,7 @@ public class ApplicationController {
     }
 
     public void onGenerate(UserInput input) {
+
         ODESystemFactory gen = new ODESystemFactory(input.initialValuesMap, input.equations);
         ODESystem syst = gen.getSyst();
         ODESolver solver = new ODESolver();
@@ -47,21 +49,22 @@ public class ApplicationController {
                 //unreachable
                 strategy = null;
         }
+
         solver.setStrategy(strategy);
         ODESolution solution = solver.solve();
+        System.out.println(solution);
 
-        ArrayList<Double> timeValues = solution.getTime();
-        ArrayList<ArrayList<Double>> stateVectors = solution.getStateVectors();
-
-        try (PrintWriter writer = new PrintWriter("data/plot.csv")) {
-            writer.println("Variable to plot: " + input.equationsType);
-            for (int i = 0; i < timeValues.size(); i++) {
-                Double time = timeValues.get(i);
-                ArrayList<Double> stateVector = stateVectors.get(i);
-                writer.println(time + "," + stateVector.toString());
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred while writing to the CSV file: " + e.getMessage());
+        if(input.graph) {
+            //
+        }
+        if (input.table) {
+            table = new Table(syst.getVariables(), solution);
+            table.setVisible(true);
+        }
+        //System.out.println(input.phase);
+        if (input.phase) {
+            phaseSpace = new PhaseSpace(syst, solution);
+            phaseSpace.setVisible(true);
         }
     }
 }

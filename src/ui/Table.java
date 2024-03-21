@@ -10,7 +10,7 @@ import interfaces.ODESystem;
 
 import java.util.ArrayList;
 
-public class Table {
+public class Table extends JFrame {
 
     private ODESolution solution;
 
@@ -47,13 +47,13 @@ public class Table {
         scrollPane = new JScrollPane(table);
 
         // Create a frame and add the scroll pane to it
-        frame = new JFrame("Table with State Vectors");
-        frame.add(scrollPane);
+        this.setTitle("Table with State Vectors");
+        this.add(scrollPane);
 
         // Set frame properties
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setLocationRelativeTo(null); // Center the frame
-        frame.setVisible(true); // Set frame visible after adding all components
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(800, 600);
+        this.setLocationRelativeTo(null); // Center the frame
+        this.setVisible(true); // Set frame visible after adding all components
     }
 }
