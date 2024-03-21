@@ -2,7 +2,6 @@ package interfaces;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class ODESystem {
     ArrayList<Double> initialStateVector;

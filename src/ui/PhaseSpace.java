@@ -1,7 +1,11 @@
-package ui;
-
 import javax.swing.*;
+
+import interfaces.ODESolution;
+import interfaces.ODESystem;
+
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PhaseSpace extends JFrame {
 
@@ -10,7 +14,13 @@ public class PhaseSpace extends JFrame {
     private JButton generateButton;
     private GraphPanel graphPanel;
 
-    public PhaseSpace() {
+    private final ODESystem odeSystem;
+    private final ODESolution odeSolution;
+
+    public PhaseSpace(ODESystem odeSystem, ODESolution odeSolution) {
+        this.odeSystem = odeSystem;
+        this.odeSolution = odeSolution;
+
         setTitle("PhaseSpace");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -19,32 +29,41 @@ public class PhaseSpace extends JFrame {
         JPanel inputPanel = new JPanel(new GridLayout(3, 1));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        variable1ComboBox = new JComboBox<>(new String[]{"Variable A", "Variable B", "Variable C"});
-        variable2ComboBox = new JComboBox<>(new String[]{"Variable X", "Variable Y" , "Variabel Z"});
+        
+        List<String> variables = getVariablesFromODESystem();
 
-
-        add(new JLabel("Variable 1:"));
-        add(variable1ComboBox);
-        add(new JLabel(" Vazriable 2:"));
-        add(variable2ComboBox);
+        variable1ComboBox = new JComboBox<>(variables.toArray(new String[0]));
+        variable2ComboBox = new JComboBox<>(variables.toArray(new String[0]));
 
         generateButton = new JButton("Generate");
+
         generateButton.addActionListener(e -> generateGraph());
+
+        inputPanel.add(new JLabel("Variable 1:"));
+        inputPanel.add(variable1ComboBox);
+        inputPanel.add(new JLabel("Variable 2:"));
+        inputPanel.add(variable2ComboBox);
         inputPanel.add(generateButton);
 
         add(inputPanel, BorderLayout.WEST);
 
-        //graphPanel = new GraphPanel();
-        //add(graphPanel, BorderLayout.CENTER);
+        graphPanel = new GraphPanel(odeSystem, odeSolution, new int[]{0, 1}, new ArrayList<>(List.of("Variable A", "Variable B"));
+        add(graphPanel, BorderLayout.CENTER);
+
+        graphPanel.setVisible(false); 
     }
 
     private void generateGraph() {
         String selectedVariable1 = (String) variable1ComboBox.getSelectedItem();
         String selectedVariable2 = (String) variable2ComboBox.getSelectedItem();
 
-
-        // generating the graph?(i guess)but for now we re just making it visible
+        graphPanel.repaint();
         graphPanel.setVisible(true);
+    }
+
+    private List<String> getVariablesFromODESystem() {
+
+        return List.of("Variable A", "Variable B", "Variable C");
     }
 
     public static void main(String[] args) {
