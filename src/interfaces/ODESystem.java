@@ -18,11 +18,22 @@ public class ODESystem {
         this.functions = functions;
     }
 
-    @Deprecated
+    //untested
     public ArrayList<Number> derivative() {
         ArrayList<Number> derivative = new ArrayList<>();
         for (int i = 0; i < initialStateVector.size(); i++) {
             derivative.add(functions.get(i).apply(initialStateVector));
+        }
+        return derivative;
+    }
+
+    public ArrayList<Number> derivative(ArrayList<Number> stateVector) {
+        if (stateVector.size() != initialStateVector.size()) {
+            throw new IllegalArgumentException("The size of the state vector must be equal to the number of functions.");
+        }
+        ArrayList<Number> derivative = new ArrayList<>();
+        for (int i = 0; i < stateVector.size(); i++) {
+            derivative.add(functions.get(i).apply(stateVector));
         }
         return derivative;
     }
