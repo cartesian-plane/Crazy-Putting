@@ -185,7 +185,7 @@ public class InputPage {
                         solverType = null;
                 }
         
-                UserInput userInput = new UserInput(equations, initialValuesMap, stepSize, 0, time, graph, phaseSpace, table, solverType);
+                UserInput userInput = new UserInput(equations, initialValuesMap, stepSize, 0, time, graph, table, phaseSpace, solverType);
                 app.onGenerate(userInput);
         
             } catch (NumberFormatException nfe) {

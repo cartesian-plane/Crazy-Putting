@@ -8,12 +8,16 @@ import odesolver.methods.EulerMethod;
 import odesolver.methods.ODESolverMethod;
 import odesolver.methods.RungeKutta4;
 import ui.InputPage;
+import ui.PhaseSpace;
 
 public class ApplicationController {
-    
+       
+    private PhaseSpace phaseSpace;
+    //private final GraphPanel graphPanel;
 
     public static void main(String[] args) {
         ApplicationController app = new ApplicationController();
+
         app.run();
     }
 
@@ -22,7 +26,7 @@ public class ApplicationController {
     }
 
     public void onGenerate(UserInput input) {
-        //System.out.println(input.initialValuesMap + "\n" + input.equations);
+
         ODESystemFactory gen = new ODESystemFactory(input.initialValuesMap, input.equations);
         ODESystem syst = gen.getSyst();
         ODESolver solver = new ODESolver();
@@ -45,10 +49,20 @@ public class ApplicationController {
                 strategy = null;
         }
 
-        //System.out.println(syst);
-
         solver.setStrategy(strategy);
         ODESolution solution = solver.solve();
         System.out.println(solution);
+
+        if(input.graph) {
+            //
+        }
+        if (input.table) {
+            //new Table(syst, solution);
+        }
+        //System.out.println(input.phase);
+        if (input.phase) {
+            phaseSpace = new PhaseSpace(syst, solution);
+            phaseSpace.setVisible(true);
+        }
     }
 }

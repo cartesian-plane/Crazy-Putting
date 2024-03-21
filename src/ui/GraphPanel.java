@@ -52,6 +52,14 @@ public class GraphPanel extends JPanel {
             // screen coordinates start from bottom left corner -> y axis is inverted
             return (int) (((yMax - y) / (yMax - yMin) * (height - 2*PADDING)) + PADDING);
         }
+
+        public double xPixelToUnit(int x) {
+            return (x - PADDING) * (xMax - xMin) / (width - 2*PADDING) + xMin;
+        }
+
+        public double yPixelToUnit(int y) {
+            return yMax - (y - PADDING) * (yMax - yMin) / (height - 2*PADDING);
+        }
     }
 
     private final Point origin;
@@ -85,8 +93,8 @@ public class GraphPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        this.width = getWidth();
-        this.height = getHeight();
+        // this.width = getWidth();
+        // this.height = getHeight();
         Graphics2D g2d = (Graphics2D) g;
 
         // draw axis
@@ -108,7 +116,7 @@ public class GraphPanel extends JPanel {
         for(double h = PADDING; h < height - PADDING; h += LATTICE_DIST) {
             for(double w = PADDING; w < width - PADDING; w += LATTICE_DIST) {
 
-                ArrayList<Double> vec = currentVector(w, h);
+                ArrayList<Double> vec = currentVector(convertor.xPixelToUnit((int)w), convertor.yPixelToUnit((int)h));
                 
                 double xVec = convertor.xUnitToPixel(vec.get(entryIndexes[0]));
                 double yVec = convertor.yUnitToPixel(vec.get(entryIndexes[1]));
@@ -118,41 +126,36 @@ public class GraphPanel extends JPanel {
                 double xDer = convertor.xUnitToPixel(der.get(entryIndexes[0]));
                 double yDer = convertor.yUnitToPixel(der.get(entryIndexes[1]));
 
+                //normalize the derivative vector
+                double norm = Math.sqrt(xDer * xDer + yDer * yDer);
+                xDer = xDer / norm * LATTICE_DIST;
+                yDer = yDer / norm * LATTICE_DIST;
+
                 drawArrow(g2d, (int)xVec, (int)yVec, (int)(xVec + xDer), (int)(yVec - yDer));
             }
         }
 
         // x axis tickmarcks
         for (int i = xMin; i <= xMax; i++) {
-            int xMark = origin.x + (i * (width - origin.x) / (xMax-xMin));
+            int xMark = convertor.xUnitToPixel(i);
             g2d.drawLine(xMark, origin.y - 3, xMark, origin.y + 3);
 
             String label = Integer.toString(i);
             int labelWidth = fm.stringWidth(label);
-            g2d.drawString(label, xMark - labelWidth / 2, origin.y + 20); 
 
-            g2d.drawString(label, origin.x - labelWidth - 10, xMark + fm.getAscent() / 2);
-
-            if (i == xMax) {
-                g2d.drawString(xLabel, xMark - labelWidth / 2, origin.y + 20);
-            }
+            g2d.drawString(label, xMark - labelWidth, origin.y + fm.getAscent() / 2 + 10);
         }
 
         // y axis tickmarcks
         for (int i = yMin; i <= yMax; i++) {
-            int yMark = origin.y - (i * origin.y / (xMax-xMin));
+            int yMark = convertor.yUnitToPixel(i);
 
             g2d.drawLine(origin.x - 3, yMark, origin.x + 3, yMark);
 
             String label = Integer.toString(i);
             int labelWidth = fm.stringWidth(label);
-            g2d.drawString(label, yMark - labelWidth / 2, origin.y + 20); 
 
             g2d.drawString(label, origin.x - labelWidth - 10, yMark + fm.getAscent() / 2);
-
-            if (i == yMax) {
-                g2d.drawString(yLabel, origin.x - labelWidth - 10, yMark + fm.getAscent() / 2);
-            }
         }
 
         if (odeSolution != null) {
@@ -172,7 +175,7 @@ public class GraphPanel extends JPanel {
                 g2d.fillOval(xNext - 2, yNext - 2, 4, 4);
 
                 if (xPrev != 0 && yPrev != 0) {
-                    drawArrow(g2d, xPrev, yPrev, xNext, yNext);
+                    g2d.drawLine(xPrev, yPrev, xNext, yNext);
                 }
 
                 xPrev = xNext;

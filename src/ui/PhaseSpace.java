@@ -1,3 +1,5 @@
+package ui;
+
 import javax.swing.*;
 
 import interfaces.ODESolution;
@@ -22,7 +24,7 @@ public class PhaseSpace extends JFrame {
         this.odeSolution = odeSolution;
 
         setTitle("PhaseSpace");
-        setSize(800, 600);
+        setSize(1200, 900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); 
 
@@ -47,7 +49,7 @@ public class PhaseSpace extends JFrame {
 
         add(inputPanel, BorderLayout.WEST);
 
-        graphPanel = new GraphPanel(odeSystem, odeSolution, new int[]{0, 1}, new ArrayList<>(List.of("Variable A", "Variable B"));
+        graphPanel = new GraphPanel(odeSystem, odeSolution, "A", "B", new int[]{0, 1}, 0, 10, 0, 10);
         add(graphPanel, BorderLayout.CENTER);
 
         graphPanel.setVisible(false); 
@@ -68,8 +70,8 @@ public class PhaseSpace extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            PhaseSpace gui = new PhaseSpace();
-            gui.setVisible(true);
+            //PhaseSpace gui = new PhaseSpace();
+            //gui.setVisible(true);
         });
     }
 }
