@@ -9,6 +9,7 @@ import odesolver.methods.ODESolverMethod;
 import odesolver.methods.RungeKutta4;
 import ui.InputPage;
 import ui.PhaseSpace;
+import ui.Table;
 
 public class ApplicationController {
        
@@ -56,7 +57,7 @@ public class ApplicationController {
             //
         }
         if (input.table) {
-            //new Table(syst, solution);
+            new Table(syst.getVariables(), solution);
         }
         //System.out.println(input.phase);
         if (input.phase) {

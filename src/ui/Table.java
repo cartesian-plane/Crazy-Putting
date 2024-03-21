@@ -12,15 +12,18 @@ import java.util.ArrayList;
 
 public class Table {
 
+    private ODESolution solution;
+
     private JFrame frame;
     private JTable table;
     private JScrollPane scrollPane;
 
-    public Table(ArrayList<Double> time, ArrayList<String> variables, ArrayList<ArrayList<Double>> stateVectors) {
-        initializeTable(time, variables, stateVectors);
-    }
+    public Table(ArrayList<String> variables, ODESolution solution) {
 
-    private void initializeTable(ArrayList<Double> time, ArrayList<String> variables, ArrayList<ArrayList<Double>> stateVectors) {
+        this.solution = solution;
+        ArrayList<ArrayList<Double>> stateVectors = solution.getStateVectors();
+        ArrayList<Double> time = solution.getTime();
+
         // Initialize column names array with time followed by variables
         String[] columnNames = new String[variables.size() + 1];
         columnNames[0] = "Time";
@@ -52,14 +55,5 @@ public class Table {
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(null); // Center the frame
         frame.setVisible(true); // Set frame visible after adding all components
-    }
-
-    public static void main(String[] args) {
-        // Generate the data from ODEsolution
-        ODESolution solution = new ODESolution(time,stateVectors);
-        ODESystem system = new ODESystem(varOrder,initialStateVector, functions);
-
-        // Use the ArrayLists directly to create the table
-        SwingUtilities.invokeLater(() -> new Table(solution.time, system.getVariables(), solution.getStateVectors()));
     }
 }

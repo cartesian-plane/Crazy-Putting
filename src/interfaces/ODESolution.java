@@ -23,6 +23,10 @@ public class ODESolution {
         return timeTaken;
     }
 
+    public ArrayList<Double> getTime() {
+        return time;
+    }
+
     public void setTimeTaken(long timeTaken) {
         this.timeTaken = timeTaken;
     }
