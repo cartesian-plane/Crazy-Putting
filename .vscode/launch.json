@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ApplicationController",
+            "request": "launch",
+            "mainClass": "controller.ApplicationController",
+            "projectName": "project1-2_77912ecf"
+        },
+        {
+            "type": "java",
             "name": "InputPage",
             "request": "launch",
             "mainClass": "ui.InputPage",

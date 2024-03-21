@@ -49,5 +49,6 @@ public class ApplicationController {
 
         solver.setStrategy(strategy);
         ODESolution solution = solver.solve();
+        System.out.println(solution);
     }
 }
