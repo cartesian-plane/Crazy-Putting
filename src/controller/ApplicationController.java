@@ -54,6 +54,7 @@ public class ApplicationController {
         ArrayList<ArrayList<Double>> stateVectors = solution.getStateVectors();
 
         try (PrintWriter writer = new PrintWriter("data/plot.csv")) {
+            writer.println("Variable to plot: " + input.equationsType);
             for (int i = 0; i < timeValues.size(); i++) {
                 Double time = timeValues.get(i);
                 ArrayList<Double> stateVector = stateVectors.get(i);
