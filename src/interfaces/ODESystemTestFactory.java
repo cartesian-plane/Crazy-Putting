@@ -10,8 +10,8 @@ import java.util.HashMap;
 import input.ODESystemFactory;
 
 public class ODESystemTestFactory {
-    ODESystem system(ArrayList<Double> initialStateVector, ArrayList<IFunc<Double, Double>> functions) {
-        return new ODESystem(initialStateVector, functions);
+    ODESystem system(HashMap<String, Integer> varOrder, ArrayList<Double> initialStateVector, ArrayList<IFunc<Double, Double>> functions) {
+        return new ODESystem(varOrder, initialStateVector, functions);
     }
 
     public ODESystem LotkaVolterra(double initialX, double initialY, double alpha, double beta,

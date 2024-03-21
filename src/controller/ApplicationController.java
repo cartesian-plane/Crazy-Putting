@@ -22,6 +22,7 @@ public class ApplicationController {
     }
 
     public void onGenerate(UserInput input) {
+        //System.out.println(input.initialValuesMap + "\n" + input.equations);
         ODESystemFactory gen = new ODESystemFactory(input.initialValuesMap, input.equations);
         ODESystem syst = gen.getSyst();
         ODESolver solver = new ODESolver();
@@ -43,6 +44,9 @@ public class ApplicationController {
                 //unreachable
                 strategy = null;
         }
+
+        //System.out.println(syst);
+
         solver.setStrategy(strategy);
         ODESolution solution = solver.solve();
     }

@@ -7,15 +7,19 @@ import java.util.HashSet;
 public class ODESystem {
     ArrayList<Double> initialStateVector;
     ArrayList<IFunc<Double, Double>> functions;
-    HashSet<String> variables;
-    HashMap<String, Integer> variableIndices;
+    HashMap<String, Integer> varOrder;
 
-    public ODESystem(ArrayList<Double> initialStateVector, ArrayList<IFunc<Double, Double>> functions) {
+    public ODESystem(HashMap<String, Integer> varOrder, ArrayList<Double> initialStateVector, ArrayList<IFunc<Double, Double>> functions) {
         if (initialStateVector.size() != functions.size()) {
             throw new IllegalArgumentException("The size of the state vector must be equal to the number of functions.");
         }
         this.initialStateVector = initialStateVector;
         this.functions = functions;
+        this.varOrder = varOrder;
+    }
+
+    public ArrayList<String> getVariables() {
+        return new ArrayList<>(varOrder.keySet());
     }
 
     //untested

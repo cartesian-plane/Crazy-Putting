@@ -1,77 +1,106 @@
 package ui;
 
 import javax.swing.*;
+
+import interfaces.ODESolution;
+import interfaces.ODESystem;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GraphPanel extends JPanel {
+    private int width = 800;
+    private int height = 600;
+    
+    private static final int LATTICE_DIST = 20; //in pixels
+    private static final int PADDING = 50; //in pixels
+
     private static final int AXIS_WIDTH = 2;
-    private static final int DOT_SIZE = 6;
+    private static final int DOT_SIZE = 5;
 
-    private Point origin;
-    private String horizontalAxisLabel;
-    private String verticalAxisLabel;
-    private ArrayList<ArrayList<Double>> odeSolution;
-    private HashMap<String, Integer> variableIndexMap;
+    private final ODESystem odeSystem;
+    private final ODESolution odeSolution;
+    private final int[] entryIndexes;
+    private final ArrayList<String> variableNames;
 
-    public GraphPanel() {
-        setPreferredSize(new Dimension(600, 400));
+    private final UnitConvertor convertor;
+
+    /**
+     * A class to convert the unit norm to pixel norm.
+     */
+    class UnitConvertor {
+        double xMin;
+        double xMax;
+        double yMin;
+        double yMax;
+
+        public UnitConvertor(double xMin, double xMax, double yMin, double yMax) {
+            this.xMin = xMin;
+            this.xMax = xMax;
+            this.yMin = yMin;
+            this.yMax = yMax;
+        }
+
+        public int xUnitToPixel(double x) {
+            return (int) ((x - xMin) / (xMax - xMin) * (width - 2*PADDING) + PADDING);
+        }
+
+        public int yUnitToPixel(double y) {
+            // screen coordinates start from bottom left corner -> y axis is inverted
+            return (int) (((yMax - y) / (yMax - yMin) * (height - 2*PADDING)) + PADDING);
+        }
+    }
+
+    private final Point origin;
+    private final String xLabel;
+    private final String yLabel;
+
+    /**
+     * expects the origin to be within the passed in limits.
+     */
+    public GraphPanel(ODESystem odeSystem, ODESolution odeSolution, String xVarName, String yVarName, int[] entryIndexes, int xMin, int xMax, int yMin, int yMax) {
+        setPreferredSize(new Dimension(width, height));
         setBackground(Color.WHITE);
 
-        origin = new Point(50, 350);
-        horizontalAxisLabel = "X";
-        verticalAxisLabel = "Y";
-        variableIndexMap = new HashMap<>();
-    }
-
-    public void setOrigin(Point origin) {
-        this.origin = origin;
-        repaint();
-    }
-
-    public void setHorizontalAxisLabel(String label) {
-        this.horizontalAxisLabel = label;
-        repaint();
-    }
-
-    public void setVerticalAxisLabel(String label) {
-        this.verticalAxisLabel = label;
-        repaint();
-    }
-
-    public void setODESolution(ArrayList<ArrayList<Double>> odeSolution) {
+        this.odeSystem = odeSystem;
         this.odeSolution = odeSolution;
-        repaint();
-    }
+        this.entryIndexes = entryIndexes;
+        this.variableNames = odeSystem.getVariables();
 
-    public void setVariableIndexMap(HashMap<String, Integer> variableIndexMap) {
-        this.variableIndexMap = variableIndexMap;
+        this.convertor = new UnitConvertor(xMin, xMax, yMin, yMax);
+        this.origin = new Point(convertor.xUnitToPixel(0), convertor.yUnitToPixel(0));
+
+        this.xLabel = xVarName;
+        this.yLabel = yVarName;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        int width = getWidth();
-        int height = getHeight();
+        this.width = getWidth();
+        this.height = getHeight();
         Graphics2D g2d = (Graphics2D) g;
 
+        // draw axis
         g2d.setColor(Color.BLACK);
         g2d.setStroke(new BasicStroke(AXIS_WIDTH));
-        g2d.drawLine(origin.x, origin.y, width, origin.y);
-        g2d.drawString(horizontalAxisLabel, width - 60, origin.y + 10); 
+        g2d.drawLine(0, origin.y, width, origin.y);
+        g2d.drawString(xLabel, width - PADDING, origin.y + 15); 
+        g2d.drawLine(origin.x, height-PADDING, origin.x, PADDING);
+        g2d.drawString(yLabel, origin.x - 15, 30); 
 
-        g2d.drawLine(origin.x, origin.y, origin.x, 0);
-        g2d.drawString(verticalAxisLabel, origin.x + 10, 10); 
-
-        int x = origin.x - DOT_SIZE / 2;
-        int y = height - origin.y - DOT_SIZE / 2;
-        g2d.fillOval(x, y, DOT_SIZE, DOT_SIZE);
+        // draw origin
+        g2d.fillOval(origin.x, origin.y, DOT_SIZE, DOT_SIZE);
 
         g2d.setColor(Color.BLACK);
         g2d.setStroke(new BasicStroke(1));
         FontMetrics fm = g2d.getFontMetrics();
+
+        // draw derivatives
+        for(int h = PADDING; h < )
+
         for (int i = 1; i <= 10; i++) {
             int xMark = origin.x + (i * (width - origin.x) / 10);
             int yMark = origin.y - (i * origin.y / 10);

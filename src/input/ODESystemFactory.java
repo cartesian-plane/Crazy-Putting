@@ -80,7 +80,7 @@ public class ODESystemFactory {
         ArrayList<Double> initialStateVector = createInitialStateVector(initialState, vecVars, reverseVarOrder);
         System.out.println("initialStateVector: " + initialStateVector);
         // Create the ODESystem  
-        this.system = new ODESystem(initialStateVector, functions);
+        this.system = new ODESystem(varOrder, initialStateVector, functions);
     }
 
     private ArrayList<Double> createInitialStateVector(HashMap<String, Double> initialState, HashSet<String> vecVars, HashMap<Integer, String> reverseVarOrder) {
