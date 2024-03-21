@@ -43,7 +43,14 @@ public class ODESystemTestFactory {
                     gamma * systemVars.get(1).doubleValue();
         });
 
-        return new ODESystem(initialStateVector, functions);
+        HashMap<String, Integer> varOrder = new HashMap<>() {
+            {
+                put("X", 0);
+                put("Y", 1);
+            }
+        };
+
+        return new ODESystem(varOrder, initialStateVector, functions);
     }
 
     public ODESystem LotkaVolterra(double initialX, double initialY) {
@@ -74,7 +81,14 @@ public class ODESystemTestFactory {
                     gamma * systemVars.get(1).doubleValue();
         });
 
-        return new ODESystem(initialStateVector, functions);
+        HashMap<String, Integer> varOrder = new HashMap<>() {
+            {
+                put("X", 0);
+                put("Y", 1);
+            }
+        };
+
+        return new ODESystem(varOrder, initialStateVector, functions);
     }
 
     public ODESystem FitzHughNagumo() {
@@ -90,7 +104,15 @@ public class ODESystemTestFactory {
         functions.add((systemVars) -> {
             return 0.05 * (systemVars.getFirst().doubleValue() + 0.95 - 0.91 * systemVars.get(1).doubleValue() + 0.1);
         });
-        return new ODESystem(initialStateVector, functions);
+
+        HashMap<String, Integer> varOrder = new HashMap<>() {
+            {
+                put("V", 0);
+                put("W", 1);
+            }
+        };
+
+        return new ODESystem(varOrder, initialStateVector, functions);
     }
 
     public ODESystem SIR(double initialS, double initialI, double initialR, double k, double mu, double gamma) {
@@ -122,8 +144,16 @@ public class ODESystemTestFactory {
             return gamma * systemVars.get(1).doubleValue() - mu * systemVars.get(2).doubleValue();
         });
 
-        return new ODESystem(initialStateVector, functions);
+        HashMap<String, Integer> varOrder = new HashMap<>() {
+            {
+                put("S", 0);
+                put("I", 1);
+                put("R", 2);
+            }
+        
+        };
 
+        return new ODESystem(varOrder, initialStateVector, functions);
     }
 
     public ODESystem SIR(double initialS, double initialI, double initialR) {
@@ -160,7 +190,15 @@ public class ODESystemTestFactory {
             return gamma * systemVars.get(1).doubleValue() - mu * systemVars.get(2).doubleValue();
         });
 
-        return new ODESystem(initialStateVector, functions);
+        HashMap<String, Integer> varOrder = new HashMap<>() {
+            {
+                put("S", 0);
+                put("I", 1);
+                put("R", 2);
+            }
+        };
+
+        return new ODESystem(varOrder, initialStateVector, functions);
 
     }
 
@@ -178,7 +216,13 @@ public class ODESystemTestFactory {
             return 2 * varss.get(0).doubleValue();
         });
 
-        return new ODESystem(initialStateVector, functions);
+        HashMap<String, Integer> varOrder = new HashMap<>() {
+            {
+                put("X", 0);
+            }
+        };
+
+        return new ODESystem(varOrder, initialStateVector, functions);
     }
 
     public static void main(String[] args) {

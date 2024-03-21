@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ODESystemTestFactory",
+            "request": "launch",
+            "mainClass": "interfaces.ODESystemTestFactory",
+            "projectName": "project1-2_77912ecf"
+        },
+        {
+            "type": "java",
+            "name": "PhaseSpace",
+            "request": "launch",
+            "mainClass": "ui.PhaseSpace",
+            "projectName": "project1-2_77912ecf"
+        },
+        {
+            "type": "java",
             "name": "ApplicationController",
             "request": "launch",
             "mainClass": "controller.ApplicationController",
