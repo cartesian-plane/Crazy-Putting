@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ApplicationController",
+            "request": "launch",
+            "mainClass": "controller.ApplicationController",
+            "projectName": "Phase1_f1fd4659"
+        },
+        {
+            "type": "java",
             "name": "ODESystemTestFactory",
             "request": "launch",
             "mainClass": "interfaces.ODESystemTestFactory",

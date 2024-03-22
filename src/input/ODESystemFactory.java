@@ -60,8 +60,8 @@ public class ODESystemFactory {
         ArrayList<MathParser> parsers = new ArrayList<>();
         for (String expression : sources) {
             lexers.add(new MathLexer(expression));
-            parsers.add(new MathParser(lexers.getLast().getTokens()));
-            System.out.println(parsers.getLast().getExprVars());
+            parsers.add(new MathParser(lexers.get(lexers.size()-1).getTokens()));
+            System.out.println(parsers.get(parsers.size()-1).getExprVars());
         }
 
         this.lambdaVars = lambdaVars(lexers);
@@ -229,7 +229,7 @@ public class ODESystemFactory {
         vars.removeAll(temp);
 
         //add back the derivatives that appear in expressions
-        parsers.getLast().getExprVars().forEach(vars::add); // I like this code, but it's hard to debug.
+        parsers.get(parsers.size()-1).getExprVars().forEach(vars::add); // I like this code, but it's hard to debug.
         return vars;
     }
 

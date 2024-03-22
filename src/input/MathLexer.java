@@ -128,10 +128,10 @@ public class MathLexer {
                 addToken(POW);
                 break;
             case '\'':
-                if(tokens.getLast().type == VARIABLE || tokens.getLast().type == DERIV){
+                if(tokens.get(tokens.size()-1).type == VARIABLE || tokens.get(tokens.size()-1).type == DERIV){
                     addToken(DERIV, null);
                 } else {
-                    throw new LexError(tokens.getLast(), "Derivative must be preceded by a variable.");
+                    throw new LexError(tokens.get(tokens.size()-1), "Derivative must be preceded by a variable.");
                 }
                 break;
             case '=':
