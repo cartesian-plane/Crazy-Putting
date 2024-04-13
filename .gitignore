@@ -56,8 +56,9 @@ www-test/
 ## TeaVM:
 # Not sure yet...
 
-## IntelliJ, Android Studio:
+## IntelliJ, Android Studio, VSCode:
 .idea/
+.vscode/
 *.ipr
 *.iws
 *.iml
