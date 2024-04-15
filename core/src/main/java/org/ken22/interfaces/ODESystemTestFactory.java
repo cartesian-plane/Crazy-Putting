@@ -1,6 +1,6 @@
 package org.ken22.interfaces;
 
-import org.ken22.input.ODESystemFactory;
+import org.ken22.input.odeinput.ODESystemFactory;
 import org.ken22.odesolver.ODESolver;
 import org.ken22.odesolver.methods.ODESolverMethod;
 import org.ken22.odesolver.methods.RungeKutta2;
@@ -149,7 +149,7 @@ public class ODESystemTestFactory {
                 put("I", 1);
                 put("R", 2);
             }
-        
+
         };
 
         return new ODESystem(varOrder, initialStateVector, functions);

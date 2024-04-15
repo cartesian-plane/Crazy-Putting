@@ -1,13 +1,13 @@
-package org.ken22.input;
+package org.ken22.input.odeinput;
 
-import org.ken22.input.tokens.Token;
-import org.ken22.input.tokens.TokenType;
+import org.ken22.input.odeinput.tokens.Token;
+import org.ken22.input.odeinput.tokens.TokenType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static org.ken22.input.tokens.TokenType.*;
+import static org.ken22.input.odeinput.tokens.TokenType.*;
 
 public class MathLexer {
 
@@ -77,7 +77,7 @@ public class MathLexer {
     private void compileVariables() {
         for (int i = 0; i < tokens.size(); i++) {
             Token token = tokens.get(i);
-            while (token.type == DERIV) {    
+            while (token.type == DERIV) {
                 tokens.remove(i);
                 tokens.set(i-1, new Token(VARIABLE, tokens.get(i - 1).lexeme + "'", null));
                 variables.add(tokens.get(i - 1).lexeme);
@@ -178,7 +178,7 @@ public class MathLexer {
     private void number() {
         while (isDigit(peek()))
             advance();
-        
+
         // Look for a fractional part.
         if (peek() == '.' && isDigit(peekNext())) {
             // Consume the "."

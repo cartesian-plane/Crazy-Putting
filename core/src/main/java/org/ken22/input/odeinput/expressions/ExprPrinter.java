@@ -1,4 +1,4 @@
-package org.ken22.input.expressions;
+package org.ken22.input.odeinput.expressions;
 
 public class ExprPrinter implements Expr.Visitor<String> {
 
@@ -47,5 +47,5 @@ public class ExprPrinter implements Expr.Visitor<String> {
         }
         builder.append(")");
         return builder.toString();
-    }       
+    }
 }

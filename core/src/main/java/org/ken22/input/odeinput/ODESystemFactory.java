@@ -1,7 +1,7 @@
-package org.ken22.input;
+package org.ken22.input.odeinput;
 
-import org.ken22.input.expressions.Expr;
-import org.ken22.input.expressions.ExprLambdaComposer;
+import org.ken22.input.odeinput.expressions.Expr;
+import org.ken22.input.odeinput.expressions.ExprLambdaComposer;
 import org.ken22.interfaces.IFunc;
 import org.ken22.interfaces.ODESystem;
 
@@ -79,7 +79,7 @@ public class ODESystemFactory {
         // Create the initial state vector
         ArrayList<Double> initialStateVector = createInitialStateVector(initialState, vecVars, reverseVarOrder);
         System.out.println("initialStateVector: " + initialStateVector);
-        // Create the ODESystem  
+        // Create the ODESystem
         this.system = new ODESystem(varOrder, initialStateVector, functions);
     }
 
@@ -131,7 +131,7 @@ public class ODESystemFactory {
     private int findAntiderivative(String vecVar, HashSet<String> vecVars, HashMap<String, Integer> varOrder) {
         if (!vecVar.endsWith("'"))
             throw new IllegalArgumentException("The variable must be a derivative.");
-        
+
         String antiderivative = vecVar.substring(0, vecVar.length() - 1);
         for (String var : vecVars) {
             if (var.equals(antiderivative))
@@ -167,13 +167,13 @@ public class ODESystemFactory {
         HashSet<String> uniqueVars = new HashSet<>(varList);
         varList.clear();
         varList.addAll(uniqueVars);
-        
+
         // sort the list lexicographically
             // This is a bit of a hack, but it works. It is because the variables are evaluated in the varOrder, to always compute the variables themselves before the derivatives
-        Collections.sort(varList); 
+        Collections.sort(varList);
         System.out.println("idk: "+ varList);
 
-        
+
 
         // create the hashmap with the order of the variables
         HashMap<String, Integer> varOrder = new HashMap<>();

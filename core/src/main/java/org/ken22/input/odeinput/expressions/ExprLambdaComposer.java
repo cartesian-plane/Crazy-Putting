@@ -1,7 +1,7 @@
-package org.ken22.input.expressions;
+package org.ken22.input.odeinput.expressions;
 
-import org.ken22.input.MathLexer;
-import org.ken22.input.MathParser;
+import org.ken22.input.odeinput.MathLexer;
+import org.ken22.input.odeinput.MathParser;
 import org.ken22.interfaces.IFunc;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.HashSet;
 
 public class ExprLambdaComposer implements Expr.Visitor<IFunc<Double, Double>> {
 
-    private final HashSet<String> vecVars; 
+    private final HashSet<String> vecVars;
     private final HashMap<String, Integer> varOrder;
     private final IFunc<Double, Double> lambda;
 
@@ -23,7 +23,7 @@ public class ExprLambdaComposer implements Expr.Visitor<IFunc<Double, Double>> {
         HashSet<String> vars = lexer.getVariables();
 
         Expr expression = parser.getExpression();
-        
+
         System.out.println(lexer.getVariables());
 
         HashMap<String, Integer> varOrder = new HashMap<>();
@@ -33,7 +33,7 @@ public class ExprLambdaComposer implements Expr.Visitor<IFunc<Double, Double>> {
         }
 
         ArrayList<Double> values = new ArrayList<Double>(){{add(1.0); add(2.0); add (3.0); add (4.0);}};
-        
+
         ExprLambdaComposer composer = new ExprLambdaComposer(expression, lexer.getVariables(), varOrder);
         System.out.println(composer.lambda.apply(values));
         //System.out.println(lambda.apply(new ArrayList<Double>(){{add(1.0); add(2.0);}}));

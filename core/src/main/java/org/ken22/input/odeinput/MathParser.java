@@ -1,15 +1,15 @@
-package org.ken22.input;
+package org.ken22.input.odeinput;
 
-import org.ken22.input.expressions.Expr;
-import org.ken22.input.expressions.ExprPrinter;
-import org.ken22.input.tokens.Token;
-import org.ken22.input.tokens.TokenType;
+import org.ken22.input.odeinput.expressions.Expr;
+import org.ken22.input.odeinput.expressions.ExprPrinter;
+import org.ken22.input.odeinput.tokens.Token;
+import org.ken22.input.odeinput.tokens.TokenType;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.ken22.input.tokens.TokenType.*;
+import static org.ken22.input.odeinput.tokens.TokenType.*;
 
 public class MathParser {
 
@@ -27,7 +27,7 @@ public class MathParser {
         MathLexer lexer = new MathLexer(source);
         List<Token> tokens = lexer.getTokens();
         System.out.println(lexer.getVariables());
-        
+
         MathParser parser = new MathParser(tokens);
         Expr expression = parser.getExpression();
         System.out.println(expression);
@@ -41,7 +41,7 @@ public class MathParser {
             super(message + " at " + token);
         }
     }
-    
+
     /**
      * This expects a list of tokens of the form [VARIABLE, EQUALS, ...], where the variable is the lambdaVar.
      * The lambdaVar is the variable for which the lambda function will be used.
@@ -154,7 +154,7 @@ public class MathParser {
         if (check(type)) return advance();
         throw error(peek(), message);
     }
-    
+
     private ParseError error(Token token, String message) {
         return new ParseError(token, message);
     }

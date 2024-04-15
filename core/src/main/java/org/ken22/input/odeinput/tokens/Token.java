@@ -1,4 +1,4 @@
-package org.ken22.input.tokens;
+package org.ken22.input.odeinput.tokens;
 
 public class Token {
     public final TokenType type;

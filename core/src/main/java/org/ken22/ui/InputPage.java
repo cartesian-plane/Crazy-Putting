@@ -3,7 +3,7 @@ package org.ken22.ui;
 //////////////////// IMPORTS //////////////////////////////////////////////
 
 import org.ken22.controller.ApplicationController;
-import org.ken22.input.MathLexer;
+import org.ken22.input.odeinput.MathLexer;
 import org.ken22.interfaces.UserInput;
 import org.ken22.odesolver.methods.SolverMethodType;
 
@@ -32,11 +32,11 @@ public class InputPage {
 
 //////////////////// INITIALIZATIONS //////////////////////////////////////////////
     private static final int MAX_EQUATIONS = 10; // maximum number of equations allowed
-    private JFrame frame;                        
-    private JPanel mainPanel;                    
+    private JFrame frame;
+    private JPanel mainPanel;
     private ArrayList<JTextField> formulaFields; // list to hold the equations text fields
-   // private ArrayList<JTextField> variableFields; // list to hold the variable fields (e.g. 'X') // not used right now 
-    private ArrayList<JTextField> initialFields; // list to hold the initial value fields   
+   // private ArrayList<JTextField> variableFields; // list to hold the variable fields (e.g. 'X') // not used right now
+    private ArrayList<JTextField> initialFields; // list to hold the initial value fields
     private JButton addButton;                   // button to add new equation fields
     private JButton generateButton;              // button to generate results based on input
     private JTextField stepSizeField, timeField; // fields for inputting step size and time
@@ -53,7 +53,7 @@ public class InputPage {
 
 
 
- 
+
 
 
  ////////////////////  GUI CONSTRUCTOR //////////////////////////////////////////////
@@ -87,7 +87,7 @@ public class InputPage {
         });
 
         addEquationInput(false, false); // this adds the first non-removable equation field
-        equationsPanel.add(addButton); 
+        equationsPanel.add(addButton);
         //////////////////// creating the structure //////////////////////////////////////////////
 
 
@@ -131,7 +131,7 @@ public class InputPage {
 
 
         //button stuff
-        
+
 
         generateButton = new JButton("GENERATE");
         generateButton.setFont(largerFont);
@@ -141,7 +141,7 @@ public class InputPage {
                 for (JTextField field : formulaFields) {
                     equations.add(field.getText());
                 }
-        
+
                 // ArrayList<Double> initialValues = new ArrayList<>();
                 // for (JTextField field : initialFields) {
                 //     String text = field.getText();
@@ -161,10 +161,10 @@ public class InputPage {
                 for (String key : initialValuesMap.keySet()) {
                     System.out.println(key + " : " + initialValuesMap.get(key));
                 }
-        
+
                 double stepSize = !stepSizeField.getText().isEmpty() ? Double.parseDouble(stepSizeField.getText()) : 0.0;
                 double time = !timeField.getText().isEmpty() ? Double.parseDouble(timeField.getText()) : 0.0;
-                
+
                 boolean graph = graphCheckBox.isSelected();
                 boolean phaseSpace = phaseSpaceCheckBox.isSelected();
                 boolean table = tableCheckBox.isSelected();
@@ -185,18 +185,18 @@ public class InputPage {
                         //unreachable
                         solverType = null;
                 }
-        
+
                 UserInput userInput = new UserInput(equations, initialValuesMap, stepSize, 0, time, graph, table, phaseSpace, solverType);
                 app.onGenerate(userInput);
-        
+
             } catch (NumberFormatException nfe) {
                 JOptionPane.showMessageDialog(frame, "Please enter valid numbers", "Input error", JOptionPane.ERROR_MESSAGE);
             }
         });
-        
-        
 
-        
+
+
+
 
 
 ////////////////////  Creating fields, buttons and naming them //////////////////////////////////////////////
@@ -216,8 +216,8 @@ public class InputPage {
         controlsPanel.add(tableCheckBox);
         controlsPanel.add(solverTypeComboBox);
         controlsPanel.add(generateButton);
-        
-      
+
+
 
         mainPanel.add(controlsPanel);
 
@@ -275,9 +275,9 @@ public class InputPage {
     // method to add a new equation input field
     private void addEquationInput(boolean removable, boolean shift) {
         Font largerFont = new Font("SansSerif", Font.PLAIN, 20);
-        
 
-      
+
+
         JTextField formulaField = createPlaceholderTextField("V = x + y", 20, largerFont);  // change intials text and size of window
     //    JTextField variableField = createVariableField(largerFont);
         JTextField initialValueField = createNumberField(largerFont);
@@ -316,7 +316,7 @@ public class InputPage {
 
 
 
-        equationsPanel.add(equationPanel, equationsPanel.getComponentCount() - 1); 
+        equationsPanel.add(equationPanel, equationsPanel.getComponentCount() - 1);
     }
 
 
@@ -341,15 +341,15 @@ public class InputPage {
     private void removeEquationInput(JPanel equationPanel, JTextField formulaField, JTextField initialValueField) {
         formulaFields.remove(formulaField);
         initialFields.remove(initialValueField);
-        equationsPanel.remove(equationPanel); 
+        equationsPanel.remove(equationPanel);
     }
 
 
 
- 
- 
-    // Method to create a text field for variable input that allows only one alphabetical character   NOT USED RIGHT NOW 
-    /* 
+
+
+    // Method to create a text field for variable input that allows only one alphabetical character   NOT USED RIGHT NOW
+    /*
     private JTextField createVariableField(Font font) {
         JTextField variableField = new JTextField("X", 2);
         variableField.setFont(font);
@@ -359,7 +359,7 @@ public class InputPage {
                 if (getLength() + str.length() > 1) {
                     return;
                 }
-                if (str.matches("[a-zA-Z]")) { // if its a character 
+                if (str.matches("[a-zA-Z]")) { // if its a character
                     super.insertString(offs, str.toUpperCase(), a);
                 }
             }

@@ -1,6 +1,6 @@
 package org.ken22.controller;
 
-import org.ken22.input.ODESystemFactory;
+import org.ken22.input.odeinput.ODESystemFactory;
 import org.ken22.interfaces.ODESystem;
 import org.ken22.interfaces.UserInput;
 import org.ken22.odesolver.ODESolver;

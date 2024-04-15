@@ -1,6 +1,6 @@
-package org.ken22.input.expressions;
+package org.ken22.input.odeinput.expressions;
 
-import org.ken22.input.tokens.Token;
+import org.ken22.input.odeinput.tokens.Token;
 
 /**
  * Represents an expression in the form of a parse tree.
