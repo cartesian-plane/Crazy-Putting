@@ -3,6 +3,6 @@ eclipse.project.name = appName + '-core'
 
 dependencies {
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
-  // https://mvnrepository.com/artifact/org.json/json
-  implementation group: 'org.json', name: 'json', version: '20240303'
+  // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.1'
 }
