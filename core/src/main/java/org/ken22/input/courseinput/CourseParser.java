@@ -16,10 +16,12 @@ public class CourseParser {
         File jsonFile = new File("assets/input/golf-course.json");
         try {
 
-            JsonNode jsonNode = objectMapper.readTree(jsonFile);
-            JsonNode golfCourseNode = jsonNode.get("golfCourse");
-            String terrain = golfCourseNode.get("courseProfile").asText();
+            String terrain = "sin((x - y) / 7) + 0.5";
             System.out.println("Terrain: " + terrain);
+
+            GolfCourse course = objectMapper.readValue(jsonFile, GolfCourse.class);
+
+            System.out.println("Mass: " + course.getMass());
 
             Expression expression = new ExpressionBuilder(terrain)
                 .variables("x", "y")
