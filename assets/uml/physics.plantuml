@@ -1,0 +1,68 @@
+@startuml Physics - ODE Solvers interaction
+
+rectangle "ODE Solvers" as ODES {
+    abstract class ODESolver {
+        -state : Vec
+        +ODESolver(init : Vec)
+        +solve() : void
+    }
+}
+
+rectangle "Vectors" as V {
+    interface Vec {
+        +state : double[]
+        +get(i : int) : double
+        +set(i : int, value : double) : void
+        +size() : int
+    }
+
+    class Vec4 {
+        +state : double[4]
+        +get(i : int) : double
+        +set(i : int, value : double) : void
+        +size() : int
+    }
+
+    class GVec4 {
+        +state : double[4]
+        +getX() : double
+        +getY() : double
+        +getVX() : double
+        +getVY() : double
+        +get(i : int) : double
+        +set(i : int, value : double) : void
+        +size() : int
+    }
+
+    class Vec6 {
+        +state : double[6]
+        +get(i : int) : double
+        +set(i : int, value : double) : void
+        +size() : int
+    }
+
+    class GVec6 {
+        +state : double[6]
+        +getX() : double
+        +getY() : double
+        +getZ() : double
+        +getVX() : double
+        +getVY() : double
+        +getVZ() : double
+        +get(i : int) : double
+        +set(i : int, value : double) : void
+        +size() : int
+    }
+
+    Vec6 .up.|> Vec
+    Vec4 .up.|> Vec
+    GVec6 --|> Vec6
+    GVec4 --|> Vec4
+
+}
+
+rectangle "Physics" as Ph {
+
+}
+
+@enduml
