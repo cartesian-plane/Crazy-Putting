@@ -11,6 +11,7 @@ import org.ken22.ui.InputPage;
 import org.ken22.ui.PhaseSpace;
 import org.ken22.ui.Table;
 
+
 public class ApplicationController {
 
     private PhaseSpace phaseSpace;
@@ -22,7 +23,7 @@ public class ApplicationController {
         app.run();
     }
 
-    private void run() {
+    public void run() {
         InputPage InputPage = new InputPage(this);
     }
 
