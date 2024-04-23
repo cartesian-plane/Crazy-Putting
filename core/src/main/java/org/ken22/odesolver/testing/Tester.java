@@ -1,14 +1,16 @@
 package org.ken22.odesolver.testing;
 
+import org.ken22.interfaces.IFunc;
 import org.ken22.interfaces.ODESolution;
 import org.ken22.interfaces.ODESystem;
-import org.ken22.interfaces.ODESystemTestFactory;
 import org.ken22.odesolver.ODESolver;
+import org.ken22.odesolver.methods.EulerMethod;
 import org.ken22.odesolver.methods.RungeKutta4;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.function.Function;
 
 public class Tester {
@@ -16,7 +18,7 @@ public class Tester {
      * Equation used for computing the analytical solution.
      * Written by hand.
      */
-    private static Function<Double, Double> func = t -> Math.exp(2*t);
+    private static Function<Double, Double> func = t -> Math.exp(t);
 
     /**
      * System used for computing the numerical solution.
@@ -24,64 +26,108 @@ public class Tester {
     private static ODESystem numericalSystem;
 
     public static void main(String[] args) throws IOException {
-        numericalSystem = new ODESystemTestFactory().testSyst();
-
-        FileWriter csvWriter = new FileWriter("errors.csv");
-        csvWriter.append("Step Size");
-        csvWriter.append(",");
-        csvWriter.append("Global Error");
-        csvWriter.append("\n");
-
-        double t = 0;
-        double endTime = 300;
-
-        for (double stepSize = 0.0001; stepSize <= 0.01; stepSize += 0.0001) {
-            // keep changing this to test stuff
-            ODESolver solver = new ODESolver(new RungeKutta4(numericalSystem, stepSize, 0, endTime));
-            ODESolution numericalSolution = solver.solve();
-
-            ArrayList<Double> tValues = new ArrayList<>();
-            tValues.add(t);
-            ArrayList<Double> yValues = new ArrayList<>();
-            yValues.add(func.apply(t));
-
-            double y;
-            while (t <= endTime) {
-                t += stepSize;
-                y = func.apply(t);
-                tValues.add(t);
-                yValues.add(y);
-            }
-
-            double globalError = getGlobalError(numericalSolution, tValues, yValues);
-            System.out.println("Step size: " + stepSize + ", Global error: " + globalError);
-
-            csvWriter.append(String.valueOf(stepSize));
-            csvWriter.append(",");
-            csvWriter.append(String.valueOf(globalError));
-            csvWriter.append("\n");
-
-            t = 0;
-        }
-
-
+        testEuler();
+        testRK4();
     }
 
-    public static double getGlobalError(ODESolution solution, ArrayList<Double> tValues, ArrayList<Double> yValues) {
+    public static double getGlobalError(ODESolution solution, double endTime) {
         double sum = 0;
 
         ArrayList<ArrayList<Double>> vectors = solution.getStateVectors();
+        double numerical_y = vectors.get(vectors.size() - 1).get(0);
+        double true_y = func.apply(endTime);
+        sum += Math.abs(numerical_y - true_y);
 
-        int i = 0;
-        for (ArrayList<Double> vector : vectors) {
-            double numerical_y = vector.getFirst().doubleValue();
-            double true_y = yValues.get(i).doubleValue();
+        // Normalize the error
+        return sum/vectors.size();
+    }
 
-            sum += Math.abs(numerical_y - true_y);
+    public static void testEuler() throws IOException {
 
-            i++;
+        ArrayList<Double> initialStateVector = new ArrayList<>();
+        ArrayList<IFunc<Double, Double>> functions = new ArrayList<>();
+        ArrayList<Double> vars = new ArrayList<>();
+        vars.add(1.0);
+        initialStateVector.add(vars.get(0));
+        functions.add(
+            (varss) -> { return varss.get(0); }
+        );
+        HashMap<String, Integer> varOrder = new HashMap<>() {
+            {
+                put("X", 0);
+            }
+        };
+
+        ODESystem eulerSystem = new ODESystem(varOrder, initialStateVector, functions);
+
+        FileWriter eulerCsvWriter = new FileWriter("/Users/leo/Desktop/Output/errorseuler.csv");
+        eulerCsvWriter.append("Step Size");
+        eulerCsvWriter.append(",");
+        eulerCsvWriter.append("Global Error");
+        eulerCsvWriter.append("\n");
+
+        double t = 0;
+        double endTime = 50;
+
+        for (double stepSize = 0.0001; stepSize <= 1; stepSize += 0.0001) {
+            // keep changing this to test stuff
+            ODESolver solver = new ODESolver(new EulerMethod(eulerSystem, stepSize, 0, endTime));
+            ODESolution numericalSolution = solver.solve();
+
+            int iterations = (int) (endTime/stepSize);
+            double globalError = getGlobalError(numericalSolution, endTime);
+            System.out.println("Step size: " + stepSize + ", Global error: " + globalError);
+
+            eulerCsvWriter.append(String.valueOf(stepSize));
+            eulerCsvWriter.append(",");
+            eulerCsvWriter.append(String.valueOf(globalError));
+            eulerCsvWriter.append("\n");
+
+            t = 0;
         }
+    }
 
-        return sum;
+    public static void testRK4() throws IOException {
+
+        ArrayList<Double> initialStateVector = new ArrayList<>();
+        ArrayList<IFunc<Double, Double>> functions = new ArrayList<>();
+        ArrayList<Double> vars = new ArrayList<>();
+        vars.add(1.0);
+        initialStateVector.add(vars.get(0));
+        functions.add(
+            (varss) -> { return varss.get(0); }
+        );
+        HashMap<String, Integer> varOrder = new HashMap<>() {
+            {
+                put("X", 0);
+            }
+        };
+
+        ODESystem rk4System = new ODESystem(varOrder, initialStateVector, functions);
+
+        FileWriter rk4CsvWriter = new FileWriter("/Users/leo/Desktop/Output/errorsrk4.csv");
+        rk4CsvWriter.append("Step Size");
+        rk4CsvWriter.append(",");
+        rk4CsvWriter.append("Global Error");
+        rk4CsvWriter.append("\n");
+
+        double t = 0;
+        double endTime = 50;
+
+        for (double stepSize = 0.0001; stepSize <= 1; stepSize += 0.0001) {
+            // keep changing this to test stuff
+            ODESolver solver = new ODESolver(new RungeKutta4(rk4System, stepSize, 0, endTime));
+            ODESolution numericalSolution = solver.solve();
+
+            double globalError = getGlobalError(numericalSolution, endTime);
+            System.out.println("Step size: " + stepSize + ", Global error: " + globalError);
+
+            rk4CsvWriter.append(String.valueOf(stepSize));
+            rk4CsvWriter.append(",");
+            rk4CsvWriter.append(String.valueOf(globalError));
+            rk4CsvWriter.append("\n");
+
+            t = 0;
+        }
     }
 }

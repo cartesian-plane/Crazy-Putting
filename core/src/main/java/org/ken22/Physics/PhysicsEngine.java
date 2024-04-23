@@ -15,7 +15,7 @@ public class PhysicsEngine {
     private double gCoef;
     private IFunc<Double, Double> height; //Parameters are (x,y), passed in constructor
 
-    // parameter order (t,x,y,vx, vy, gradx, grady)
+    // parameter order (t,x,y,vx, vy, gradx, grady, height)
     private IFunc<Double, Double> f_ax = (vars) ->
         ( -1*this.gCoef*(vars.get(5)+this.kFrictionCoef*vars.get(3)/( Math.sqrt( Math.pow(vars.get(3),2)+Math.pow(vars.get(4),2) ) )));
     private IFunc<Double, Double> f_ay = (vars) ->
@@ -46,10 +46,12 @@ public class PhysicsEngine {
             // Calculate gradients in x and y directions
             ArrayList<Double> gradients = this.gradients(current, this.height, this.timeStep);
             // Temporarily store gradients in current vector
-            current.add(gradients.get(0));
-            current.add(gradients.get(1));
+            current.add(gradients.get(0)); //Gradient in x direction
+            current.add(gradients.get(1)); //Gradient in y direction
+            current.add(height.apply(current)); //Height at current position (x,y)
             double ax = f_ax.apply(current);
             double ay = f_ay.apply(current);
+
             updateState(current, ax, ay); //Forward euler?
             current = stateVectors.getLast();
             t += this.timeStep;

@@ -42,7 +42,7 @@ public class EulerMethod extends ODESolverMethod {
             int i = 0;
             for (Double x : stateVector) {
                 IFunc<Double, Double> function = this.system.getFunctions().get(i);
-                double newX = (double) x + stepSize * function.apply(stateVector).doubleValue();
+                double newX = x + stepSize * function.apply(stateVector);
                 updatedStateVector.add(newX);
                 i++;
             }

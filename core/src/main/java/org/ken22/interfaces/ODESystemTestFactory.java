@@ -1,12 +1,16 @@
 package org.ken22.interfaces;
 
-import org.ken22.input.odeinput.ODESystemFactory;
 import org.ken22.odesolver.ODESolver;
 import org.ken22.odesolver.methods.ODESolverMethod;
 import org.ken22.odesolver.methods.RungeKutta2;
+import org.ken22.odesolver.methods.RungeKutta4;
+import org.ken22.odesolver.methods.EulerMethod;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.io.IOException;
+
 
 public class ODESystemTestFactory {
     ODESystem system(HashMap<String, Integer> varOrder, ArrayList<Double> initialStateVector, ArrayList<IFunc<Double, Double>> functions) {
@@ -14,7 +18,7 @@ public class ODESystemTestFactory {
     }
 
     public ODESystem LotkaVolterra(double initialX, double initialY, double alpha, double beta,
-                                    double delta, double gamma) {
+                                   double delta, double gamma) {
 
         if (alpha <= 0 || beta <= 0 || gamma <= 0 || delta <= 0) {
             throw new IllegalArgumentException("alpha, beta, gamma, and delta must be positive");
@@ -34,12 +38,12 @@ public class ODESystemTestFactory {
 
         functions.add((systemVars) -> {
             return alpha * systemVars.get(0).doubleValue() - beta * systemVars.get(0).doubleValue()
-                    * systemVars.get(1).doubleValue();
+                * systemVars.get(1).doubleValue();
         });
 
         functions.add((systemVars) -> {
             return delta * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() -
-                    gamma * systemVars.get(1).doubleValue();
+                gamma * systemVars.get(1).doubleValue();
         });
 
         HashMap<String, Integer> varOrder = new HashMap<>() {
@@ -72,12 +76,12 @@ public class ODESystemTestFactory {
 
         functions.add((systemVars) -> {
             return alpha * systemVars.get(0).doubleValue() - beta * systemVars.get(0).doubleValue()
-                    * systemVars.get(1).doubleValue();
+                * systemVars.get(1).doubleValue();
         });
 
         functions.add((systemVars) -> {
             return delta * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() -
-                    gamma * systemVars.get(1).doubleValue();
+                gamma * systemVars.get(1).doubleValue();
         });
 
         HashMap<String, Integer> varOrder = new HashMap<>() {
@@ -131,12 +135,12 @@ public class ODESystemTestFactory {
 
         functions.add((systemVars) -> {
             return -k * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() +
-                    mu * (1 - systemVars.get(0).doubleValue());
+                mu * (1 - systemVars.get(0).doubleValue());
         });
 
         functions.add((systemVars) -> {
             return k * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() -
-                    (gamma + mu) * systemVars.get(1).doubleValue();
+                (gamma + mu) * systemVars.get(1).doubleValue();
         });
 
         functions.add((systemVars) -> {
@@ -177,12 +181,12 @@ public class ODESystemTestFactory {
 
         functions.add((systemVars) -> {
             return -k * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() +
-                    mu * (1 - systemVars.get(0).doubleValue());
+                mu * (1 - systemVars.get(0).doubleValue());
         });
 
         functions.add((systemVars) -> {
             return k * systemVars.get(0).doubleValue() * systemVars.get(1).doubleValue() -
-                    (gamma + mu) * systemVars.get(1).doubleValue();
+                (gamma + mu) * systemVars.get(1).doubleValue();
         });
 
         functions.add((systemVars) -> {
@@ -201,30 +205,7 @@ public class ODESystemTestFactory {
 
     }
 
-
-    public ODESystem testSyst() {
-        ArrayList<Double> initialStateVector = new ArrayList<>();
-        ArrayList<IFunc<Double, Double>> functions = new ArrayList<>();
-
-        ArrayList<Double> vars = new ArrayList<>();
-        vars.add(1.0);
-
-        initialStateVector.add(vars.get(0));
-
-        functions.add((varss) -> {
-            return 2 * varss.get(0).doubleValue();
-        });
-
-        HashMap<String, Integer> varOrder = new HashMap<>() {
-            {
-                put("X", 0);
-            }
-        };
-
-        return new ODESystem(varOrder, initialStateVector, functions);
-    }
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // ODESystemTestFactory factory = new ODESystemTestFactory();
         // ODESystem syst = factory.testSyst();
         // System.out.println(syst + "\n" + syst.derivative());
@@ -237,20 +218,5 @@ public class ODESystemTestFactory {
         // System.out.println(solution.stateVectors.get(100000));
         // ex 2
 
-        ArrayList<String> ex = new ArrayList<>(){
-            {
-                add("x' = x-x*y");
-                add("y' = y-2*x*y");
-            }
-        };
-        HashMap<String, Double> in = new HashMap<>();
-        in.put("x", 10.0);
-        in.put("y", 20.0);
-        ODESystemFactory gen = new ODESystemFactory(in, ex);
-        gen.getSyst();
-        ODESolver solv = new ODESolver();
-        ODESolverMethod stra = new RungeKutta2(gen.getSyst(), 0.000001, 0, 5);
-        solv.setStrategy(stra);
-        System.out.println(solv.solve());
     }
 }
