@@ -40,6 +40,4 @@ public class GolfCourse {
     public String getCourseProfile() {
         return courseProfile;
     }
-
-    // Add getters and setters for each field...
 }
