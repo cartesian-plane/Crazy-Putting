@@ -22,7 +22,7 @@ public class PhysicsEngine {
     private IFunc<Double, Double> f_ay = (vars) ->
         ( -1*this.gCoef*(vars.get(6)+this.kFrictionCoef*vars.get(4)/(Math.sqrt(Math.pow(vars.get(3),2)+Math.pow(vars.get(4),2)))));;
     private ArrayList<Double> initialState = new ArrayList<Double>(); // (t,x,y,vx, vy, gradX, gradY), gradX and gradY for initial state are calculated in the loop
-    ArrayList<ArrayList<Double>> stateVectors = new ArrayList<ArrayList<Double>>(); // (t,x,y,vx, vy, gradX, gradY)
+    private ArrayList<ArrayList<Double>> stateVectors = new ArrayList<ArrayList<Double>>(); // (t,x,y,vx, vy, gradX, gradY)
 
 
     public String getName() {
