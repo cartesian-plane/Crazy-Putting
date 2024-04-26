@@ -1,14 +1,12 @@
 {
-  "golfCourse": {
-    "name": "Example Golf Course",
-    "courseProfile": "sin((x - y) / 7) + 0.5",
-    "mass": 0.0459,
-    "gravitationalConstant": 9.81,
-    "kineticFrictionGrass": 0.5,
-    "staticFrictionGrass": 0.1,
-    "kineticFrictionSand": 0.8,
-    "staticFrictionSand": 0.9,
-    "maximumSpeed": 5,
-    "targetRadius": 0.10
-  }
+  "name": "Example Golf Course",
+  "courseProfile": "sin((x - y) / 7) + 0.5",
+  "mass": 0.0459,
+  "gravitationalConstant": 9.81,
+  "kineticFrictionGrass": 0.5,
+  "staticFrictionGrass": 0.1,
+  "kineticFrictionSand": 0.8,
+  "staticFrictionSand": 0.9,
+  "maximumSpeed": 5,
+  "targetRadius": 0.10
 }
