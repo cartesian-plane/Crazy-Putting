@@ -1,4 +1,4 @@
-package org.ken22.odesolver.methods;
+package org.ken22.Physics.odesolver.methods;
 
 import org.ken22.interfaces.IFunc;
 import org.ken22.interfaces.ODESolution;

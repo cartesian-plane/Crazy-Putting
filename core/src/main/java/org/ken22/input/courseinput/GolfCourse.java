@@ -34,10 +34,42 @@ public class GolfCourse {
     private double targetRadius;
 
     public double getMass() {
-        return mass;
+        return this.mass;
     }
 
     public String getCourseProfile() {
-        return courseProfile;
+        return this.courseProfile;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getGravitationalConstant() {
+        return gravitationalConstant;
+    }
+
+    public double getKineticFrictionGrass() {
+        return kineticFrictionGrass;
+    }
+
+    public double getStaticFrictionGrass() {
+        return staticFrictionGrass;
+    }
+
+    public double getKineticFrictionSand() {
+        return kineticFrictionSand;
+    }
+
+    public double getStaticFrictionSand() {
+        return staticFrictionSand;
+    }
+
+    public double getMaximumSpeed() {
+        return maximumSpeed;
+    }
+
+    public double getTargetRadius() {
+        return targetRadius;
     }
 }

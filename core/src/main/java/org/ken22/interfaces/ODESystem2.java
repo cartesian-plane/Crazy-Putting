@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ODESystem {
+public class ODESystem2 {
     ArrayList<Double> initialStateVector;
     ArrayList<IFunc<Double, Double>> functions;
     HashMap<String, Integer> varOrder;
@@ -63,9 +63,9 @@ public class ODESystem {
     @Override
     public String toString() {
         return "ODESystem{" +
-                "initialStateVector=" + initialStateVector +
-                // ", functions=" + functions +
-                '}';
+            "initialStateVector=" + initialStateVector +
+            // ", functions=" + functions +
+            '}';
     }
 
     public ArrayList<Double> getInitialStateVector() {
