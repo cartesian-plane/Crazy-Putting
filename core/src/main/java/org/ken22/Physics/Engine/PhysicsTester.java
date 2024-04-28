@@ -1,4 +1,4 @@
-package org.ken22.Physics;
+package org.ken22.Physics.Engine;
 
 import org.ken22.interfaces.IFunc;
 

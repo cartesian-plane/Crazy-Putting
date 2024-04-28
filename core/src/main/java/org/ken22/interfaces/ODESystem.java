@@ -1,9 +1,5 @@
 package org.ken22.interfaces;
 
-import org.ken22.Physics.Vectors.GVec4;
-import org.ken22.input.courseinput.CourseParser;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,28 +8,13 @@ public class ODESystem {
     ArrayList<IFunc<Double, Double>> functions;
     HashMap<String, Integer> varOrder;
 
-    // parameter order (t,x,y,vx, vy, gradx, grady, height)
-    private IFunc<Double, Double> f_ax = (vars) ->
-        ( -1*this.gCoef*(vars.get(5)+this.kFrictionCoef*vars.get(3) /
-            (Math.sqrt( Math.pow(vars.get(3),2)+Math.pow(vars.get(4),2)))));
-    private IFunc<Double, Double> f_ay = (vars) ->
-        ( -1*this.gCoef*(vars.get(6)+this.kFrictionCoef*vars.get(4) /
-            (Math.sqrt(Math.pow(vars.get(3),2)+Math.pow(vars.get(4),2)))));;
-
-    public ODESystem(GVec4 initialStateVector, File JSonfile) {
+    public ODESystem(HashMap<String, Integer> varOrder, ArrayList<Double> initialStateVector, ArrayList<IFunc<Double, Double>> functions) {
         if (initialStateVector.size() != functions.size()) {
             throw new IllegalArgumentException("The size of the state vector must be equal to the number of functions.");
         }
         this.initialStateVector = initialStateVector;
         this.functions = functions;
         this.varOrder = varOrder;
-        this.timeStep = initialStateVector.getTimeStep();
-        this.endTime = initialStateVector.getEndTime();
-        this.initialState = initialStateVector;
-        CourseParser parser = new CourseParser(new File("project-1-2/assets/input/golf-course.json"));
-        this.terrain = parser.getExpression();
-        this.course = parser.getCourse();
-        this.solver = solver;
     }
 
     public ArrayList<String> getVariables() {
@@ -63,9 +44,9 @@ public class ODESystem {
     @Override
     public String toString() {
         return "ODESystem{" +
-                "initialStateVector=" + initialStateVector +
-                // ", functions=" + functions +
-                '}';
+            "initialStateVector=" + initialStateVector +
+            // ", functions=" + functions +
+            '}';
     }
 
     public ArrayList<Double> getInitialStateVector() {

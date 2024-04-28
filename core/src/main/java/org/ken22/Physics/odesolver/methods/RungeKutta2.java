@@ -25,7 +25,7 @@ public class RungeKutta2 extends ODESolverMethod {
         ArrayList<ArrayList<Double>> stateVectors = new ArrayList<>();
         ODESolution solution = new ODESolution(time, stateVectors);
         double t = startTime;
-        ArrayList<Double> stateVector = system.getInitialStateVector();
+        ArrayList<Double> stateVector = system1.getInitialStateVector();
         time.add(t);
         stateVectors.add(stateVector);
 
@@ -37,7 +37,7 @@ public class RungeKutta2 extends ODESolverMethod {
             int i = 0;
             ArrayList<Double> intermediateStateVector = update(stateVector, stepSize / 2);
             for (Double x : stateVector) {
-                IFunc<Double, Double> function = this.system.getFunctions().get(i);
+                IFunc<Double, Double> function = this.system1.getFunctions().get(i);
                 double newX = x.doubleValue() + stepSize * function.apply(intermediateStateVector).doubleValue();
                 updatedStateVector.add(newX);
                 i++;
@@ -58,7 +58,7 @@ public class RungeKutta2 extends ODESolverMethod {
         int i = 0;
         ArrayList<Double> intermediateStateVector = new ArrayList<>();
         for (Double x : stateVector) {
-            IFunc<Double, Double> function2 = this.system.getFunctions().get(i);
+            IFunc<Double, Double> function2 = this.system1.getFunctions().get(i);
             double newY = x.doubleValue() + stepSize * function2.apply(stateVector).doubleValue();
             intermediateStateVector.add(newY);
         }

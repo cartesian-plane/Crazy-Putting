@@ -28,7 +28,7 @@ public class EulerMethod extends ODESolverMethod {
         ODESolution solution = new ODESolution(time, stateVectors);
 
         double t = startTime;
-        ArrayList<Double> stateVector = system.getInitialStateVector();
+        ArrayList<Double> stateVector = system1.getInitialStateVector();
 
         time.add(t);
         stateVectors.add(stateVector);
@@ -41,7 +41,7 @@ public class EulerMethod extends ODESolverMethod {
             ArrayList<Double> updatedStateVector = new ArrayList<>();
             int i = 0;
             for (Double x : stateVector) {
-                IFunc<Double, Double> function = this.system.getFunctions().get(i);
+                IFunc<Double, Double> function = this.system1.getFunctions().get(i);
                 double newX = x + stepSize * function.apply(stateVector);
                 updatedStateVector.add(newX);
                 i++;

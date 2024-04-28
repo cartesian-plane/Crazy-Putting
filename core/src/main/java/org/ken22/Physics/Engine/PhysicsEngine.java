@@ -1,7 +1,6 @@
-package org.ken22.Physics;
+package org.ken22.Physics.Engine;
 
 import org.ken22.interfaces.IFunc;
-
 import java.util.ArrayList;
 
 public class PhysicsEngine {
@@ -9,7 +8,6 @@ public class PhysicsEngine {
 
     private double timeStep;
     private double endTime;
-    private double startTime;
     private double kFrictionCoef;
     private double sFrictionCoef;
     private double gCoef;
