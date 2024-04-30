@@ -6,6 +6,7 @@ import org.ken22.Physics.Numerical_Derivation.basicDerivation;
 import org.ken22.Physics.Numerical_Integration.NumIntegrationMethod;
 import org.ken22.Physics.System.PhysicsSystem;
 import org.ken22.Physics.Vectors.GVec4;
+import org.ken22.Physics.mathTools.myMath;
 import org.ken22.Physics.odesolver.ODESolver;
 import org.ken22.Physics.odesolver.methods.ODESolverMethod;
 import org.ken22.input.courseinput.CourseParser;
@@ -21,28 +22,28 @@ public class unrealEngine {
     // parameter order (t,x,y,vx, vy, gradx, grady, height)
     private IFunc<Double, Double> ax_k_gr = (vars) ->
         ( -1*this.g*(vars.get(5)+this.kf_gr*vars.get(3) /
-            (Math.sqrt( Math.pow(vars.get(3),2)+Math.pow(vars.get(4),2)))) );
+            myMath.pythagoras(vars.get(5), vars.get(6)) ));
     private IFunc<Double, Double> ay_k_gr = (vars) ->
         ( -1*this.g*(vars.get(6)+this.kf_gr*vars.get(4) /
-            (Math.sqrt(Math.pow(vars.get(3),2)+Math.pow(vars.get(4),2)))));;
+            myMath.pythagoras(vars.get(5), vars.get(6)) ));;
     private IFunc<Double, Double> ax_s_gr = (vars) ->
         ( -1*this.g*(vars.get(5)+this.sf_gr*vars.get(5) /
-            (Math.sqrt( Math.pow(vars.get(5),2)+Math.pow(vars.get(6),2)))) );
+            myMath.pythagoras(vars.get(5), vars.get(6)) ));
     private IFunc<Double, Double> ay_s_gr = (vars) ->
         ( -1*this.g*(vars.get(6)+this.sf_gr*vars.get(6) /
-            (Math.sqrt(Math.pow(vars.get(5),2)+Math.pow(vars.get(6),2)))));;
+            myMath.pythagoras(vars.get(5), vars.get(6))));;
     private IFunc<Double, Double> ax_k_sa = (vars) ->
         ( -1*this.g*(vars.get(5)+this.kf_sa*vars.get(3) /
-            (Math.sqrt( Math.pow(vars.get(3),2)+Math.pow(vars.get(4),2)))) );
+            myMath.pythagoras(vars.get(3), vars.get(4)) ));
     private IFunc<Double, Double> ay_k_sa = (vars) ->
         ( -1*this.g*(vars.get(6)+this.kf_sa*vars.get(4) /
-            (Math.sqrt(Math.pow(vars.get(3),2)+Math.pow(vars.get(4),2)))));;
+            myMath.pythagoras(vars.get(3), vars.get(4)) ));;
     private IFunc<Double, Double> ax_s_sa = (vars) ->
         ( -1*this.g*(vars.get(5)+this.sf_sa*vars.get(5) /
-            (Math.sqrt( Math.pow(vars.get(5),2)+Math.pow(vars.get(6),2)))) );
+            myMath.pythagoras(vars.get(5), vars.get(6))) );
     private IFunc<Double, Double> ay_s_sa = (vars) ->
         ( -1*this.g*(vars.get(6)+this.sf_sa*vars.get(6) /
-            (Math.sqrt(Math.pow(vars.get(5),2)+Math.pow(vars.get(6),2)))));
+            myMath.pythagoras(vars.get(5), vars.get(6))));;
 
     //Coefficents
     private double kf_gr;
@@ -60,7 +61,7 @@ public class unrealEngine {
     private NumDerivationMethod differentiator;
     private Expression terrain; //Parameters are (x,y), passed in constructor
     private GVec4 initialState; // (t,x,y,vx, vy)
-    private ArrayList<ArrayList<Double>> stateVectors = new ArrayList<ArrayList<Double>>(); // (t,x,y,vx, vy, gradX, gradY)
+    private ArrayList<GVec4> stateVectors = new ArrayList<GVec4>(); // (t,x,y,vx, vy, gradX, gradY)
     public unrealEngine(PhysicsSystem system, NumIntegrationMethod integrator, NumDerivationMethod differentiator) {
         this.vars = system.getMap();
         this.timeStep = system.getTimeStep();
@@ -69,40 +70,50 @@ public class unrealEngine {
         this.differentiator = differentiator;
         this.terrain = system.getTerrain();
         this.maxspeed = system.getCourse().getMaximumSpeed();
+        this.initialState = system.getInitialState();
+        this.stateVectors.add(initialState);
     }
 
     public void solve() {
 
         GVec4 current = initialState;
-        double t = current.get(0);
         boolean atRest = false;
 
         //do not allow velocity above maxspeed threshold
         current.set(3, Math.min(current.get(3), this.maxspeed));
         current.set(4, Math.min(current.get(4), this.maxspeed));
 
-        basicDerivation derivator = new basicDerivation(current, this.terrain, this.timeStep);
-
         while(!atRest) {
 
-            //Calculate slopes
-
-
+            //calculates partial derivatives and adds them to current vector
+            differentiator.gradients(current, this.terrain, this.timeStep);
 
             //Check if on grass or sand
 
+            //GVec4 stateVector, double timeStep, IFunc<Double, Double> funcx, IFunc<Double, Double> funcy, Expression height, NumDerivationMethod differentiator
 
-            if(current.get(3) < 0.05 & current.get(4) < 0.05) { //speed gets too low
+            if(current.get(3) < 0.05 & current.get(4) < 0.05) { //speed gets too low, 0.05 is threshold
+
                 if(current.get(5) < 0.01 & current.get(6) < 0.01) { //flat surface
                     atRest = true;
-                    break; //Is it possible to simply break?
+                    integrator.execute(current, this.timeStep, ax_k_gr, ay_k_gr, this.terrain, this.differentiator);
+                    //Is it possible to simply break?
                 }
 
                 else { //inclined surface
-                    //ball keeps rolling
+                    if(myMath.pythagoras(current.get(5), current.get(6)) < sf_gr) { //ball stops
+                        atRest = true;
+                        integrator.execute(current, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+                    }
 
-                    //ball stops
+                    else { //ball keeps rolling
+                        integrator.execute(current, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+                    }
                 }
+            }
+
+            else {
+                integrator.execute(current, this.timeStep, ax_k_sa, ay_k_sa, this.terrain, this.differentiator);
             }
 
             //Don't allow to go over max speed
@@ -112,20 +123,10 @@ public class unrealEngine {
             //Collisions? Save for later
             //Think about angle of bounce and conservation of momentum
 
-            //continue normally
-            t += this.timeStep;
+            stateVectors.add(current);
         }
 
         //Store the last position which is going to be the next starting position
         //Allow the user to choose the next starting velocities
     }
-
-    public void updateState(NumIntegrationMethod method, GVec4 current, double ax, double ay) {
-
-    }
-
-    public ArrayList<Double> gradient(NumDerivationMethod method, GVec4 current, double height, double timeStep) {
-        return null;
-    }
-
 }

@@ -125,10 +125,6 @@ public class PhysicsEngine {
         return endTime;
     }
 
-    public double getStartTime() {
-        return startTime;
-    }
-
     public double getkFrictionCoef() {
         return kFrictionCoef;
     }

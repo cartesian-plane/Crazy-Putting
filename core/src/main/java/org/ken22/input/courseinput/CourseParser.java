@@ -26,6 +26,8 @@ public class CourseParser {
             this.expression = new ExpressionBuilder(terrain)
                 .variables("x", "y")
                 .build();
+            variables.put("x", 0.0); //default values. Why?
+            variables.put("y", 0.0); //Not sure
         } catch (
             IOException e) {
             e.printStackTrace();

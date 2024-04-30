@@ -13,7 +13,6 @@ import org.ken22.interfaces.IFunc;
 
 public class PhysicsSystem {
     private Map<String, Double> vars;
-    private ArrayList<Double> initialStateVector;
     double timeStep = 0.01; //default
     private GVec4 initialState;
     private Expression terrain;
@@ -52,10 +51,6 @@ public class PhysicsSystem {
 
     public GolfCourse getCourse() {
         return course;
-    }
-
-    public ArrayList<Double> getInitialStateVector() {
-        return initialStateVector;
     }
 
 }
