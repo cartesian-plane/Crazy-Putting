@@ -11,6 +11,9 @@ public class GVec4 implements Vec {
         this.timeStep = 0.01;
     }
 
+    public GVec4() {
+
+    }
     public GVec4(String t0, String x0, String y0, String vx0, String vy0, String timeStep) {
         vector.add(Double.parseDouble(t0));
         vector.add(Double.parseDouble(x0));
@@ -31,7 +34,7 @@ public class GVec4 implements Vec {
 
 
     public int size() {
-        return vector.size();
+        return this.vector.size();
     }
 
     public ArrayList<Double> getVector() {
@@ -49,7 +52,6 @@ public class GVec4 implements Vec {
     public void add(double value) {
         this.vector.add(value);
     }
-
 
     public double getT0() {
         return vector.get(0);
@@ -99,4 +101,11 @@ public class GVec4 implements Vec {
         this.timeStep = timeStep;
     }
 
+    public static GVec4 copy(GVec4 vector) {
+        GVec4 copy = new GVec4();
+        for(Double val : vector.getVector()) {
+            copy.add(val);
+        }
+        return copy;
+    }
 }

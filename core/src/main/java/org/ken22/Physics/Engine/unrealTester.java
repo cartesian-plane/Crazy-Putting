@@ -6,16 +6,10 @@ import org.ken22.Physics.Numerical_Integration.NumIntegrationMethod;
 import org.ken22.Physics.Numerical_Integration.RK4;
 import org.ken22.Physics.System.PhysicsSystem;
 import org.ken22.Physics.Vectors.GVec4;
-import org.ken22.input.courseinput.CourseParser;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import net.objecthunter.exp4j.Expression;
-import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.interfaces.IFunc;
 
 public class unrealTester {
 
@@ -23,7 +17,7 @@ public class unrealTester {
 
         RK4 integrator = new RK4();
         basicDerivation differenatiator = new basicDerivation();
-        GVec4 initialState = new GVec4(0.0, 0.0, 0.0, 1.0, 1.0, 0.01);
+        GVec4 initialState = new GVec4(0.0, 0.0, 0.0, 1.0, 1.0, 0.05);
         File coursejson = new File("project-1-2/assets/input/golf-course.json");
         testRun("unrealTest1", coursejson, initialState, differenatiator, integrator);
     }
@@ -34,8 +28,9 @@ public class unrealTester {
         unrealEngine engine = new unrealEngine(system, integrator, differentiator);
         engine.run();
 
+
         ArrayList<GVec4> vectors = engine.getStateVectors();;
-        String filePath = "/Users/leo/Desktop/Y1/Semester 2/Project 2/Matlab/" + name + ".csv";
+        String filePath = "project-1-2/assets/" + name + ".csv";
 
         try (
             FileWriter csvWriter = new FileWriter(filePath)) {
