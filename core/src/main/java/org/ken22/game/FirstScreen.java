@@ -26,7 +26,7 @@ public class FirstScreen implements Screen {
     private Environment environment;
     private HeightMapTerrain heightMapTerrain;
     private Terrain terrain;
-    private Pixmap data = new Pixmap(Gdx.files.internal("heightmaps/heightmap.png"));
+    private Pixmap data = new Pixmap(Gdx.files.internal("heightmaps/pillowmap.png"));
     private Renderable ground;
     // instance
     @Override
@@ -37,7 +37,7 @@ public class FirstScreen implements Screen {
         cam.position.set(10f, 10f, 10f);
         cam.lookAt(0,0,0);
         cam.near = 1f;
-        cam.far = 300f;
+        cam.far = 1000f;
         cam.update();
 
         camController = new CameraInputController(cam);
