@@ -2,7 +2,6 @@ package org.ken22.Physics.System;
 
 import org.ken22.Physics.Vectors.GVec4;
 import org.ken22.input.courseinput.CourseParser;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +22,7 @@ public class PhysicsSystem {
     public PhysicsSystem(GVec4 initialStateVector, File JSonfile) {
         this.timeStep = initialStateVector.getTimeStep();
         this.initialState = initialStateVector;
-        CourseParser parser = new CourseParser(new File("project-1-2/assets/input/golf-course.json"));
+        CourseParser parser = new CourseParser(JSonfile);
         this.vars = parser.getVariables();
         this.terrain = parser.getExpression();
         this.course = parser.getCourse();

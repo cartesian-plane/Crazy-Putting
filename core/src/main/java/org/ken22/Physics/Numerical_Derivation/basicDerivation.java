@@ -4,11 +4,13 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.Physics.Vectors.GVec4;
 import org.ken22.interfaces.IFunc;
+import org.ken22.Physics.Numerical_Derivation.NumDerivationMethod;
 
 import java.util.ArrayList;
 
-public class basicDerivation {
-
+public class basicDerivation implements NumDerivationMethod {
+    public basicDerivation () {
+    }
     public void gradients(GVec4 stateVector, Expression terrain, double timeStep) {
 
         ArrayList<Double> coords = new ArrayList<Double>(); // {x,y}
@@ -67,6 +69,7 @@ public class basicDerivation {
 
         //With respect to y
         double delY = stateVector.get(4) * timeStep;
+
         terrain
             .setVariable("x", coords.get(0))
             .setVariable("y", coords.get(1)+delY);
@@ -76,6 +79,5 @@ public class basicDerivation {
 
         stateVector.add(dhdx);
         stateVector.add(dhdy);
-
     }
 }

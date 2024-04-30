@@ -31,7 +31,9 @@ public class unrealEngine {
             myMath.pythagoras(vars.get(5), vars.get(6)) ));
     private IFunc<Double, Double> ay_s_gr = (vars) ->
         ( -1*this.g*(vars.get(6)+this.sf_gr*vars.get(6) /
-            myMath.pythagoras(vars.get(5), vars.get(6))));;
+            myMath.pythagoras(vars.get(5), vars.get(6))));
+
+
     private IFunc<Double, Double> ax_k_sa = (vars) ->
         ( -1*this.g*(vars.get(5)+this.kf_sa*vars.get(3) /
             myMath.pythagoras(vars.get(3), vars.get(4)) ));
@@ -74,16 +76,28 @@ public class unrealEngine {
         this.stateVectors.add(initialState);
     }
 
-    public void solve() {
+    public Expression getTerrain() {
+        return terrain;
+    }
+
+    public GVec4 getInitialState() {
+        return initialState;
+    }
+
+    public ArrayList<GVec4> getStateVectors() {
+        return stateVectors;
+    }
+
+    public void run() {
 
         GVec4 current = initialState;
         boolean atRest = false;
 
-        //do not allow velocity above maxspeed threshold
+        //do not allow initial velocity above threshold
         current.set(3, Math.min(current.get(3), this.maxspeed));
         current.set(4, Math.min(current.get(4), this.maxspeed));
 
-        while(!atRest) {
+        while(!atRest) { //stop when target is reached
 
             //calculates partial derivatives and adds them to current vector
             differentiator.gradients(current, this.terrain, this.timeStep);
@@ -91,10 +105,8 @@ public class unrealEngine {
             //Check if on grass or sand
 
             //GVec4 stateVector, double timeStep, IFunc<Double, Double> funcx, IFunc<Double, Double> funcy, Expression height, NumDerivationMethod differentiator
-
-            if(current.get(3) < 0.05 & current.get(4) < 0.05) { //speed gets too low, 0.05 is threshold
-
-                if(current.get(5) < 0.01 & current.get(6) < 0.01) { //flat surface
+            if(current.get(3) < 0.05 && current.get(4) < 0.05) { //speed gets too low, 0.05 is threshold
+                if(current.get(5) < 0.05 && current.get(6) < 0.05) { //flat surface
                     atRest = true;
                     integrator.execute(current, this.timeStep, ax_k_gr, ay_k_gr, this.terrain, this.differentiator);
                     //Is it possible to simply break?
@@ -112,13 +124,16 @@ public class unrealEngine {
                 }
             }
 
-            else {
-                integrator.execute(current, this.timeStep, ax_k_sa, ay_k_sa, this.terrain, this.differentiator);
+            else { // ball is moving
+                integrator.execute(current, this.timeStep, ax_k_gr, ay_k_gr, this.terrain, this.differentiator);
             }
 
             //Don't allow to go over max speed
             current.set(3, Math.min(current.get(3), this.maxspeed));
             current.set(4, Math.min(current.get(4), this.maxspeed));
+
+            //Add height only for testing, remove later
+            current.add(this.terrain.setVariable("x", current.get(1)).setVariable("y", current.get(2)).evaluate());
 
             //Collisions? Save for later
             //Think about angle of bounce and conservation of momentum
@@ -126,6 +141,9 @@ public class unrealEngine {
             stateVectors.add(current);
         }
 
+        this.initialState = new GVec4(this.timeStep);
+        this.initialState.add(stateVectors.get(stateVectors.size()-1).get(1));
+        this.initialState.add(stateVectors.get(stateVectors.size()-1).get(2));
         //Store the last position which is going to be the next starting position
         //Allow the user to choose the next starting velocities
     }

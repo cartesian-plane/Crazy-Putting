@@ -7,6 +7,10 @@ public class GVec4 implements Vec {
     ArrayList<Double> vector = new ArrayList<Double>();
     double timeStep;
 
+    public GVec4(double timeStep) {
+        this.timeStep = 0.01;
+    }
+
     public GVec4(String t0, String x0, String y0, String vx0, String vy0, String timeStep) {
         vector.add(Double.parseDouble(t0));
         vector.add(Double.parseDouble(x0));
@@ -24,6 +28,7 @@ public class GVec4 implements Vec {
         vector.add(vy0);
         this.timeStep = timeStep;
     }
+
 
     public int size() {
         return vector.size();

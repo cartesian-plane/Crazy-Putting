@@ -11,10 +11,6 @@ import java.util.ArrayList;
 
 public class RK4 implements NumIntegrationMethod {
 
-    public RK4(GVec4 stateVector, double timeStep, IFunc<Double, Double> funcx, IFunc<Double, Double> funcy) {
-
-    }
-
     public GVec4 execute(GVec4 stateVector, double timeStep, IFunc<Double, Double> funcx, IFunc<Double, Double> funcy, Expression terrain, NumDerivationMethod differentiator) {
 
         ArrayList<Double> initial = stateVector.getVector();

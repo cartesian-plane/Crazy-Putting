@@ -22,7 +22,6 @@ public class PhysicsEngine {
     private ArrayList<Double> initialState = new ArrayList<Double>(); // (t,x,y,vx, vy, gradX, gradY), gradX and gradY for initial state are calculated in the loop
     private ArrayList<ArrayList<Double>> stateVectors = new ArrayList<ArrayList<Double>>(); // (t,x,y,vx, vy, gradX, gradY)
 
-
     public String getName() {
         return name;
     }
