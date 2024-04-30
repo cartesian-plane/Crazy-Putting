@@ -31,7 +31,7 @@ public class PhysicsTester {
         engine.solve();
         ArrayList<ArrayList<Double>> vectors = engine.getStateVectors();;
 
-        String filePath = "/Users/leo/Desktop/Y1/Semester 2/Project 2/Matlab/" + engine.getName() + ".csv";
+        String filePath = "assets/" + engine.getName() + ".csv";
 
         try (
             FileWriter csvWriter = new FileWriter(filePath)) {
