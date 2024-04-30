@@ -3,16 +3,16 @@ package org.ken22.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.utils.ScreenUtils;
+import org.ken22.terrains.HeightMapTerrain;
+import org.ken22.terrains.Terrain;
 
 /** First screen of the application. Displayed after the application is created. */
 public class FirstScreen implements Screen {
@@ -24,7 +24,11 @@ public class FirstScreen implements Screen {
     private PerspectiveCamera cam;
     private CameraInputController camController;
     private Environment environment;
-
+    private HeightMapTerrain heightMapTerrain;
+    private Terrain terrain;
+    private Pixmap data = new Pixmap(Gdx.files.internal("heightmaps/heightmap.png"));
+    private Renderable ground;
+    // instance
     @Override
     public void show() {
         // Prepare your screen here.
@@ -50,10 +54,20 @@ public class FirstScreen implements Screen {
         );
         instance = new ModelInstance(model);
 
+        HeightMapTerrain heightMapTerrain = new HeightMapTerrain(data, 60f);
+        ground = new Renderable();
+        ground.environment = environment;
+        ground.meshPart.mesh = heightMapTerrain.getHeightField().mesh;
+        ground.meshPart.primitiveType = GL20.GL_TRIANGLES;
+        ground.meshPart.offset = 0;
+        ground.meshPart.size = heightMapTerrain.getHeightField().mesh.getNumIndices();
+        ground.meshPart.update();
+        ground.material = new Material();
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+
 
 
     }
@@ -68,6 +82,7 @@ public class FirstScreen implements Screen {
 
         modelBatch.begin(cam);
         modelBatch.render(instance, environment);
+        modelBatch.render(ground);
         modelBatch.end();
 
     }
