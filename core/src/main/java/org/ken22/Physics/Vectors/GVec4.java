@@ -108,4 +108,9 @@ public class GVec4 implements Vec {
         }
         return copy;
     }
+
+    public void skim() {
+        this.vector.removeLast();
+    }
+
 }

@@ -111,7 +111,7 @@ public class unrealEngine {
     public void run() {
 
         GVec4 currentState = copy(initialState); // (t,x,y,vx,vy)
-        assert currentState.size() == 5;
+
         boolean atRest = false;
 
         //Do not allow initial velocity above threshold
@@ -119,7 +119,9 @@ public class unrealEngine {
         currentState.set(4, Math.min(currentState.get(4), this.maxspeed));
 
         while(!atRest) { //stop when target is reached
+            System.out.println(currentState.getVector().toString()+ " ------ ");
 
+            assert (currentState.size() == 5);
             //calculates partial derivatives and adds them to currentState vector
             differentiator.gradients(currentState, this.terrain, this.timeStep); // (t,x,y,vx, vy, gradX, gradY)
 
@@ -131,13 +133,11 @@ public class unrealEngine {
                     atRest = true;
                     integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                 }
-
                 else { //inclined surface
                     if(myMath.pythagoras(currentState.get(5), currentState.get(6)) < sf_gr) { //ball stops
                         atRest = true;
                         integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                     }
-
                     else { //ball keeps rolling
                         integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                     }
@@ -158,8 +158,9 @@ public class unrealEngine {
             //Collisions? Save for later
             //Think about angle of bounce and conservation of momentum
 
-            stateVectors.add(currentState);
-            System.out.println(currentState.getVector().toString()+" ------ ");
+            stateVectors.add(GVec4.copy(currentState));
+            currentState.skim();
+            System.out.println(currentState.getVector().toString()+ " ------ ");
         }
 
         this.initialState = new GVec4(this.timeStep);

@@ -1,6 +1,6 @@
 {
   "name": "Example Golf Course",
-  "courseProfile": "sin((x - y) / 7) + 0.5",
+  "courseProfile": "(sin(x)) * (sin(y))",
   "mass": 0.0459,
   "gravitationalConstant": 9.80665,
   "kineticFrictionGrass": 0.15,
