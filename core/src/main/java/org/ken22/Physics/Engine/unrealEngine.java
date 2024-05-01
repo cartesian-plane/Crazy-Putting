@@ -21,8 +21,7 @@ import static org.ken22.Physics.Vectors.GVec4.copy;
 
 public class unrealEngine {
 
-    // parameter order (t,x,y,vx, vy, gradx, grady, height)
-
+    // Parameter order (t,x,y,vx, vy, gradx, grady, height)
 
     //Grass equations
 
@@ -61,39 +60,51 @@ public class unrealEngine {
         ( -1*this.g*(vars.get(6)+this.sf_sa*vars.get(6) /
             myMath.pythagoras(vars.get(5), vars.get(6))));;
 
-    //Coefficents
+    //Course specific information
+    private Expression terrain; //Parameters are (x,y), passed in constructor
+    private Map<String, Double> vars;
+    private GolfCourse courseInfo;
+    private String name;
     private double kf_gr;
     private double sf_gr;
     private double g;
     private double sf_sa;
     private double kf_sa;
     private double maxspeed;
-    //System
-    private Map<String, Double> vars;
-    private GolfCourse courseInfo;
-    private String name;
+
+    //Math
     private double timeStep;
     private NumIntegrationMethod integrator;
     private NumDerivationMethod differentiator;
-    private Expression terrain; //Parameters are (x,y), passed in constructor
     private GVec4 initialState; // (t,x,y,vx, vy)
     private ArrayList<GVec4> stateVectors = new ArrayList<GVec4>(); // (t,x,y,vx, vy, gradX, gradY)
+
+    //Game and graphics
+
+    int seconds = 0;
     public unrealEngine(PhysicsSystem system, NumIntegrationMethod integrator, NumDerivationMethod differentiator) {
-        this.vars = system.getMap();
-        this.timeStep = system.getTimeStep();
-        this.courseInfo = system.getCourse();
-        this.integrator = integrator;
-        this.differentiator = differentiator;
-        this.terrain = system.getTerrain();
-        this.maxspeed = system.getCourse().getMaximumSpeed();
+        //Initial conditions
         this.initialState = system.getInitialState();
         this.stateVectors.add(initialState);
+
+        //Math information
+        this.timeStep = system.getTimeStep();
+        this.integrator = integrator;
+        this.differentiator = differentiator;
+        this.vars = system.getMap();
+
+
+        //Course info
+        this.courseInfo = system.getCourse();
         kf_gr = this.courseInfo.getKineticFrictionGrass();
         sf_gr = this.courseInfo.getStaticFrictionGrass();
         g = this.courseInfo.getGravitationalConstant();
         sf_sa = this.courseInfo.getKineticFrictionSand();
         kf_sa = this.courseInfo.getStaticFrictionSand();
-        System.out.println("kf_grass: " + kf_gr + ", sf_grass: " + sf_gr + ", g: " + g + ", sf_sand: " + sf_sa + ", kf_sand: " + kf_sa + ", maxspeed: " + maxspeed);
+        this.terrain = system.getTerrain();
+        this.maxspeed = courseInfo.getMaximumSpeed();
+
+//      System.out.println("kf_grass: " + kf_gr + ", sf_grass: " + sf_gr + ", g: " + g + ", sf_sand: " + sf_sa + ", kf_sand: " + kf_sa + ", maxspeed: " + maxspeed);
     }
 
     public Expression getTerrain() {
@@ -166,7 +177,90 @@ public class unrealEngine {
         this.initialState = new GVec4(this.timeStep);
         this.initialState.add(stateVectors.get(stateVectors.size()-1).get(1));
         this.initialState.add(stateVectors.get(stateVectors.size()-1).get(2));
+        this.stateVectors = null;
         //Store the last position which is going to be the next starting position
+        //Remove completed trajectory from memory
         //Allow the user to choose the next starting velocities
+    }
+
+    public void nextFrame() {
+
+        GVec4 currentState = copy(this.stateVectors.getLast()); // (t,x,y,vx,vy)
+
+        boolean atRest = false;
+
+        int frames = 0;
+        this.seconds ++;
+
+        //Do not allow initial velocity above threshold
+        currentState.set(3, Math.min(currentState.get(3), this.maxspeed));
+        currentState.set(4, Math.min(currentState.get(4), this.maxspeed));
+
+        while(!atRest || frames >= 60) { //stop when target is reached
+//            System.out.println(currentState.getVector().toString()+ " ------ ");
+
+            frames++;
+
+            assert (currentState.size() == 5);
+            //calculates partial derivatives and adds them to currentState vector
+            differentiator.gradients(currentState, this.terrain, this.timeStep); // (t,x,y,vx, vy, gradX, gradY)
+
+            //Check if on grass or sand
+
+            //GVec4 stateVector, double timeStep, IFunc<Double, Double> funcx, IFunc<Double, Double> funcy, Expression height, NumDerivationMethod differentiator
+            if(currentState.get(3) < Math.abs(0.05) && currentState.get(4) < Math.abs(0.05)) { //speed gets too low, 0.05 is threshold
+                if(currentState.get(5) < Math.abs(0.05) && currentState.get(6) < Math.abs(0.05)) { //flat surface
+                    atRest = true;
+                    integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+                }
+                else { //inclined surface
+                    if(myMath.pythagoras(currentState.get(5), currentState.get(6)) < sf_gr) { //ball stops
+                        atRest = true;
+                        integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+                    }
+                    else { //ball keeps rolling
+                        integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+                    }
+                }
+            }
+
+            else { // ball is moving
+                integrator.execute(currentState, this.timeStep, ax_k_gr, ay_k_gr, this.terrain, this.differentiator);
+            }
+
+            //Don't allow to go over max speed
+            currentState.set(3, Math.min(currentState.get(3), this.maxspeed));
+            currentState.set(4, Math.min(currentState.get(4), this.maxspeed));
+
+            //Add height only for testing, remove later
+            currentState.add(this.terrain.setVariable("x", currentState.get(1)).setVariable("y", currentState.get(2)).evaluate());
+
+            //Collisions? Save for later
+            //Think about angle of bounce and conservation of momentum
+            stateVectors.add(GVec4.copy(currentState));
+
+            currentState.skim(); //remove height from the vector since it's unnecessary
+//            System.out.println(currentState.getVector().toString()+ " ------ ");
+        }
+
+        //Use a queue to store the statevectors so that we only store 30 frames at any given time
+        //Instead of deleting every 5 seconds
+        if (this.seconds == 5) {
+            GVec4 last = copy(stateVectors.getLast());
+            this.initialState = last;
+            this.stateVectors = new ArrayList<GVec4>();
+            this.stateVectors.add(initialState);
+        }
+
+        else if (atRest) {
+            this.initialState = new GVec4(this.timeStep);
+            this.initialState.add(stateVectors.get(stateVectors.size()-1).get(1));
+            this.initialState.add(stateVectors.get(stateVectors.size()-1).get(2));
+            //Store the last position which is going to be the next starting position
+            //Allow the user to choose the next starting velocities
+        }
+
+
+
     }
 }
