@@ -1,6 +1,7 @@
 package org.ken22.terrains;
 
 import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.utils.MathUtils;
 
 import java.awt.image.BufferedImage;
@@ -14,6 +15,19 @@ import javax.imageio.ImageIO;
  * This allows for dynamic terrain generation.
  */
 public class HeightMapGenerator {
+    public static void main(String[] args) {
+        String heightFunction = "0.4*(0.9 - e^(-(x^2 + y^2) / 8))";
+
+        Expression e = new ExpressionBuilder(heightFunction)
+            .variables("x", "y")
+            .build()
+            .setVariable("x", -1)
+            .setVariable("y", -1);
+
+        System.out.println(e.evaluate());
+
+        generateHeightMap(e, "expheightmap");
+    }
     private static final int SIZE = 64;
     private static final double RANGE = 5.0;
     private static final String OUTPUT_PATH = "assets/heightmaps/";
