@@ -126,7 +126,7 @@ public class FirstScreen implements Screen {
             sceneManager.removeScene(terrainScene);
         }
 
-        terrain = new HeightMapTerrain(new Pixmap(Gdx.files.internal("heightmaps/expheightmap.png")), 2f);
+        terrain = new HeightMapTerrain(new Pixmap(Gdx.files.internal("heightmaps/expheightmap.png")), 20f);
 
         System.out.println(terrain.getHeightField().getPositionAt(new Vector3(0, 1, 0), 0, 0));
         terrainScene = new Scene(terrain.getModelInstance());
