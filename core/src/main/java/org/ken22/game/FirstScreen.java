@@ -148,7 +148,11 @@ public class FirstScreen implements Screen {
 
         cameraController.update();
 //        scene.modelInstance.transform.rotate(Vector3.Y, 10f * deltaTime);
-        Vector3 movementVector = new Vector3(0.01f / 2, 0, 0.01f / 2);
+
+        // arbitrary scaling factor
+        // 1 game unit = 1m (meter)
+        float scalingFactor = 9.560222f;
+        Vector3 movementVector = new Vector3(0.016f / scalingFactor, 0, 0);
         scene.modelInstance.transform.translate(movementVector);
 
 
@@ -166,17 +170,21 @@ public class FirstScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         sceneManager.update(deltaTime);
         sceneManager.render();
+//
+//        shapeRenderer.setProjectionMatrix(camera.combined);
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//        shapeRenderer.setColor(Color.RED);
+//        for (int i = 0; i < positions.size() - 1; i++) {
+//            shapeRenderer.line(positions.get(i), positions.get(i + 1));
+//        }
+//        shapeRenderer.end();
 
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.RED);
-        for (int i = 0; i < positions.size() - 1; i++) {
-            shapeRenderer.line(positions.get(i), positions.get(i + 1));
+
+        System.out.println(time);
+        if (sceneAssetPosition.x >= 100) {
+            System.out.println("object reached x: " + sceneAssetPosition.x);
+            throw new RuntimeException();
         }
-        shapeRenderer.end();
-
-        System.out.println("FPS: " + Gdx.graphics.getFramesPerSecond());
-
 
 
     }
