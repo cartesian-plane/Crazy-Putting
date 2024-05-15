@@ -1,11 +1,11 @@
-package org.ken22.odesolver.testing;
+package org.ken22.Physics.odesolver.testing;
 
+import org.ken22.Physics.odesolver.methods.EulerMethod;
+import org.ken22.Physics.odesolver.methods.RungeKutta4;
 import org.ken22.interfaces.IFunc;
 import org.ken22.interfaces.ODESolution;
 import org.ken22.interfaces.ODESystem;
-import org.ken22.odesolver.ODESolver;
-import org.ken22.odesolver.methods.EulerMethod;
-import org.ken22.odesolver.methods.RungeKutta4;
+import org.ken22.Physics.odesolver.ODESolver;
 
 import java.io.FileWriter;
 import java.io.IOException;

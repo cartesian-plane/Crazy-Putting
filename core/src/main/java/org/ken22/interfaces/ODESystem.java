@@ -44,9 +44,9 @@ public class ODESystem {
     @Override
     public String toString() {
         return "ODESystem{" +
-                "initialStateVector=" + initialStateVector +
-                // ", functions=" + functions +
-                '}';
+            "initialStateVector=" + initialStateVector +
+            // ", functions=" + functions +
+            '}';
     }
 
     public ArrayList<Double> getInitialStateVector() {

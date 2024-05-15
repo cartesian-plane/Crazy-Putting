@@ -1,6 +1,6 @@
 package org.ken22.interfaces;
 
-import org.ken22.odesolver.methods.SolverMethodType;
+import org.ken22.Physics.odesolver.methods.SolverMethodType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
