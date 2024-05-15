@@ -21,7 +21,7 @@ public class CourseParser {
 
             GolfCourse course = objectMapper.readValue(jsonFile, GolfCourse.class);
 
-            System.out.println("Mass: " + course.getMass());
+            System.out.println("Mass: " + course.mass());
 
             Expression expression = new ExpressionBuilder(terrain)
                 .variables("x", "y")

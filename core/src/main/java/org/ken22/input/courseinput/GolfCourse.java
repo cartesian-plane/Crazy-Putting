@@ -2,42 +2,15 @@ package org.ken22.input.courseinput;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class GolfCourse {
-    @JsonProperty("name")
-    private String name;
-
-    @JsonProperty("courseProfile")
-    private String courseProfile;
-
-    @JsonProperty("mass")
-    private double mass;
-
-    @JsonProperty("gravitationalConstant")
-    private double gravitationalConstant;
-
-    @JsonProperty("kineticFrictionGrass")
-    private double kineticFrictionGrass;
-
-    @JsonProperty("staticFrictionGrass")
-    private double staticFrictionGrass;
-
-    @JsonProperty("kineticFrictionSand")
-    private double kineticFrictionSand;
-
-    @JsonProperty("staticFrictionSand")
-    private double staticFrictionSand;
-
-    @JsonProperty("maximumSpeed")
-    private double maximumSpeed;
-
-    @JsonProperty("targetRadius")
-    private double targetRadius;
-
-    public double getMass() {
-        return mass;
-    }
-
-    public String getCourseProfile() {
-        return courseProfile;
-    }
-}
+public record GolfCourse(
+    @JsonProperty("name") String name,
+    @JsonProperty("courseProfile") String courseProfile,
+    @JsonProperty("mass") double mass,
+    @JsonProperty("gravitationalConstant") double gravitationalConstant,
+    @JsonProperty("kineticFrictionGrass") double kineticFrictionGrass,
+    @JsonProperty("staticFrictionGrass") double staticFrictionGrass,
+    @JsonProperty("kineticFrictionSand") double kineticFrictionSand,
+    @JsonProperty("staticFrictionSand") double staticFrictionSand,
+    @JsonProperty("maximumSpeed") double maximumSpeed,
+    @JsonProperty("targetRadius") double targetRadius
+) {}
