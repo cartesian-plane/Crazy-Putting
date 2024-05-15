@@ -41,8 +41,8 @@ public class basicDerivation implements NumDerivationMethod {
 
         double dhdy = (height_y - height)/delY;
 
-        stateVector.add(dhdx);
-        stateVector.add(dhdy);
+        stateVector.set(5, dhdx);
+        stateVector.set(6, dhdy);
     }
 
     public void gradients(GVec4 stateVector, Expression terrain, double timeStep) {
@@ -74,8 +74,8 @@ public class basicDerivation implements NumDerivationMethod {
 
         double dhdy = (height_y - height)/timeStep;
 
-        stateVector.add(dhdx);
-        stateVector.add(dhdy);
+        stateVector.set(5, dhdx);
+        stateVector.set(6, dhdy);
     }
 
     public void gradients(ArrayList<Double> stateVector, Expression terrain, double timeStep) {
@@ -107,7 +107,7 @@ public class basicDerivation implements NumDerivationMethod {
 
         double dhdy = (height_y - height)/timeStep;
 
-        stateVector.add(dhdx);
-        stateVector.add(dhdy);
+        stateVector.set(5, dhdx);
+        stateVector.set(6, dhdy);
     }
 }

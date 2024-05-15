@@ -36,6 +36,12 @@ public class GolfCourse {
     @JsonProperty("targetRadius")
     private double targetRadius;
 
+    @JsonProperty("targetXcoord")
+    private double targetX;
+
+    @JsonProperty("targetYcoord")
+    private double targetY;
+
     public double getMass() {
         return this.mass;
     }
@@ -77,4 +83,12 @@ public class GolfCourse {
     }
 
     public double getTerrainBounds() {return this.range;}
+
+    public double getTargetX() {
+        return targetX;
+    }
+
+    public double getTargetY() {
+        return targetY;
+    }
 }

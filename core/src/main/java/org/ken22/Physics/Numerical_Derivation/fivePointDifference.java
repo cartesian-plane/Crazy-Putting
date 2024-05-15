@@ -23,8 +23,8 @@ public class fivePointDifference implements NumDerivationMethod {
         double dhdx = centredStencilX(terrain, timeStep, coords);
         double dhdy = centredStencilY(terrain, timeStep, coords);
 
-        stateVector.add(dhdx);
-        stateVector.add(dhdy);
+        stateVector.set(5, dhdx);
+        stateVector.set(6, dhdy);
     }
 
     public void gradients(ArrayList<Double> stateVector, Expression terrain, double timeStep) {
@@ -43,8 +43,8 @@ public class fivePointDifference implements NumDerivationMethod {
         double dhdx = centredStencilX(terrain, timeStep, coords);
         double dhdy = centredStencilY(terrain, timeStep, coords);
 
-        stateVector.add(dhdx);
-        stateVector.add(dhdy);
+        stateVector.set(5, dhdx);
+        stateVector.add(6, dhdy);
     }
 
     public double centredStencilX(Expression terrain, double timeStep, ArrayList<Double> coords) {
