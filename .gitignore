@@ -15,9 +15,9 @@ gradle-app.setting
 /shared/build/
 
 ## Ignore the gradle build files so that each user can configure their own:
-build.gradle
-core/build.gradle
-settings.gradle
+/build.gradle
+/core/build.gradle
+/settings.gradle
 
 ## Java:
 *.class
