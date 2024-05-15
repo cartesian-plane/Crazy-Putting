@@ -5,7 +5,7 @@ package org.ken22.ui;
 import org.ken22.controller.ApplicationController;
 import org.ken22.input.odeinput.MathLexer;
 import org.ken22.interfaces.UserInput;
-import org.ken22.odesolver.methods.SolverMethodType;
+import org.ken22.Physics.odesolver.methods.SolverMethodType;
 
 import javax.swing.*;
 import javax.swing.border.Border;

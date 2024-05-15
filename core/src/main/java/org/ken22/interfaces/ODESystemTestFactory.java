@@ -1,12 +1,5 @@
 package org.ken22.interfaces;
 
-import org.ken22.odesolver.ODESolver;
-import org.ken22.odesolver.methods.ODESolverMethod;
-import org.ken22.odesolver.methods.RungeKutta2;
-import org.ken22.odesolver.methods.RungeKutta4;
-import org.ken22.odesolver.methods.EulerMethod;
-
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.io.IOException;
