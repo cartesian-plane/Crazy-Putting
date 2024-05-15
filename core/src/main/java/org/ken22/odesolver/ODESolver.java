@@ -1,7 +1,7 @@
-package org.ken22.Physics.odesolver;
+package org.ken22.odesolver;
 
 import org.ken22.interfaces.ODESolution;
-import org.ken22.Physics.odesolver.methods.ODESolverMethod;
+import org.ken22.odesolver.methods.ODESolverMethod;
 
 /**
  * Context class for the Strategy pattern.

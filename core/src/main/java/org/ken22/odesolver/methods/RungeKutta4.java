@@ -1,4 +1,4 @@
-package org.ken22.Physics.odesolver.methods;
+package org.ken22.odesolver.methods;
 
 import org.ken22.interfaces.IFunc;
 import org.ken22.interfaces.ODESolution;
@@ -25,7 +25,7 @@ public class RungeKutta4 extends ODESolverMethod {
         ArrayList<ArrayList<Double>> stateVectors = new ArrayList<>();
         ODESolution solution = new ODESolution(time, stateVectors);
         double t = startTime;
-        ArrayList<Double> stateVector = system1.getInitialStateVector();
+        ArrayList<Double> stateVector = system.getInitialStateVector();
         time.add(t);
         stateVectors.add(stateVector);
 
@@ -42,7 +42,7 @@ public class RungeKutta4 extends ODESolverMethod {
 
             int j1 = 0;
             for (Double y : stateVector) {
-                IFunc<Double, Double> function2 = this.system1.getFunctions().get(j1);
+                IFunc<Double, Double> function2 = this.system.getFunctions().get(j1);
                 double k1_increment = stepSize * function2.apply(stateVector);
                 k1.add(k1_increment);
 //                System.out.println("k1: " + k1_increment);
@@ -59,7 +59,7 @@ public class RungeKutta4 extends ODESolverMethod {
 
             int j2 = 0;
             for (Double y : stateVector) {
-                IFunc<Double, Double> function2 = this.system1.getFunctions().get(j2);
+                IFunc<Double, Double> function2 = this.system.getFunctions().get(j2);
                 double newY = stepSize * function2.apply(k1_half);
                 k2.add(newY);
                 j2++;
@@ -74,7 +74,7 @@ public class RungeKutta4 extends ODESolverMethod {
 
             int j3 = 0;
             for (Double y : stateVector) {
-                IFunc<Double, Double> function2 = this.system1.getFunctions().get(j3);
+                IFunc<Double, Double> function2 = this.system.getFunctions().get(j3);
                 double newY = stepSize * function2.apply(k2_half);
                 k3.add(newY);
                 j3++;
@@ -89,7 +89,7 @@ public class RungeKutta4 extends ODESolverMethod {
 
             int j4 = 0;
             for (Double y : stateVector) {
-                IFunc<Double, Double> function2 = this.system1.getFunctions().get(j4);
+                IFunc<Double, Double> function2 = this.system.getFunctions().get(j4);
                 double newY = stepSize * function2.apply(k3_vector);
                 k4.add(newY);
                 j4++;

@@ -11,8 +11,7 @@ rectangle "ODE Solvers" as ODES {
 rectangle "Vectors" as V {
     interface Vec {
         +state : double[]
-        +getState() : double[]
-        +getAt(i : int) : double
+        +get(i : int) : double
         +set(i : int, value : double) : void
         +size() : int
     }

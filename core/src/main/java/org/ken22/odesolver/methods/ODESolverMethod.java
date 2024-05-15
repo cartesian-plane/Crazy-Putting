@@ -1,4 +1,4 @@
-package org.ken22.Physics.odesolver.methods;
+package org.ken22.odesolver.methods;
 
 import org.ken22.interfaces.ODESolution;
 import org.ken22.interfaces.ODESystem;
@@ -9,7 +9,7 @@ import org.ken22.interfaces.ODESystem;
  */
 public abstract class ODESolverMethod {
 
-    protected ODESystem system1;
+    protected ODESystem system;
     protected double stepSize;
     protected double endTime;
     protected double startTime;
@@ -23,7 +23,7 @@ public abstract class ODESolverMethod {
      * @param endTime the end point of the interval to solve, namely: [initialValue, endPoint]
      */
     public ODESolverMethod(ODESystem system, double stepSize, double startTime, double endTime) {
-        this.system1 = system;
+        this.system = system;
         this.stepSize = stepSize;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -37,5 +37,4 @@ public abstract class ODESolverMethod {
      * @return {@link  ODESolution} object containing the solution to the system of ODEs
      */
     public abstract ODESolution solve();
-
 }
