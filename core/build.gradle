@@ -1,26 +1,12 @@
-plugins {
-    id 'java'
-    id 'application'
-}
-
-repositories {
-    mavenCentral()
-}
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+eclipse.project.name = appName + '-core'
 
 dependencies {
-    api "com.badlogicgames.gdx:gdx:$gdxVersion"
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
-    implementation 'net.objecthunter:exp4j:0.4.8'
-    api "com.github.mgsx-dev.gdx-gltf:gltf:2.1.0"
-}
-
-application {
-    mainClassName = 'org.ken22.controller.ApplicationController2' // Specify your actual main class here
-}
-
-sourceCompatibility = '17'
-targetCompatibility = '17'
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+  api "com.badlogicgames.gdx:gdx:$gdxVersion"
+  // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+  implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.1'
+  // https://mvnrepository.com/artifact/net.objecthunter/exp4j
+  implementation group: 'net.objecthunter', name: 'exp4j', version: '0.4.8'
+  // https://github.com/mgsx-dev/gdx-gltf
+  api "com.github.mgsx-dev.gdx-gltf:gltf:2.1.0"
 }
