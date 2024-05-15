@@ -2,26 +2,20 @@ package org.ken22.Physics.Engine;
 
 import net.objecthunter.exp4j.Expression;
 import org.ken22.Physics.Numerical_Derivation.NumDerivationMethod;
-import org.ken22.Physics.Numerical_Derivation.basicDerivation;
 import org.ken22.Physics.Numerical_Integration.NumIntegrationMethod;
 import org.ken22.Physics.System.PhysicsSystem;
 import org.ken22.Physics.Vectors.GVec4;
 import org.ken22.Physics.mathTools.myMath;
-import org.ken22.Physics.odesolver.ODESolver;
-import org.ken22.Physics.odesolver.methods.ODESolverMethod;
-import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.interfaces.IFunc;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static org.ken22.Physics.Vectors.GVec4.copy;
 
 public class unrealEngine {
-
     // Parameter order (t,x,y,vx, vy, gradx, grady, height)
+
 
     //Grass equations
 
@@ -32,7 +26,6 @@ public class unrealEngine {
     private IFunc<Double, Double> ay_k_gr = (vars) ->
         ( -1*this.g*(vars.get(6)+this.kf_gr*vars.get(4) /
             myMath.pythagoras(vars.get(5), vars.get(6)) ));
-
     //Static
     private IFunc<Double, Double> ax_s_gr = (vars) ->
         ( -1*this.g*(vars.get(5)+this.sf_gr*vars.get(5) /
@@ -51,7 +44,6 @@ public class unrealEngine {
     private IFunc<Double, Double> ay_k_sa = (vars) ->
         ( -1*this.g*(vars.get(6)+this.kf_sa*vars.get(4) /
             myMath.pythagoras(vars.get(3), vars.get(4)) ));
-
     //Static
     private IFunc<Double, Double> ax_s_sa = (vars) ->
         ( -1*this.g*(vars.get(5)+this.sf_sa*vars.get(5) /
@@ -71,7 +63,7 @@ public class unrealEngine {
     private double sf_sa;
     private double kf_sa;
     private double maxspeed;
-
+    private double range;
     //Math
     private double timeStep;
     private NumIntegrationMethod integrator;
@@ -93,7 +85,6 @@ public class unrealEngine {
         this.differentiator = differentiator;
         this.vars = system.getMap();
 
-
         //Course info
         this.courseInfo = system.getCourse();
         kf_gr = this.courseInfo.getKineticFrictionGrass();
@@ -103,6 +94,7 @@ public class unrealEngine {
         kf_sa = this.courseInfo.getStaticFrictionSand();
         this.terrain = system.getTerrain();
         this.maxspeed = courseInfo.getMaximumSpeed();
+        this.range = courseInfo.getTerrainBounds();
 
 //      System.out.println("kf_grass: " + kf_gr + ", sf_grass: " + sf_gr + ", g: " + g + ", sf_sand: " + sf_sa + ", kf_sand: " + kf_sa + ", maxspeed: " + maxspeed);
     }
@@ -120,9 +112,7 @@ public class unrealEngine {
     }
 
     public void run() {
-
         GVec4 currentState = copy(initialState); // (t,x,y,vx,vy)
-
         boolean atRest = false;
 
         //Do not allow initial velocity above threshold
@@ -130,11 +120,11 @@ public class unrealEngine {
         currentState.set(4, Math.min(currentState.get(4), this.maxspeed));
 
         while(!atRest) { //stop when target is reached
-            System.out.println(currentState.getVector().toString()+ " ------ ");
+            System.out.println(currentState.getVector().toString() + " ------ ");
 
             assert (currentState.size() == 5);
             //calculates partial derivatives and adds them to currentState vector
-            differentiator.gradients(currentState, this.terrain, this.timeStep); // (t,x,y,vx, vy, gradX, gradY)
+            differentiator.gradients(currentState, this.terrain, this.range); // (t,x,y,vx, vy, gradX, gradY)
 
             //Check if on grass or sand
 
@@ -142,21 +132,21 @@ public class unrealEngine {
             if(currentState.get(3) < Math.abs(0.05) && currentState.get(4) < Math.abs(0.05)) { //speed gets too low, 0.05 is threshold
                 if(currentState.get(5) < Math.abs(0.05) && currentState.get(6) < Math.abs(0.05)) { //flat surface
                     atRest = true;
-                    integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+                    integrator.execute(this.stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                 }
                 else { //inclined surface
                     if(myMath.pythagoras(currentState.get(5), currentState.get(6)) < sf_gr) { //ball stops
                         atRest = true;
-                        integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+                        integrator.execute(this.stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                     }
                     else { //ball keeps rolling
-                        integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+                        integrator.execute(this.stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                     }
                 }
             }
 
             else { // ball is moving
-                integrator.execute(currentState, this.timeStep, ax_k_gr, ay_k_gr, this.terrain, this.differentiator);
+                integrator.execute(stateVectors, this.timeStep, ax_k_gr, ay_k_gr, this.terrain, this.differentiator);
             }
 
             //Don't allow to go over max speed
@@ -178,69 +168,72 @@ public class unrealEngine {
         this.initialState.add(stateVectors.get(stateVectors.size()-1).get(1));
         this.initialState.add(stateVectors.get(stateVectors.size()-1).get(2));
         this.stateVectors = null;
+
         //Store the last position which is going to be the next starting position
         //Remove completed trajectory from memory
         //Allow the user to choose the next starting velocities
     }
 
-    public void nextFrame() {
+    public boolean nextFrame() {
 
-        GVec4 currentState = copy(this.stateVectors.getLast()); // (t,x,y,vx,vy)
+        GVec4 currentState = this.stateVectors.getLast(); // (t,x,y,vx,vy)
 
         boolean atRest = false;
-
         int frames = 0;
-        this.seconds ++;
+        this.seconds++;
 
         //Do not allow initial velocity above threshold
         currentState.set(3, Math.min(currentState.get(3), this.maxspeed));
         currentState.set(4, Math.min(currentState.get(4), this.maxspeed));
 
         while(!atRest || frames >= 60) { //stop when target is reached
-//            System.out.println(currentState.getVector().toString()+ " ------ ");
+//          System.out.println(currentState.getVector().toString()+ " ------ ");
 
             frames++;
-
             assert (currentState.size() == 5);
-            //calculates partial derivatives and adds them to currentState vector
+
+            //Calculates partial derivatives and adds them to currentState vector (in place)
             differentiator.gradients(currentState, this.terrain, this.timeStep); // (t,x,y,vx, vy, gradX, gradY)
 
             //Check if on grass or sand
+
+            GVec4 newState;
 
             //GVec4 stateVector, double timeStep, IFunc<Double, Double> funcx, IFunc<Double, Double> funcy, Expression height, NumDerivationMethod differentiator
             if(currentState.get(3) < Math.abs(0.05) && currentState.get(4) < Math.abs(0.05)) { //speed gets too low, 0.05 is threshold
                 if(currentState.get(5) < Math.abs(0.05) && currentState.get(6) < Math.abs(0.05)) { //flat surface
                     atRest = true;
-                    integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+                    //Creates new stateVector
+                    newState = integrator.execute(stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                 }
                 else { //inclined surface
                     if(myMath.pythagoras(currentState.get(5), currentState.get(6)) < sf_gr) { //ball stops
                         atRest = true;
-                        integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+                        newState = integrator.execute(stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                     }
                     else { //ball keeps rolling
-                        integrator.execute(currentState, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+                        newState = integrator.execute(stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                     }
                 }
             }
 
             else { // ball is moving
-                integrator.execute(currentState, this.timeStep, ax_k_gr, ay_k_gr, this.terrain, this.differentiator);
+                newState = integrator.execute(stateVectors, this.timeStep, ax_k_gr, ay_k_gr, this.terrain, this.differentiator);
             }
 
             //Don't allow to go over max speed
-            currentState.set(3, Math.min(currentState.get(3), this.maxspeed));
-            currentState.set(4, Math.min(currentState.get(4), this.maxspeed));
+            newState.set(3, Math.min(newState.get(3), this.maxspeed));
+            newState.set(4, Math.min(newState.get(4), this.maxspeed));
 
-            //Add height only for testing, remove later
-            currentState.add(this.terrain.setVariable("x", currentState.get(1)).setVariable("y", currentState.get(2)).evaluate());
+            //Calculate height
+            newState.add(this.terrain.setVariable("x", newState.get(1)).setVariable("y", newState.get(2)).evaluate());
 
-            //Collisions? Save for later
-            //Think about angle of bounce and conservation of momentum
-            stateVectors.add(GVec4.copy(currentState));
+            //Check if in water or out of bounds
+            atRest = ((Math.abs(newState.get(1)) > this.range || Math.abs(newState.get(2)) > this.range) || (newState.getLast() < 0));
 
-            currentState.skim(); //remove height from the vector since it's unnecessary
-//            System.out.println(currentState.getVector().toString()+ " ------ ");
+            stateVectors.add(newState);
+            currentState = newState;
+            //          System.out.println(currentState.getVector().toString()+ " ------ ");
         }
 
         //Use a queue to store the statevectors so that we only store 30 frames at any given time
@@ -260,7 +253,6 @@ public class unrealEngine {
             //Allow the user to choose the next starting velocities
         }
 
-
-
+        return atRest;
     }
 }

@@ -32,6 +32,15 @@ public class GVec4 implements Vec {
         this.timeStep = timeStep;
     }
 
+    public GVec4(ArrayList<Double> vector, double timeStep) {
+        this.vector.add(vector.get(0));
+        this.vector.add(vector.get(1));
+        this.vector.add(vector.get(2));
+        this.vector.add(vector.get(3));
+        this.vector.add(vector.get(4));
+        this.timeStep = timeStep;
+    }
+
 
     public int size() {
         return this.vector.size();
@@ -111,6 +120,10 @@ public class GVec4 implements Vec {
 
     public void skim() {
         this.vector.removeLast();
+    }
+
+    public double getLast() {
+        return this.vector.getLast();
     }
 
 }

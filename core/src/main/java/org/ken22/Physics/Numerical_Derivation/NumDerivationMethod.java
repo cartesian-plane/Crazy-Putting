@@ -10,4 +10,5 @@ public interface NumDerivationMethod {
     public void gradients(GVec4 stateVector, Expression terrain, double timeStep);
 
     public void gradients(ArrayList<Double> stateVector, Expression terrain, double timeStep);
+
 }
