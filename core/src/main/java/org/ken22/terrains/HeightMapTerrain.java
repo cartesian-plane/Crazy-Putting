@@ -36,7 +36,7 @@ public class HeightMapTerrain extends Terrain {
         heightField.update();
 
 
-        Texture texture = new Texture(Gdx.files.internal("wispy-grass-meadow_albedo.png"), true);
+        Texture texture = new Texture(Gdx.files.internal("textures/wispy-grass-meadow_albedo.png"), true);
         texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear);
         texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
