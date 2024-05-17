@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
-import org.ken22.Physics.PhysicsEngine;
-import org.ken22.interfaces.IFunc;
+import org.ken22.physics.PhysicsEngine;
+
 import java.util.ArrayList;
 
 
@@ -119,8 +119,8 @@ public class GameLoop {
     //to shoot the ball NEEDS CHANGE
     private void shootBall() {
         // CHANGE THIS
-        ballVelocityX = 5.0; 
-        ballVelocityY = 5.0; 
+        ballVelocityX = 5.0;
+        ballVelocityY = 5.0;
 
         //reset physics engine
         physicsEngine = new PhysicsEngine(

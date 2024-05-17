@@ -1,4 +1,4 @@
-package org.ken22.Physics.mathTools;
+package org.ken22.physics.mathTools;
 
 public class myMath {
 

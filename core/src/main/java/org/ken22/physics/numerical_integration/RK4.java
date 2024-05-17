@@ -1,12 +1,12 @@
-package org.ken22.Physics.Numerical_Integration;
+package org.ken22.physics.numerical_integration;
 
 import net.objecthunter.exp4j.Expression;
-import org.ken22.Physics.Numerical_Derivation.NumDerivationMethod;
-import org.ken22.Physics.Vectors.GVec4;
+import org.ken22.physics.numerical_derivation.NumDerivationMethod;
+import org.ken22.physics.vectors.GVec4;
 import org.ken22.interfaces.IFunc;
 import java.util.ArrayList;
 
-import static org.ken22.Physics.Vectors.GVec4.copy;
+import static org.ken22.physics.vectors.GVec4.copy;
 
 public class RK4 implements NumIntegrationMethod {
 

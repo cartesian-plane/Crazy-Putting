@@ -8,8 +8,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -22,13 +20,10 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import net.mgsx.gltf.scene3d.scene.SceneSkybox;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
-import org.ken22.terrains.HeightField;
 import org.ken22.terrains.HeightMapTerrain;
-import org.ken22.terrains.Terrain;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import org.ken22.interfaces.IFunc;
-import org.ken22.Physics.PhysicsEngine;
+import org.ken22.physics.PhysicsEngine;
 
 
 import java.util.LinkedList;

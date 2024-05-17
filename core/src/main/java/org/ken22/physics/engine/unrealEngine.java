@@ -1,17 +1,17 @@
-package org.ken22.Physics.Engine;
+package org.ken22.physics.engine;
 
 import net.objecthunter.exp4j.Expression;
-import org.ken22.Physics.Numerical_Derivation.NumDerivationMethod;
-import org.ken22.Physics.Numerical_Integration.NumIntegrationMethod;
-import org.ken22.Physics.System.PhysicsSystem;
-import org.ken22.Physics.Vectors.GVec4;
-import org.ken22.Physics.mathTools.myMath;
+import org.ken22.physics.numerical_derivation.NumDerivationMethod;
+import org.ken22.physics.numerical_integration.NumIntegrationMethod;
+import org.ken22.physics.system.PhysicsSystem;
+import org.ken22.physics.vectors.GVec4;
+import org.ken22.physics.mathTools.myMath;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.interfaces.IFunc;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static org.ken22.Physics.Vectors.GVec4.copy;
+import static org.ken22.physics.vectors.GVec4.copy;
 
 public class unrealEngine {
     // Parameter order (t,x,y,vx, vy, gradx, grady, height)

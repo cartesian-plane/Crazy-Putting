@@ -1,10 +1,7 @@
-package org.ken22.Physics.Numerical_Derivation;
+package org.ken22.physics.numerical_derivation;
 
 import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
-import org.ken22.Physics.Vectors.GVec4;
-import org.ken22.interfaces.IFunc;
-import org.ken22.Physics.Numerical_Derivation.NumDerivationMethod;
+import org.ken22.physics.vectors.GVec4;
 
 import java.util.ArrayList;
 

@@ -1,14 +1,12 @@
-package org.ken22.Physics.System;
+package org.ken22.physics.system;
 
-import org.ken22.Physics.Vectors.GVec4;
+import org.ken22.physics.vectors.GVec4;
 import org.ken22.input.courseinput.CourseParser;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.interfaces.IFunc;
 
 public class PhysicsSystem {
     private Map<String, Double> vars;

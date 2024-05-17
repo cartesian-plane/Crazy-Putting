@@ -1,4 +1,4 @@
-package org.ken22.Physics.Vectors;
+package org.ken22.physics.vectors;
 
 public class Vec4 extends GVec4 {
 
