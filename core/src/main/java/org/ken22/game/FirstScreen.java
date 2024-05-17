@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
 import net.mgsx.gltf.scene3d.attributes.PBRTextureAttribute;
@@ -70,14 +71,14 @@ public class FirstScreen implements Screen {
         // Prepare your screen here.
 
         // create scene
-        sceneAsset = new GLTFLoader().load(Gdx.files.internal("avocado/Avocado.gltf"));
+        sceneAsset = new GLTFLoader().load(Gdx.files.internal("models/avocado/Avocado.gltf"));
         scene = new Scene(sceneAsset.scene);
         scene.modelInstance.transform.setTranslation(0, 13f, 0);
         scene.modelInstance.transform.scl(10, 10, 10);
 
 
 
-        SceneAsset waterAsset = new GLTFLoader().load(Gdx.files.internal("low_poly_-_puddle/scene.gltf"));
+        SceneAsset waterAsset = new GLTFLoader().load(Gdx.files.internal("models/low_poly_-_puddle/puddle.gltf"));
         sceneManager = new SceneManager();
         sceneManager.addScene(scene);
         Scene waterScene = new Scene(waterAsset.scene);
@@ -85,7 +86,25 @@ public class FirstScreen implements Screen {
         Quaternion rotation = new Quaternion();
         scene.modelInstance.transform.getRotation(rotation);
 
-//        waterScene.modelInstance.transform.rotate(Vector3.X, 60);
+
+        // Calculate the scale factor
+        BoundingBox terrainBounds = new BoundingBox();
+        scene.modelInstance.calculateBoundingBox(terrainBounds);
+        Vector3 terrainSize = terrainBounds.getDimensions(new Vector3());
+        System.out.println(terrainSize);
+        BoundingBox waterBounds = new BoundingBox();
+        waterScene.modelInstance.calculateBoundingBox(waterBounds);
+        Vector3 waterSize = waterBounds.getDimensions(new Vector3());
+        Vector3 scaleFactor = new Vector3(
+            terrainSize.x / waterSize.x,
+            terrainSize.y / waterSize.y,
+            terrainSize.z / waterSize.z
+        );
+
+        System.out.println("scaleFactor = " + scaleFactor);
+        waterScene.modelInstance.transform.scl(0.3f, 1f, 1f);
+        waterScene.modelInstance.transform.rotate(Vector3.X, 63);
+        waterScene.modelInstance.transform.translate(50, 0, 0);
         waterScene.modelInstance.transform.getRotation(rotation);
 
         float euler = rotation.getAngle();
@@ -100,8 +119,8 @@ public class FirstScreen implements Screen {
         camera.near = 1f;
         camera.far = 1000;
         sceneManager.setCamera(camera);
-        camera.position.set(0,14, 0f);
-        camera.lookAt(4, 13, 4);
+        camera.position.set(0,0, 0f);
+        camera.lookAt(100, 0, 100);
 
         cameraController = new FirstPersonCameraController(camera);
         // change the camera controls sensitivity (check the FirstPersonCameraController class definition)
@@ -219,7 +238,7 @@ public class FirstScreen implements Screen {
             throw new RuntimeException();
         }
 
-        gameLoop.update(delta);
+        //gameLoop.update(delta);
 
     }
 
