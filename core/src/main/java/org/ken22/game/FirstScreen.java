@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import net.mgsx.gltf.loaders.gltf.GLTFLoader;
 import net.mgsx.gltf.scene3d.attributes.PBRCubemapAttribute;
@@ -81,9 +82,22 @@ public class FirstScreen implements Screen {
 
 
 
+        SceneAsset waterAsset = new GLTFLoader().load(Gdx.files.internal("low_poly_-_puddle/scene.gltf"));
         sceneManager = new SceneManager();
         sceneManager.addScene(scene);
+        Scene waterScene = new Scene(waterAsset.scene);
+        sceneManager.addScene(waterScene);
+        Quaternion rotation = new Quaternion();
+        scene.modelInstance.transform.getRotation(rotation);
 
+//        waterScene.modelInstance.transform.rotate(Vector3.X, 60);
+        waterScene.modelInstance.transform.getRotation(rotation);
+
+        float euler = rotation.getAngle();
+
+// Print the Euler angles
+        System.out.println("Rotation");
+        System.out.println(euler);
 
         // setup camera (The BoomBox model is very small, so you may need to adapt camera settings for your scene)
         camera = new PerspectiveCamera(60f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -202,7 +216,7 @@ public class FirstScreen implements Screen {
 //        shapeRenderer.end();
 
 
-        System.out.println(time);
+        // System.out.println(time);
         if (sceneAssetPosition.x >= 100) {
             System.out.println("object reached x: " + sceneAssetPosition.x);
             throw new RuntimeException();
