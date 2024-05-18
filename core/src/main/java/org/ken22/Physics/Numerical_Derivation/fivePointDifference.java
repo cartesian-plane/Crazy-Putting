@@ -66,7 +66,7 @@ public class fivePointDifference implements NumDerivationMethod {
             .setVariable("y", coords.get(1));
         double forward2 = terrain.evaluate();
 
-        grad = (forward2 - 8*forward1 + 8*backward1 - backward2)/(12*timeStep);
+        grad = (backward2 - 8*backward1 + 8*forward1 - forward2)/(12*timeStep);
 
         return grad;
     }
@@ -90,7 +90,7 @@ public class fivePointDifference implements NumDerivationMethod {
             .setVariable("y", coords.get(1)+2*timeStep);
         double forward2 = terrain.evaluate();
 
-        grad = (forward2 - 8*forward1 + 8*backward1 - backward2)/(12*timeStep);
+        grad = (backward2 - 8*backward1 + 8*forward1 - forward2)/(12*timeStep);
 
         return grad;
     }

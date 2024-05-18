@@ -13,7 +13,6 @@ public class RK4 implements NumIntegrationMethod {
     public GVec4 execute(ArrayList<GVec4> stateVectors, double timeStep, IFunc<Double, Double> funcx, IFunc<Double, Double> funcy, Expression terrain, NumDerivationMethod differentiator) {
 
         GVec4 stateVector = copy(stateVectors.getLast());
-        stateVector.skim();
         ArrayList<Double> initial = stateVector.getVector();
 //      System.out.println("Initial state vector: " + initial.toString());
 
@@ -33,7 +32,7 @@ public class RK4 implements NumIntegrationMethod {
 
         double _vx = (timeStep/6)*(k1.get(0) + 2*k2.get(0) + 2*k3.get(0) + k4.get(0));
         double _vy = (timeStep/6)*(k1.get(1) + 2*k2.get(1) + 2*k3.get(1) + k4.get(1));
-//      System.out.println("ax: " + ax + ", ay: " + ay);
+        System.out.println("new_vx: " + _vx + ", new_vy: " + _vy);
 
         stateVector.set(0, initial.get(0) + timeStep);
         stateVector.set(1, initial.get(1) + timeStep*initial.get(3));
@@ -41,6 +40,7 @@ public class RK4 implements NumIntegrationMethod {
         stateVector.set(3, initial.get(3) + _vx);
         stateVector.set(4, initial.get(4) + _vy);
         differentiator.gradients(stateVector, terrain, timeStep);
+        stateVector.set(7, terrain.setVariable("x", stateVector.get(1)).setVariable("y", stateVector.get(2)).evaluate());
 //      System.out.println("Final state vector: " + stateVector.getVector().toString());
 
         return stateVector;

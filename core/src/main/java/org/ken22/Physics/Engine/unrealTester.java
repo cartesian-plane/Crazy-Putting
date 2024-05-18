@@ -2,6 +2,7 @@ package org.ken22.Physics.Engine;
 
 import org.ken22.Physics.Numerical_Derivation.NumDerivationMethod;
 import org.ken22.Physics.Numerical_Derivation.basicDerivation;
+import org.ken22.Physics.Numerical_Derivation.fivePointDifference;
 import org.ken22.Physics.Numerical_Integration.NumIntegrationMethod;
 import org.ken22.Physics.Numerical_Integration.RK4;
 import org.ken22.Physics.System.PhysicsSystem;
@@ -14,10 +15,9 @@ import java.util.ArrayList;
 public class unrealTester {
 
     public static void main(String[] args) {
-
         RK4 integrator = new RK4();
-        basicDerivation differentiator = new basicDerivation();
-        GVec4 initialState = new GVec4(0.0, 0.0, 0.0, 1.0, 1.0, 0.01);
+        fivePointDifference differentiator = new fivePointDifference();
+        GVec4 initialState = new GVec4(0.0, 0.0, 1.0, 1.0, 1.0, 0.01);
         File coursejson = new File("project-1-2/assets/input/golf-course.json");
         testRun("unrealTest1", coursejson, initialState, differentiator, integrator);
     }
