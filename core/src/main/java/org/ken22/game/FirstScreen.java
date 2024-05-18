@@ -187,21 +187,6 @@ public class FirstScreen implements Screen {
     }
 
 
-    // private void createTerrain() {
-    //     if (terrain != null) {
-    //         terrain.dispose();
-    //         sceneManager.removeScene(terrainScene);
-    //     }
-    
-    //     terrain = new HeightMapTerrain(new Pixmap(Gdx.files.internal("heightmaps/expheightmap.png")), 20f);
-    
-    //     System.out.println(terrain.getHeightField().getPositionAt(new Vector3(0, 1, 0), 0, 0));
-    //     terrainScene = new Scene(terrain.getModelInstance());
-    //     sceneManager.addScene(terrainScene);
-    // }
-    
-
-
     @Override
     public void render(float delta) {
         // Draw your screen here. "delta" is the time since last render in seconds.
