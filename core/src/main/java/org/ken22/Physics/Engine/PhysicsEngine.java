@@ -1,8 +1,9 @@
-package org.ken22.Physics.Engine;
+package org.ken22.physics.Engine;
 
 import org.ken22.interfaces.IFunc;
 import java.util.ArrayList;
 
+@Deprecated
 public class PhysicsEngine {
     //The only redeeming quality of this class is that it does what it's supposed to do
 
