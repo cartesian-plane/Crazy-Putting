@@ -24,7 +24,6 @@ import net.mgsx.gltf.scene3d.utils.IBLBuilder;
 import org.ken22.terrains.HeightMapTerrain;
 
 import org.ken22.interfaces.IFunc;
-import org.ken22.physics.PhysicsEngine;
 
 
 import java.util.LinkedList;
@@ -155,11 +154,11 @@ public class FirstScreen implements Screen {
         createTerrain();
 
 
-
-        //setup physics engine  ALL OF tHIS WILL NEED to BE CHANGEd
-        IFunc<Double, Double> heightFunction = (vars) -> Math.sin((vars.get(0) - vars.get(1)) / 7) + 0.5; // height function
-        PhysicsEngine physicsEngine = new PhysicsEngine(0, 0, 0, 0, 0.01, 0, 10, 0.1, 0.2, 9.81, heightFunction);
-        //plugging things into physics engine
+//
+//        //setup physics engine  ALL OF tHIS WILL NEED to BE CHANGEd
+//        IFunc<Double, Double> heightFunction = (vars) -> Math.sin((vars.get(0) - vars.get(1)) / 7) + 0.5; // height function
+//        PhysicsEngine physicsEngine = new PhysicsEngine(0, 0, 0, 0, 0.01, 0, 10, 0.1, 0.2, 9.81, heightFunction);
+//        //plugging things into physics engine
 
 
         Vector3 initialBallPosition = new Vector3(0, 0, 0);
@@ -168,7 +167,8 @@ public class FirstScreen implements Screen {
         float boundaryMinX = -10f, boundaryMinY = -10f, boundaryMaxX = 110f, boundaryMaxY = 10f;
         int maxStrokes = 10;
 
-        gameLoop = new GameLoop(physicsEngine, initialBallPosition, targetPosition, targetRadius, camera, boundaryMinX, boundaryMinY, boundaryMaxX, boundaryMaxY, maxStrokes);
+//        gameLoop = new GameLoop(physicsEngine, initialBallPosition, targetPosition, targetRadius, camera, boundaryMinX,
+//            boundaryMinY, boundaryMaxX, boundaryMaxY, maxStrokes);
 
         //ALL OF tHIS WILL NEED to BE CHANGEd
     }
