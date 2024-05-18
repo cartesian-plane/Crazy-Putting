@@ -1,11 +1,12 @@
-package org.ken22.physics.engine;
+package org.ken22.Physics.Engine;
 
-import org.ken22.physics.numerical_derivation.NumDerivationMethod;
-import org.ken22.physics.numerical_derivation.basicDerivation;
-import org.ken22.physics.numerical_integration.NumIntegrationMethod;
-import org.ken22.physics.numerical_integration.RK4;
-import org.ken22.physics.system.PhysicsSystem;
-import org.ken22.physics.vectors.GVec4;
+import org.ken22.Physics.Numerical_Derivation.NumDerivationMethod;
+import org.ken22.Physics.Numerical_Derivation.basicDerivation;
+import org.ken22.Physics.Numerical_Derivation.fivePointDifference;
+import org.ken22.Physics.Numerical_Integration.NumIntegrationMethod;
+import org.ken22.Physics.Numerical_Integration.RK4;
+import org.ken22.Physics.System.PhysicsSystem;
+import org.ken22.Physics.Vectors.GVec4;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,10 +15,9 @@ import java.util.ArrayList;
 public class unrealTester {
 
     public static void main(String[] args) {
-
         RK4 integrator = new RK4();
-        basicDerivation differentiator = new basicDerivation();
-        GVec4 initialState = new GVec4(0.0, 0.0, 0.0, 1.0, 1.0, 0.01);
+        fivePointDifference differentiator = new fivePointDifference();
+        GVec4 initialState = new GVec4(0.0, 0.0, 1.0, 1.0, 1.0, 0.01);
         File coursejson = new File("project-1-2/assets/input/golf-course.json");
         testRun("unrealTest1", coursejson, initialState, differentiator, integrator);
     }
