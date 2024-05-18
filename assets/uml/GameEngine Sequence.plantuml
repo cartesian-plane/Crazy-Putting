@@ -1,0 +1,12 @@
+@startuml
+
+participant ApplicationController as AC
+participant GameEngine as GE
+participant Agent as Ag
+participant PhysicsEngine as PE
+participant GraphicsEngine as GrE
+AC -> GE : new GameEngine(agent : Agent)
+GE -> PE : new PhysicsEngine(course : GolfCourse)
+GE -> GrE : new GraphicsEngine(course, stateVectors, stepsize)
+
+@enduml

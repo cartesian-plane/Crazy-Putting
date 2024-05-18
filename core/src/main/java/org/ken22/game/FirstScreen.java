@@ -21,14 +21,12 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import net.mgsx.gltf.scene3d.scene.SceneSkybox;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
-import org.ken22.physics.engine.UnrealEngine;
+import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.numerical_derivation.fivePointDifference;
 import org.ken22.physics.numerical_integration.RK4;
 import org.ken22.physics.system.PhysicsSystem;
 import org.ken22.physics.vectors.GVec4;
 import org.ken22.terrains.HeightMapTerrain;
-
-import org.ken22.interfaces.IFunc;
 
 
 import java.io.File;
@@ -66,7 +64,7 @@ public class FirstScreen implements Screen {
     private LinkedList<Vector3> positions = new LinkedList<>();
 
     // Physics stuff
-    private UnrealEngine engine;
+    private PhysicsEngine engine;
 
 
 
@@ -186,7 +184,7 @@ public class FirstScreen implements Screen {
         GVec4 initialState = new GVec4(0.0, 0.0, 1.0, 1.0, 1.0, 0.01);
         File coursejson = new File("input/golf-course.json");
         PhysicsSystem system = new PhysicsSystem(initialState,coursejson);
-        engine = new UnrealEngine(system, integrator, differentiator);
+        engine = new PhysicsEngine(system, integrator, differentiator);
 
     }
 
