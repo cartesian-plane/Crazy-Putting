@@ -1,0 +1,28 @@
+In order for the matlab function to work, you need to have CSV files in the same directory as the matlab function
+
+data = readtable('sin.csv');
+
+x1 = data.Var2;
+y1 = data.Var3;
+z1 = data.Var8;
+
+x = 0:0.001:3;
+y = x;
+[X, Y] = meshgrid(x);  % Create 2D grids of x and y
+F = sin(X).*sin(Y);  % Compute the terrain function over the grid
+
+figure
+plot3(x1,y1,z1, "-xk");
+hold on
+mesh(X,Y,F)
+xlabel('X')
+ylabel('Y')
+zlabel('Z')
+title('3D Terrain Plot')
+
+zlim([-2 2]);
+%%
+data.Properties.VariableNames
+
+
+

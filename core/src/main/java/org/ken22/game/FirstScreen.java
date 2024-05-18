@@ -59,7 +59,7 @@ public class FirstScreen implements Screen {
     private float terrainHeight;
     private LinkedList<Vector3> positions = new LinkedList<>();
 
-    private GameLoop gameLoop;
+
 
 
 
@@ -240,7 +240,7 @@ public class FirstScreen implements Screen {
             throw new RuntimeException();
         }
 
-        gameLoop.update(delta);
+
 
     }
 

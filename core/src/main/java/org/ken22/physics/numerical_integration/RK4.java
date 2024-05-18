@@ -5,6 +5,7 @@ import org.ken22.physics.numerical_derivation.NumDerivationMethod;
 import org.ken22.physics.vectors.GVec4;
 import org.ken22.interfaces.IFunc;
 import java.util.ArrayList;
+
 import static org.ken22.physics.vectors.GVec4.copy;
 
 public class RK4 implements NumIntegrationMethod {

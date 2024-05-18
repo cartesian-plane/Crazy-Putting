@@ -1,13 +1,11 @@
-package org.ken22.Physics.Engine;
+package org.ken22.physics.engine;
 
-import org.ken22.Physics.Numerical_Derivation.NumDerivationMethod;
-import org.ken22.Physics.Numerical_Derivation.basicDerivation;
-import org.ken22.Physics.Numerical_Derivation.fivePointDifference;
-import org.ken22.Physics.Numerical_Integration.NumIntegrationMethod;
-import org.ken22.Physics.Numerical_Integration.RK4;
-import org.ken22.Physics.System.PhysicsSystem;
-import org.ken22.Physics.Vectors.GVec4;
-import org.ken22.Physics.Engine.unrealEngine;
+import org.ken22.physics.numerical_derivation.NumDerivationMethod;
+import org.ken22.physics.numerical_derivation.fivePointDifference;
+import org.ken22.physics.numerical_integration.NumIntegrationMethod;
+import org.ken22.physics.numerical_integration.RK4;
+import org.ken22.physics.system.PhysicsSystem;
+import org.ken22.physics.vectors.GVec4;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -20,7 +18,7 @@ public class unrealTester {
         RK4 integrator = new RK4();
         fivePointDifference differentiator = new fivePointDifference();
         GVec4 initialState = new GVec4(0.0, 0.0, 1.0, 1.0, 1.0, 0.01);
-        File coursejson = new File("project-1-2/assets/input/golf-course.json");
+        File coursejson = new File("assets/input/golf-course.json");
         testRun("unrealTest1", coursejson, initialState, differentiator, integrator);
     }
 
@@ -42,7 +40,7 @@ public class unrealTester {
         }
 
         ArrayList<GVec4> vectors = engine.getStateVectors();;
-        String filePath = "project-1-2/assets/" + name + ".csv";
+        String filePath = "assets/" + name + ".csv";
 
         try (
             FileWriter csvWriter = new FileWriter(filePath)) {
