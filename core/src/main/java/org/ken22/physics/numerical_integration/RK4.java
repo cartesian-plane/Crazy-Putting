@@ -31,7 +31,7 @@ public class RK4 implements NumIntegrationMethod {
 
         double _vx = (timeStep/6)*(k1.get(0) + 2*k2.get(0) + 2*k3.get(0) + k4.get(0));
         double _vy = (timeStep/6)*(k1.get(1) + 2*k2.get(1) + 2*k3.get(1) + k4.get(1));
-        System.out.println("new_vx: " + _vx + ", new_vy: " + _vy);
+//        System.out.println("new_vx: " + _vx + ", new_vy: " + _vy);
 
         stateVector.set(0, initial.get(0) + timeStep);
         stateVector.set(1, initial.get(1) + timeStep*initial.get(3));

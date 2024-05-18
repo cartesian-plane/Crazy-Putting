@@ -1,18 +1,18 @@
-package org.ken22.physics;
+package org.ken22.physics.Engine;
 
 import org.ken22.interfaces.IFunc;
-
 import java.util.ArrayList;
 
+@Deprecated
 public class PhysicsEngine {
     //The only redeeming quality of this class is that it does what it's supposed to do
 
     private double timeStep;
     private double endTime;
-    private double startTime;
     private double kFrictionCoef;
     private double sFrictionCoef;
     private double gCoef;
+    private String name;
     private IFunc<Double, Double> height; //Parameters are (x,y), passed in constructor
 
     // parameter order (t,x,y,vx, vy, gradx, grady, height)
@@ -21,10 +21,13 @@ public class PhysicsEngine {
     private IFunc<Double, Double> f_ay = (vars) ->
         ( -1*this.gCoef*(vars.get(6)+this.kFrictionCoef*vars.get(4)/(Math.sqrt(Math.pow(vars.get(3),2)+Math.pow(vars.get(4),2)))));;
     private ArrayList<Double> initialState = new ArrayList<Double>(); // (t,x,y,vx, vy, gradX, gradY), gradX and gradY for initial state are calculated in the loop
-    ArrayList<ArrayList<Double>> stateVectors = new ArrayList<ArrayList<Double>>(); // (t,x,y,vx, vy, gradX, gradY)
+    private ArrayList<ArrayList<Double>> stateVectors = new ArrayList<ArrayList<Double>>(); // (t,x,y,vx, vy, gradX, gradY)
 
+    public String getName() {
+        return name;
+    }
 
-    public PhysicsEngine(double x, double y, double vx, double vy, double timeStep, double startTime, double endTime, double kFrictionCoef, double sFrictionCoef, double gCoef, IFunc<Double, Double> height) {
+    public PhysicsEngine(double x, double y, double vx, double vy, double timeStep, double startTime, double endTime, double kFrictionCoef, double sFrictionCoef, double gCoef, IFunc<Double, Double> height, String name) {
         this.timeStep = timeStep;
         this.endTime = endTime;
         this.kFrictionCoef = kFrictionCoef;
@@ -36,6 +39,7 @@ public class PhysicsEngine {
         initialState.add(y);
         initialState.add(vx);
         initialState.add(vy);
+        this.name = name;
     }
 
     public void solve() {
@@ -48,7 +52,10 @@ public class PhysicsEngine {
             // Temporarily store gradients in current vector
             current.add(gradients.get(0)); //Gradient in x direction
             current.add(gradients.get(1)); //Gradient in y direction
-            current.add(height.apply(current)); //Height at current position (x,y)
+            ArrayList<Double> xy = new ArrayList<Double>();
+            xy.add(current.get(1));
+            xy.add(current.get(2));
+            current.add(height.apply(xy)); //Height at current position (x,y)
             double ax = f_ax.apply(current);
             double ay = f_ay.apply(current);
 
@@ -116,10 +123,6 @@ public class PhysicsEngine {
 
     public double getEndTime() {
         return endTime;
-    }
-
-    public double getStartTime() {
-        return startTime;
     }
 
     public double getkFrictionCoef() {

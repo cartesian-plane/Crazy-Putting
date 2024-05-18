@@ -67,6 +67,7 @@ public class unrealEngine {
     private double targetX;
     private double targetY;
     private double targetRadius;
+
     //Math
     private double timeStep;
     private NumIntegrationMethod integrator;
@@ -195,6 +196,7 @@ public class unrealEngine {
 
         //Calculates partial derivatives and adds them to currentState vector (in place)
         differentiator.gradients(currentState, this.terrain, this.timeStep); // (t,x,y,vx, vy, gradX, gradY)
+        currentState.set(7, terrain.setVariable("x", currentState.get(1)).setVariable("y", currentState.get(2)).evaluate());
         ArrayList<IFunc<Double, Double>> functions = chooseFunctions(currentState);
         GVec4 newState = integrator.execute(stateVectors, this.timeStep, functions.getFirst(), functions.get(1), this.terrain, this.differentiator);
 
