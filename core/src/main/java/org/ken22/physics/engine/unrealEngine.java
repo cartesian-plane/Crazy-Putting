@@ -16,7 +16,6 @@ import static org.ken22.physics.vectors.GVec4.copy;
 public class unrealEngine {
     // Parameter order (t,x,y,vx, vy, gradx, grady, height)
 
-
     //Grass equations
 
     //Kinetic
@@ -81,10 +80,10 @@ public class unrealEngine {
     public unrealEngine(PhysicsSystem system, NumIntegrationMethod integrator, NumDerivationMethod differentiator) {
         //Initial conditions
         this.initialState = system.getInitialState();
+        this.stateVectors.add(initialState);
         this.initialState.add(0.0); //initiialising values for gradX
         this.initialState.add(0.0); //initialising values for gradY since they are edited in place
         this.initialState.add(0.0); //initialising values for height since they are edited in place
-        this.stateVectors.add(initialState);
 
         //Math information
         this.timeStep = system.getTimeStep();
@@ -195,7 +194,7 @@ public class unrealEngine {
         //System.out.println(currentState.getVector().toString()+ " ------ ");
 
         //Calculates partial derivatives and adds them to currentState vector (in place)
-        differentiator.gradients(currentState, this.terrain, this.timeStep); // (t,x,y,vx, vy, gradX, gradY)
+        differentiator.gradients(currentState, this.terrain, this.timeStep/10); // (t,x,y,vx, vy, gradX, gradY)
         currentState.set(7, terrain.setVariable("x", currentState.get(1)).setVariable("y", currentState.get(2)).evaluate());
         ArrayList<IFunc<Double, Double>> functions = chooseFunctions(currentState);
         GVec4 newState = integrator.execute(stateVectors, this.timeStep, functions.getFirst(), functions.get(1), this.terrain, this.differentiator);
@@ -217,8 +216,8 @@ public class unrealEngine {
 
     public boolean isAtRest(GVec4 currentState) {
         boolean atRest = false;
-        if(currentState.get(3) < Math.abs(0.05) && currentState.get(4) < Math.abs(0.05)) { //speed gets too low, 0.05 is threshold
-            if(currentState.get(5) < Math.abs(0.05) && currentState.get(6) < Math.abs(0.05)) { //flat surface
+        if(Math.abs(currentState.get(3)) < Math.abs(0.05) && currentState.get(4) < 0.05) { //speed gets too low, 0.05 is threshold
+            if(Math.abs(currentState.get(5)) < Math.abs(0.05) && currentState.get(6) < 0.05) { //flat surface
                 atRest = true;
             }
             else { // Inclined surface
@@ -230,16 +229,11 @@ public class unrealEngine {
 
         //Check if in water or out of bounds
         if(!atRest) {
-            atRest = ((Math.abs(currentState.get(1)) > this.range && Math.abs(currentState.get(2)) > this.range) || (currentState.getLast() < 0));
+            atRest = (Math.abs(currentState.get(1)) > this.range || Math.abs(currentState.get(2)) > this.range || (currentState.getLast() < 0));
             //zero velocities
             if(atRest) {
                 currentState.set(3, 0.0);
                 currentState.set(4, 0.0);
-            }
-            else {
-                //Don't allow to go over max speed
-                currentState.set(3, Math.min(currentState.get(3), this.maxspeed));
-                currentState.set(4, Math.min(currentState.get(4), this.maxspeed));
             }
         }
 
@@ -255,21 +249,9 @@ public class unrealEngine {
 
     private ArrayList<IFunc<Double, Double>> chooseFunctions(GVec4 currentState) {
         ArrayList<IFunc<Double, Double>> functions = new ArrayList<IFunc<Double, Double>>();
-        if(currentState.get(3) < Math.abs(0.05) && currentState.get(4) < Math.abs(0.05)) { //speed gets too low, 0.05 is threshold
-            if(currentState.get(5) < Math.abs(0.05) && currentState.get(6) < Math.abs(0.05)) { //flat surface
-                functions.add(this.ax_s_gr);
-                functions.add(this.ay_s_gr);
-            }
-            else { //inclined surface
-                if(myMath.pythagoras(currentState.get(5), currentState.get(6)) < sf_gr) { //ball stops
-                    functions.add(this.ax_s_gr);
-                    functions.add(this.ay_s_gr);
-                }
-                else { //ball keeps rolling
-                    functions.add(this.ax_s_gr);
-                    functions.add(this.ay_s_gr);
-                }
-            }
+        if(Math.abs(currentState.get(3)) < Math.abs(0.05) && currentState.get(4) < 0.05) { //speed gets too low, 0.05 is threshold
+          functions.add(this.ax_s_gr);
+          functions.add(this.ay_s_gr);
         }
 
         else { // ball is moving

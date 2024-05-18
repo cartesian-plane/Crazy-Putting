@@ -44,11 +44,11 @@ public class fivePointDifference implements NumDerivationMethod {
         double dhdy = centredStencilY(terrain, timeStep, coords);
 
         stateVector.set(5, dhdx);
-        stateVector.add(6, dhdy);
+        stateVector.set(6, dhdy);
     }
 
     public double centredStencilX(Expression terrain, double timeStep, ArrayList<Double> coords) {
-        double grad = 0;
+
         terrain
             .setVariable("x", coords.get(0)-timeStep)
             .setVariable("y", coords.get(1));
@@ -66,13 +66,11 @@ public class fivePointDifference implements NumDerivationMethod {
             .setVariable("y", coords.get(1));
         double forward2 = terrain.evaluate();
 
-        grad = (backward2 - 8*backward1 + 8*forward1 - forward2)/(12*timeStep);
-
-        return grad;
+        return (backward2 - 8*backward1 + 8*forward1 - forward2)/(12*timeStep);
     }
 
     public double centredStencilY(Expression terrain, double timeStep, ArrayList<Double> coords) {
-        double grad = 0;
+
         terrain
             .setVariable("x", coords.get(0))
             .setVariable("y", coords.get(1)-timeStep);
@@ -90,9 +88,7 @@ public class fivePointDifference implements NumDerivationMethod {
             .setVariable("y", coords.get(1)+2*timeStep);
         double forward2 = terrain.evaluate();
 
-        grad = (backward2 - 8*backward1 + 8*forward1 - forward2)/(12*timeStep);
-
-        return grad;
+        return (backward2 - 8*backward1 + 8*forward1 - forward2)/(12*timeStep);
     }
 
 }

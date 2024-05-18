@@ -39,7 +39,7 @@ public class RK4 implements NumIntegrationMethod {
         stateVector.set(2, initial.get(2) + timeStep*initial.get(4));
         stateVector.set(3, initial.get(3) + _vx);
         stateVector.set(4, initial.get(4) + _vy);
-        differentiator.gradients(stateVector, terrain, timeStep);
+        differentiator.gradients(stateVector, terrain, timeStep/10.0);
         stateVector.set(7, terrain.setVariable("x", stateVector.get(1)).setVariable("y", stateVector.get(2)).evaluate());
 //      System.out.println("Final state vector: " + stateVector.getVector().toString());
 
@@ -75,7 +75,7 @@ public class RK4 implements NumIntegrationMethod {
         interim.add(0.0);
         interim.add(0.0);
         //Re-evaluate gradients at current point
-        differentiator.gradients(interim, terrain, timeStep);
+        differentiator.gradients(interim, terrain, timeStep/10.0);
 
         return interim;
     }

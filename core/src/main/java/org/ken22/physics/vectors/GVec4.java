@@ -62,23 +62,23 @@ public class GVec4 implements Vec {
         this.vector.add(value);
     }
 
-    public double getT0() {
+    public double get_t() {
         return vector.get(0);
     }
 
-    public double getX0() {
+    public double get_x() {
         return vector.get(1);
     }
 
-    public double getY0() {
+    public double get_y() {
         return vector.get(2);
     }
 
-    public double getVx0() {
+    public double get_vx() {
         return vector.get(3);
     }
 
-    public double getVy0() {
+    public double get_vy() {
         return vector.get(4);
     }
 
@@ -86,24 +86,24 @@ public class GVec4 implements Vec {
         return timeStep;
     }
 
-    public void setT0(double t0) {
+    public void set_t(double t0) {
         this.vector.set(0, t0);
     }
 
-    public void setX0(double x0) {
+    public void set_x(double x0) {
         this.vector.set(1, x0);
     }
 
-    public void setY0(double y0) {
+    public void set_y(double y0) {
         this.vector.set(2, y0);
     }
 
-    public void setVx0(double vx0) {
+    public void set_vx(double vx0) {
         this.vector.set(3, vx0);
     }
 
-    public void setVy0(double vy0) {
-        this.vector.set(0, vy0);
+    public void set_vy(double vy0) {
+        this.vector.set(4, vy0);
     }
 
     public void setTimeStep(double timeStep) {
