@@ -12,7 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class unrealTester {
+public class UnrealTester {
 
     public static void main(String[] args) {
         RK4 integrator = new RK4();
@@ -25,7 +25,7 @@ public class unrealTester {
     public static void testRun(String name, File coursejson, GVec4 initialState, NumDerivationMethod differentiator, NumIntegrationMethod integrator) {
 
         PhysicsSystem system = new PhysicsSystem(initialState,coursejson);
-        unrealEngine engine = new unrealEngine(system, integrator, differentiator);
+        UnrealEngine engine = new UnrealEngine(system, integrator, differentiator);
 
         double t0 = System.nanoTime();
         boolean atRest = engine.isAtRest(engine.getInitialState());

@@ -13,7 +13,7 @@ import java.util.Map;
 
 import static org.ken22.physics.vectors.GVec4.copy;
 
-public class unrealEngine {
+public class UnrealEngine {
     // Parameter order (t,x,y,vx, vy, gradx, grady, height)
 
 
@@ -78,7 +78,7 @@ public class unrealEngine {
     //Game and graphics
     double seconds = 0.0;
     boolean atRest = false;
-    public unrealEngine(PhysicsSystem system, NumIntegrationMethod integrator, NumDerivationMethod differentiator) {
+    public UnrealEngine(PhysicsSystem system, NumIntegrationMethod integrator, NumDerivationMethod differentiator) {
         //Initial conditions
         this.initialState = system.getInitialState();
         this.initialState.add(0.0); //initiialising values for gradX

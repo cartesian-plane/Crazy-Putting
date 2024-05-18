@@ -21,11 +21,17 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import net.mgsx.gltf.scene3d.scene.SceneSkybox;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
+import org.ken22.physics.engine.UnrealEngine;
+import org.ken22.physics.numerical_derivation.fivePointDifference;
+import org.ken22.physics.numerical_integration.RK4;
+import org.ken22.physics.system.PhysicsSystem;
+import org.ken22.physics.vectors.GVec4;
 import org.ken22.terrains.HeightMapTerrain;
 
 import org.ken22.interfaces.IFunc;
 
 
+import java.io.File;
 import java.util.LinkedList;
 
 
@@ -59,6 +65,8 @@ public class FirstScreen implements Screen {
     private float terrainHeight;
     private LinkedList<Vector3> positions = new LinkedList<>();
 
+    // Physics stuff
+    private UnrealEngine engine;
 
 
 
@@ -171,6 +179,15 @@ public class FirstScreen implements Screen {
 //            boundaryMinY, boundaryMaxX, boundaryMaxY, maxStrokes);
 
         //ALL OF tHIS WILL NEED to BE CHANGEd
+
+
+        RK4 integrator = new RK4();
+        fivePointDifference differentiator = new fivePointDifference();
+        GVec4 initialState = new GVec4(0.0, 0.0, 1.0, 1.0, 1.0, 0.01);
+        File coursejson = new File("input/golf-course.json");
+        PhysicsSystem system = new PhysicsSystem(initialState,coursejson);
+        engine = new UnrealEngine(system, integrator, differentiator);
+
     }
 
     private void createTerrain() {
@@ -207,7 +224,17 @@ public class FirstScreen implements Screen {
         // 1 game unit = 1m (meter)
         float scalingFactor = 9.560222f;
         Vector3 movementVector = new Vector3(0.016f / scalingFactor, 0, 0);
-        scene.modelInstance.transform.translate(movementVector);
+        // scene.modelInstance.transform.translate(movementVector);
+
+        GVec4 temp = engine.nextStep();
+
+        // Get the velocities from the state vector
+        float vx = (float) temp.getVx0();
+        float vy = (float) temp.getVy0();
+
+        Vector3 nextStep = new Vector3(vx / scalingFactor / 60, 0, vy / scalingFactor / 60);
+        scene.modelInstance.transform.translate(nextStep);
+
 
 
 //        // animate camera
