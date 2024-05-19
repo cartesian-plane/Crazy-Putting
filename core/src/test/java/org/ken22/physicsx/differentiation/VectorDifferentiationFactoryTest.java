@@ -1,9 +1,12 @@
 package org.ken22.physicsx.differentiation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physicsx.vectors.StateVector4;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +14,6 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 
 class VectorDifferentiationFactoryTest {
-
 
     @Test
     @DisplayName("Dummy test")
@@ -29,7 +31,17 @@ class VectorDifferentiationFactoryTest {
             throw new RuntimeException(e);
         }
 
-        assertEquals(true, true);
+        Expression expr = new ExpressionBuilder(course.courseProfile())
+            .variables("x", "y")
+            .build();
+
+        VectorDifferentiationFactory vectorDifferentiationFactory = new VectorDifferentiationFactory(0.00001, expr, course, new FivePointCenteredDifference());
+        VectorDifferentiation4 vd = vectorDifferentiationFactory.vectorDifferentiation4(0.0, 0.0);
+
+        StateVector4 sv = new StateVector4(0.0, 0.0, 0.0, 0.0);
+        assertEquals(vd.dsv(sv), new StateVector4(0.0, 0.0, 0.0, 0.0));
+
+        assertNotNull(vd);
     }
 
 }

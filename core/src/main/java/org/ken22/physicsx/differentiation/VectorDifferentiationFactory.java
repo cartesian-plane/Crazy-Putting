@@ -2,6 +2,7 @@ package org.ken22.physicsx.differentiation;
 
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physicsx.utils.PhysicsUtils;
 import org.ken22.physicsx.vectors.StateVector4;
 
 import java.util.function.Function;
@@ -35,10 +36,10 @@ public class VectorDifferentiationFactory {
         // Define the velocity differentiation functions
         Function<StateVector4, Double> dvx = (stateVector4) ->
             (-course.gravitationalConstant() * df_dx - course.kineticFrictionGrass() * stateVector4.vx() /
-                magnitude(stateVector4.vx(), stateVector4.vy()))/course.mass();
+                PhysicsUtils.magnitude(stateVector4.vx(), stateVector4.vy()))/course.mass();
         Function<StateVector4, Double> dvy = (stateVector4) ->
             (-course.gravitationalConstant() * df_dy - course.kineticFrictionGrass() * stateVector4.vy() /
-                magnitude(stateVector4.vx(), stateVector4.vy()))/course.mass();
+                PhysicsUtils.magnitude(stateVector4.vx(), stateVector4.vy()))/course.mass();
 
         // Return the vector differentiation object
         return new VectorDifferentiation4(dx, dy, dvx, dvy);
@@ -56,16 +57,12 @@ public class VectorDifferentiationFactory {
         // Define the velocity differentiation functions
         Function<StateVector4, Double> dvx = (stateVector4) ->
             (-course.gravitationalConstant() * df_dx - course.kineticFrictionGrass() * df_dx /
-            magnitude(df_dx, df_dy))/course.mass();
+            PhysicsUtils.magnitude(df_dx, df_dy))/course.mass();
         Function<StateVector4, Double> dvy = (stateVector4) ->
             (-course.gravitationalConstant() * df_dy - course.kineticFrictionGrass() * df_dy /
-                magnitude(df_dx, df_dy))/course.mass();
+                PhysicsUtils.magnitude(df_dx, df_dy))/course.mass();
 
         // Return the vector differentiation object
         return new VectorDifferentiation4(dx, dy, dvx, dvy);
-    }
-
-    private double magnitude(double x, double y) {
-        return Math.sqrt(x * x + y * y);
     }
 }
