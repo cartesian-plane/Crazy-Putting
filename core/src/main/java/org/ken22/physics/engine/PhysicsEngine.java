@@ -5,7 +5,7 @@ import org.ken22.physics.numerical_derivation.NumDerivationMethod;
 import org.ken22.physics.numerical_integration.NumIntegrationMethod;
 import org.ken22.physics.system.PhysicsSystem;
 import org.ken22.physics.vectors.GVec4;
-import org.ken22.physics.mathTools.myMath;
+import org.ken22.physics.mathTools.MyMath;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.interfaces.IFunc;
 import java.util.ArrayList;
@@ -21,17 +21,17 @@ public class PhysicsEngine {
     //Kinetic
     private IFunc<Double, Double> ax_k_gr = (vars) ->
         ( -1*this.g*(vars.get(5)+this.kf_gr*vars.get(3) /
-            myMath.pythagoras(vars.get(5), vars.get(6)) ));
+            MyMath.pythagoras(vars.get(5), vars.get(6)) ));
     private IFunc<Double, Double> ay_k_gr = (vars) ->
         ( -1*this.g*(vars.get(6)+this.kf_gr*vars.get(4) /
-            myMath.pythagoras(vars.get(5), vars.get(6)) ));
+            MyMath.pythagoras(vars.get(5), vars.get(6)) ));
     //Static
     private IFunc<Double, Double> ax_s_gr = (vars) ->
         ( -1*this.g*(vars.get(5)+this.sf_gr*vars.get(5) /
-            myMath.pythagoras(vars.get(5), vars.get(6)) ));
+            MyMath.pythagoras(vars.get(5), vars.get(6)) ));
     private IFunc<Double, Double> ay_s_gr = (vars) ->
         ( -1*this.g*(vars.get(6)+this.sf_gr*vars.get(6) /
-            myMath.pythagoras(vars.get(5), vars.get(6))));
+            MyMath.pythagoras(vars.get(5), vars.get(6))));
 
 
     //Sand equations
@@ -39,17 +39,17 @@ public class PhysicsEngine {
     //Kinetic
     private IFunc<Double, Double> ax_k_sa = (vars) ->
         ( -1*this.g*(vars.get(5)+this.kf_sa*vars.get(3) /
-            myMath.pythagoras(vars.get(3), vars.get(4)) ));
+            MyMath.pythagoras(vars.get(3), vars.get(4)) ));
     private IFunc<Double, Double> ay_k_sa = (vars) ->
         ( -1*this.g*(vars.get(6)+this.kf_sa*vars.get(4) /
-            myMath.pythagoras(vars.get(3), vars.get(4)) ));
+            MyMath.pythagoras(vars.get(3), vars.get(4)) ));
     //Static
     private IFunc<Double, Double> ax_s_sa = (vars) ->
         ( -1*this.g*(vars.get(5)+this.sf_sa*vars.get(5) /
-            myMath.pythagoras(vars.get(5), vars.get(6))) );
+            MyMath.pythagoras(vars.get(5), vars.get(6))) );
     private IFunc<Double, Double> ay_s_sa = (vars) ->
         ( -1*this.g*(vars.get(6)+this.sf_sa*vars.get(6) /
-            myMath.pythagoras(vars.get(5), vars.get(6))));;
+            MyMath.pythagoras(vars.get(5), vars.get(6))));;
 
     //Course specific information
     private Expression terrain; //Parameters are (x,y), passed in constructor
@@ -143,7 +143,7 @@ public class PhysicsEngine {
                     integrator.execute(this.stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                 }
                 else { //inclined surface
-                    if(myMath.pythagoras(currentState.get(5), currentState.get(6)) < sf_gr) { //ball stops
+                    if(MyMath.pythagoras(currentState.get(5), currentState.get(6)) < sf_gr) { //ball stops
                         atRest = true;
                         integrator.execute(this.stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                     }
@@ -221,7 +221,7 @@ public class PhysicsEngine {
                 atRest = true;
             }
             else { // Inclined surface
-                if(myMath.pythagoras(currentState.get(5), currentState.get(6)) < sf_gr) { //ball stops
+                if(MyMath.pythagoras(currentState.get(5), currentState.get(6)) < sf_gr) { //ball stops
                     atRest = true;
                 }
             }
