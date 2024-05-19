@@ -40,7 +40,7 @@ public class PhysicsEngine {
     public PhysicsEngine(GolfCourse course, StateVector4 initialStateVector, double timeStep,
                          Differentiator differentiator, ODESolver solver) {
 
-        if (timeStep < 0.016) {
+        if (timeStep > 0.016) {
             throw new IllegalArgumentException("Step size too big for 60FPS");
         }
 
