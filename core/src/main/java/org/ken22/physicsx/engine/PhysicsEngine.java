@@ -1,5 +1,6 @@
 package org.ken22.physicsx.engine;
 
+import com.badlogic.gdx.math.Vector4;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
@@ -14,7 +15,6 @@ import org.ken22.physicsx.vectors.StateVector4;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.function.Function;
 
 public class PhysicsEngine {
 
@@ -63,7 +63,7 @@ public class PhysicsEngine {
      * Checks whether the ball is at rest by looking at the last computed state vector.
      *
      * <p> If the speed is small and the slope is almost flat, the ball stops.
-     *
+     * <p>
      * In the case that the slope is not negligible, it will check if the static friction overcomes
      * the downhill force.
      * </p>
@@ -100,7 +100,18 @@ public class PhysicsEngine {
      */
     private StateVector4 nextStep() {
         StateVector4 lastVector = trajectory.getLast();
-        VectorDifferentiation4 differentiation = vectorDifferentiationFactory.vectorDifferentiation4(lastVector.x(), lastVector.y());
+        double vx = lastVector.vx();
+        double vy = lastVector.vy();
+
+        VectorDifferentiation4 differentiation;
+
+        // Decide which equations to use for updating the acceleration
+        if (PhysicsUtils.magnitude(vx, vy) < STOPPING_THRESHOLD) {
+            differentiation = vectorDifferentiationFactory.lowSpeedVectorDifferentiation4(lastVector.x(), lastVector.y());
+        } else {
+            differentiation = vectorDifferentiationFactory.normalSpeedVectorDifferentiation4(lastVector.x(), lastVector.y());
+        }
+
         StateVector4 newVector = solver.nextStep(timeStep, lastVector, differentiation);
         trajectory.add(newVector);
         return newVector;

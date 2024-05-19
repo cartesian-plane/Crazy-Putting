@@ -17,7 +17,7 @@ class VectorDifferentiationFactoryTest {
 
     @Test
     @DisplayName("Dummy test")
-    void vectorDifferentiation4() {
+    void normalSpeedVectorDifferentiation4() {
         GolfCourse course;
 
         File resourcesDirectory = new File("src/test/resources");
@@ -36,7 +36,7 @@ class VectorDifferentiationFactoryTest {
             .build();
 
         VectorDifferentiationFactory vectorDifferentiationFactory = new VectorDifferentiationFactory(0.00001, expr, course, new FivePointCenteredDifference());
-        VectorDifferentiation4 vd = vectorDifferentiationFactory.vectorDifferentiation4(0.0, 0.0);
+        VectorDifferentiation4 vd = vectorDifferentiationFactory.normalSpeedVectorDifferentiation4(0.0, 0.0);
 
         //assertEquals();
 
