@@ -27,10 +27,10 @@ public class PhysicsEngine {
             myMath.pythagoras(vars.get(3), vars.get(4)) ));
     //Static
     private IFunc<Double, Double> ax_s_gr = (vars) ->
-        ( -1*this.g*(vars.get(5)+this.sf_gr*vars.get(5) /
+        ( -1*this.g*(vars.get(5)+this.kf_gr*vars.get(5) /
             myMath.pythagoras(vars.get(5), vars.get(6)) ));
     private IFunc<Double, Double> ay_s_gr = (vars) ->
-        ( -1*this.g*(vars.get(6)+this.sf_gr*vars.get(6) /
+        ( -1*this.g*(vars.get(6)+this.kf_gr*vars.get(6) /
             myMath.pythagoras(vars.get(5), vars.get(6)) ));
 
 

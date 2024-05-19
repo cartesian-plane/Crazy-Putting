@@ -16,7 +16,7 @@ public class PhysicsTester {
     public static void main(String[] args) {
         RK4 integrator = new RK4();
         fivePointDifference differentiator = new fivePointDifference();
-        GVec4 initialState = new GVec4(0.0, 3.3, 0.0, 0.0, 2.3, 0.01);
+        GVec4 initialState = new GVec4(0.0, 3.3, 0.0, 0.4, 0.4, 0.01);
         File coursejson = new File("assets/input/golf-course.json");
         testRun("unrealTest1", coursejson, initialState, differentiator, integrator);
     }
