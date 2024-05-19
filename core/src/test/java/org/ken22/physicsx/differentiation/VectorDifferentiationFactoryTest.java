@@ -49,5 +49,38 @@ class VectorDifferentiationFactoryTest {
         assertEquals(vd.dsv(sv).vy(), -10.0-10*2*1/Math.sqrt(2), d);
     }
 
+    @Test
+    @DisplayName("Dummy test")
+    void lowSpeedVectorDifferentiation4() {
+        GolfCourse course;
+
+        File resourcesDirectory = new File("src/test/resources");
+        File courseFile = new File(resourcesDirectory, "golf-course.json");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            course = objectMapper.readValue(courseFile, GolfCourse.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Expression expr = new ExpressionBuilder(course.courseProfile())
+            .variables("x", "y")
+            .build();
+
+        VectorDifferentiationFactory vectorDifferentiationFactory = new VectorDifferentiationFactory(0.00001, expr, course, new FivePointCenteredDifference());
+        VectorDifferentiation4 vd = vectorDifferentiationFactory.lowSpeedVectorDifferentiation4(0.0, 0.0);
+
+        //assertEquals();
+
+        StateVector4 sv = new StateVector4(0.0, 0.0, 1.0, 1.0);
+        //System.out.println(vd.dsv(sv).toString());
+        double d = 0.000000000001;
+        assertEquals(vd.dsv(sv).x(), 1.0, d);
+        assertEquals(vd.dsv(sv).y(), 1.0, d);
+        assertEquals(vd.dsv(sv).vx(), -10.0*2-10.0*2*2/Math.sqrt(5), d);
+        assertEquals(vd.dsv(sv).vy(), -10.0-10.0*2*1/Math.sqrt(5), d);
+    }
 }
 

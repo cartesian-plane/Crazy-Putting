@@ -92,6 +92,11 @@ public class PhysicsEngine {
         return false;
     }
 
+    public boolean underwater() {
+        StateVector4 lastVector;
+        return false;
+    }
+
     /**
      * Generates, appends and returns the next state vector in the trajectory according to the step size
      * Does not check whether the ball is at rest
