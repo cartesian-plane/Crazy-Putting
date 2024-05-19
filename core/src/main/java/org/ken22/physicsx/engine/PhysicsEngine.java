@@ -9,10 +9,12 @@ import org.ken22.physicsx.differentiation.VectorDifferentiation4;
 import org.ken22.physicsx.differentiation.VectorDifferentiationFactory;
 import org.ken22.physicsx.odesolvers.ODESolver;
 import org.ken22.physicsx.odesolvers.RK4;
+import org.ken22.physicsx.utils.PhysicsUtils;
 import org.ken22.physicsx.vectors.StateVector4;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.function.Function;
 
 public class PhysicsEngine {
 
@@ -27,7 +29,6 @@ public class PhysicsEngine {
     private ArrayList<StateVector4> trajectory = new ArrayList<>();
     private StateVector4 initialStateVector;
     private double timeStep; // Default time step
-
 
 
     /// Constructors
@@ -56,14 +57,44 @@ public class PhysicsEngine {
 
 
     /// Methods
+
+    /**
+     * Checks whether the ball is at rest by looking at the last computed state vector.
+     *
+     * <p> If the speed is small and the slope is almost flat, the ball stops.
+     *
+     * In the case that the slope is not negligible, it will check if the static friction overcomes
+     * the downhill force.
+     * </p>
+     *
+     * @return {@code true} if at rest, {@code false} otherwise
+     */
     public boolean isAtRest() {
         StateVector4 lastVector = trajectory.getLast();
+
+        double x = lastVector.x();
+        double y = lastVector.y();
+
+
+        // Evaluate the partial derivatives for x and y
+        double dh_dx = PhysicsUtils.xSlope(x, y, timeStep, expr, differentiator);
+        double dh_dy = PhysicsUtils.ySlope(x, y, timeStep, expr, differentiator);
+
+        if (PhysicsUtils.magnitude(x, y) < 0.05) {
+            if (PhysicsUtils.magnitude(dh_dx, dh_dy) < 0.05) {
+                return true;
+            } else if (course.staticFrictionGrass() > PhysicsUtils.magnitude(dh_dx, dh_dy)) {
+                return true;
+            }
+        }
+
         return false;
     }
 
     /**
      * Generates, appends and returns the next state vector in the trajectory according to the step size
      * Does not check whether the ball is at rest
+     *
      * @return
      */
     private StateVector4 nextStep() {
@@ -76,12 +107,12 @@ public class PhysicsEngine {
 
     /**
      * Returns an iterator that will iterate over the trajectory of the golf ball for graphical display
-     *
+     * <p>
      * Assumes that time matches dt = 1 -> 1s has passed, and frame rate of 60FPS
      */
     public class frameRateIterator implements Iterator<StateVector4> {
         private static int FRAME_RATE = 60;
-        private double kPerFrame = (1.0/FRAME_RATE) / timeStep;
+        private double kPerFrame = (1.0 / FRAME_RATE) / timeStep;
         private int index = 0;
 
 
@@ -92,9 +123,9 @@ public class PhysicsEngine {
 
         @Override
         public StateVector4 next() {
-            for(int i = 0; i < kPerFrame; i++) {
+            for (int i = 0; i < kPerFrame; i++) {
                 nextStep();
-                if(!isAtRest()) {
+                if (!isAtRest()) {
                     break;
                 }
             }

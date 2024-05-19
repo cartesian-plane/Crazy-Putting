@@ -10,14 +10,16 @@ public class PhysicsUtils {
         return Math.sqrt(x * x + y * y);
     }
 
-    public static double xSlope(int xCoord, int yCoord, double h, Expression expr, Differentiator differentiator) {
+    public static double xSlope(double xCoord, double yCoord, double h,
+                                Expression expr, Differentiator differentiator) {
         // Define the univariate functions at the x coordinate
         Function<Double, Double> fx = (x) -> expr.setVariable("y", yCoord).setVariable("x", x).evaluate();
         // Aproximate the derivatives of the functions at the x coordinate
         return differentiator.differentiate(h, xCoord, fx);
     }
 
-    public static double ySlope(int xCoord, int yCoord, double h, Expression expr, Differentiator differentiator) {
+    public static double ySlope(double xCoord, double yCoord,
+                                double h, Expression expr, Differentiator differentiator) {
         // Define the univariate functions at the y coordinate
         Function<Double, Double> fy = (y) -> expr.setVariable("x", xCoord).setVariable("y", y).evaluate();
         // Aproximate the derivatives of the functions at the y coordinate
