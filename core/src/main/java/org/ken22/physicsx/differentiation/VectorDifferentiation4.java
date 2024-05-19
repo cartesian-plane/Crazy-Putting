@@ -35,4 +35,8 @@ public class VectorDifferentiation4 {
     public double dvy(StateVector4 sv) {
         return dvy.apply(sv);
     }
+
+    public StateVector4 dsv(StateVector4 sv) {
+        return new StateVector4(dx.apply(sv), dy.apply(sv), dvx.apply(sv), dvy.apply(sv));
+    }
 }

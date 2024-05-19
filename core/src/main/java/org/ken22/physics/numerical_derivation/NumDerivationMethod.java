@@ -5,7 +5,7 @@ import org.ken22.physics.vectors.GVec4;
 
 import java.util.ArrayList;
 
-public interface NumDerivationMethod {
+public interface  NumDerivationMethod {
 
     public void gradients(GVec4 stateVector, Expression terrain, double timeStep);
 
