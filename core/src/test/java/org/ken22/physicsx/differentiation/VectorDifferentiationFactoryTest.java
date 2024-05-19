@@ -42,7 +42,11 @@ class VectorDifferentiationFactoryTest {
 
         StateVector4 sv = new StateVector4(0.0, 0.0, 1.0, 1.0);
         //System.out.println(vd.dsv(sv).toString());
-        assertEquals(vd.dsv(sv), new StateVector4(1.0, 1.0, -10.0*2-10*2*1/Math.sqrt(2), -10.0-10*2*1/Math.sqrt(2)));
+        double d = 0.000000000001;
+        assertEquals(vd.dsv(sv).x(), 1.0, d);
+        assertEquals(vd.dsv(sv).y(), 1.0, d);
+        assertEquals(vd.dsv(sv).vx(), -10.0*2-10*2*1/Math.sqrt(2), d);
+        assertEquals(vd.dsv(sv).vy(), -10.0-10*2*1/Math.sqrt(2), d);
     }
 
 }

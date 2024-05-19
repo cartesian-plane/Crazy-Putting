@@ -35,10 +35,10 @@ public class VectorDifferentiationFactory {
 
         // Define the velocity differentiation functions
         Function<StateVector4, Double> dvx = (stateVector4) ->
-            (-course.gravitationalConstant() * df_dx - course.kineticFrictionGrass() * stateVector4.vx() /
+            (-course.gravitationalConstant() * df_dx - course.gravitationalConstant() * course.kineticFrictionGrass() * stateVector4.vx() /
                 PhysicsUtils.magnitude(stateVector4.vx(), stateVector4.vy()))/course.mass();
         Function<StateVector4, Double> dvy = (stateVector4) ->
-            (-course.gravitationalConstant() * df_dy - course.kineticFrictionGrass() * stateVector4.vy() /
+            (-course.gravitationalConstant() * df_dy - course.gravitationalConstant() * course.kineticFrictionGrass() * stateVector4.vy() /
                 PhysicsUtils.magnitude(stateVector4.vx(), stateVector4.vy()))/course.mass();
 
         // Return the vector differentiation object
@@ -56,10 +56,10 @@ public class VectorDifferentiationFactory {
 
         // Define the velocity differentiation functions
         Function<StateVector4, Double> dvx = (stateVector4) ->
-            (-course.gravitationalConstant() * df_dx - course.kineticFrictionGrass() * df_dx /
+            (-course.gravitationalConstant() * df_dx - course.gravitationalConstant() * course.kineticFrictionGrass() * df_dx /
             PhysicsUtils.magnitude(df_dx, df_dy))/course.mass();
         Function<StateVector4, Double> dvy = (stateVector4) ->
-            (-course.gravitationalConstant() * df_dy - course.kineticFrictionGrass() * df_dy /
+            (-course.gravitationalConstant() * df_dy - course.gravitationalConstant() * course.kineticFrictionGrass() * df_dy /
                 PhysicsUtils.magnitude(df_dx, df_dy))/course.mass();
 
         // Return the vector differentiation object
