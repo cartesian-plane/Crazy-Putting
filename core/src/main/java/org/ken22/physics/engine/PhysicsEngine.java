@@ -255,13 +255,14 @@ public class PhysicsEngine {
 
     private ArrayList<IFunc<Double, Double>> chooseFunctions(GVec4 currentState) {
         ArrayList<IFunc<Double, Double>> functions = new ArrayList<IFunc<Double, Double>>();
-        double vx = currentState.get_vx();
-        double vy = currentState.get_vy();
-        double gradx = currentState.get_dhdx();
-        double grady = currentState.get_dhdy();
+        if(minSpeedReached(currentState)) { //speed gets too low, 0.05 is threshold
+            functions.add(this.ax_s_gr);
+            functions.add(this.ay_s_gr);
+        }
 
-        if(Math.abs(vx) < 0.01) {
-            if
+        else { // ball is moving
+            functions.add(this.ax_k_gr);
+            functions.add(this.ay_k_gr);
         }
         return functions;
     }
