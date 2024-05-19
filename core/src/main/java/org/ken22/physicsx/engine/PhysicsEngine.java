@@ -74,7 +74,7 @@ public class PhysicsEngine {
     public boolean isAtRest() {
         StateVector4 lastVector = trajectory.getLast();
 
-        if (underwater()) {
+        if (underwater() || reachedTarget()) {
             return true;
         }
 
@@ -114,11 +114,25 @@ public class PhysicsEngine {
 
         double height = expr.evaluate();
 
-        if (height < 0) {
-            return true;
-        }
+        return height < 0;
+    }
 
-        return false;
+    /**
+     * Checks if the ball has reached the target.
+     *
+     * @return {@code true} if reached, {@code false} otherwise
+     */
+    public boolean reachedTarget() {
+        StateVector4 lastVector = trajectory.getLast();
+
+        double x = lastVector.x();
+        double y = lastVector.y();
+
+        double targetRadius = course.targetRadius();
+        double targetX = course.targetXcoord();
+        double targetY = course.targetYcoord();
+
+        return PhysicsUtils.magnitude(x - targetX, y - targetY) < targetRadius;
     }
 
     /**
