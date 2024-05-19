@@ -6,7 +6,6 @@ import org.ken22.physics.numerical_integration.NumIntegrationMethod;
 import org.ken22.physics.numerical_integration.RK4;
 import org.ken22.physics.system.PhysicsSystem;
 import org.ken22.physics.vectors.GVec4;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,7 +23,7 @@ public class PhysicsTester {
 
     public static void testRun(String name, File coursejson, GVec4 initialState, NumDerivationMethod differentiator, NumIntegrationMethod integrator) {
 
-        PhysicsSystem system = new PhysicsSystem(initialState,coursejson);
+        PhysicsSystem system = new PhysicsSystem(initialState, coursejson);
         PhysicsEngine engine = new PhysicsEngine(system, integrator, differentiator);
 
         double t0 = System.nanoTime();

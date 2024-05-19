@@ -21,17 +21,17 @@ public class PhysicsEngine {
     //Kinetic
     private IFunc<Double, Double> ax_k_gr = (vars) ->
         ( -1*this.g*(vars.get(5)+this.kf_gr*vars.get(3) /
-            myMath.pythagoras(vars.get(5), vars.get(6)) ));
+            myMath.pythagoras(vars.get(3), vars.get(4)) ));
     private IFunc<Double, Double> ay_k_gr = (vars) ->
         ( -1*this.g*(vars.get(6)+this.kf_gr*vars.get(4) /
-            myMath.pythagoras(vars.get(5), vars.get(6)) ));
+            myMath.pythagoras(vars.get(3), vars.get(4)) ));
     //Static
     private IFunc<Double, Double> ax_s_gr = (vars) ->
-        ( -1*this.g*(vars.get(5)+this.sf_gr*vars.get(5) /
+        ( -1*this.g*(vars.get(5)+this.kf_gr*vars.get(5) /
             myMath.pythagoras(vars.get(5), vars.get(6)) ));
     private IFunc<Double, Double> ay_s_gr = (vars) ->
-        ( -1*this.g*(vars.get(6)+this.sf_gr*vars.get(6) /
-            myMath.pythagoras(vars.get(5), vars.get(6))));
+        ( -1*this.g*(vars.get(6)+this.kf_gr*vars.get(6) /
+            myMath.pythagoras(vars.get(5), vars.get(6)) ));
 
 
     //Sand equations
@@ -46,12 +46,12 @@ public class PhysicsEngine {
     //Static
     private IFunc<Double, Double> ax_s_sa = (vars) ->
         ( -1*this.g*(vars.get(5)+this.sf_sa*vars.get(5) /
-            myMath.pythagoras(vars.get(5), vars.get(6))) );
+            myMath.pythagoras(vars.get(5), vars.get(6)) ));
     private IFunc<Double, Double> ay_s_sa = (vars) ->
         ( -1*this.g*(vars.get(6)+this.sf_sa*vars.get(6) /
-            myMath.pythagoras(vars.get(5), vars.get(6))));;
+            myMath.pythagoras(vars.get(5), vars.get(6)) ));
 
-    //Course specific information
+    //Json
     private Expression terrain; //Parameters are (x,y), passed in constructor
     private Map<String, Double> vars;
     private GolfCourse courseInfo;
@@ -93,11 +93,11 @@ public class PhysicsEngine {
 
         //Course info
         this.courseInfo = system.getCourse();
-        kf_gr = this.courseInfo.kineticFrictionGrass();
-        sf_gr = this.courseInfo.staticFrictionGrass();
-        g = this.courseInfo.gravitationalConstant();
-        sf_sa = this.courseInfo.kineticFrictionSand();
-        kf_sa = this.courseInfo.staticFrictionSand();
+        this.kf_gr = this.courseInfo.kineticFrictionGrass();
+        this.sf_gr = this.courseInfo.staticFrictionGrass();
+        this.g = this.courseInfo.gravitationalConstant();
+        this.sf_sa = this.courseInfo.kineticFrictionSand();
+        this.kf_sa = this.courseInfo.staticFrictionSand();
         this.terrain = system.getTerrain();
         this.maxspeed = courseInfo.maximumSpeed();
         this.range = courseInfo.range();
@@ -137,7 +137,7 @@ public class PhysicsEngine {
             //Check if on grass or sand
 
             //GVec4 stateVector, double timeStep, IFunc<Double, Double> funcx, IFunc<Double, Double> funcy, Expression height, NumDerivationMethod differentiator
-            if(currentState.get(3) < Math.abs(0.05) && currentState.get(4) < Math.abs(0.05)) { //speed gets too low, 0.05 is threshold
+            if(minSpeedReached(currentState)) { //speed gets too low, 0.05 is threshold
                 if(currentState.get(5) < Math.abs(0.05) && currentState.get(6) < Math.abs(0.05)) { //flat surface
                     atRest = true;
                     integrator.execute(this.stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
@@ -216,30 +216,35 @@ public class PhysicsEngine {
 
     public boolean isAtRest(GVec4 currentState) {
         boolean atRest = false;
-        if(Math.abs(currentState.get(3)) < Math.abs(0.05) && currentState.get(4) < 0.05) { //speed gets too low, 0.05 is threshold
-            if(Math.abs(currentState.get(5)) < Math.abs(0.05) && currentState.get(6) < 0.05) { //flat surface
+        double vx = Math.abs(currentState.get(3));
+        double vy = Math.abs(currentState.get(4));
+        double gradX = Math.abs(currentState.get(5));
+        double gradY = Math.abs(currentState.get(6));
+
+        if(vx < 0.02 && vy < 0.02) { // speed threshold
+            if(gradX < 0.05 && gradY < 0.05) { // flat surface
                 atRest = true;
-            }
-            else { // Inclined surface
-                if(myMath.pythagoras(currentState.get(5), currentState.get(6)) < sf_gr) { //ball stops
-                    atRest = true;
-                }
+            } else if(myMath.pythagoras(gradX, gradY) < sf_gr) { // inclined surface but within static friction
+                atRest = true;
             }
         }
 
-        //Check if in water or out of bounds
+        // Check if in water or out of bounds
         if(!atRest) {
-            atRest = (Math.abs(currentState.get(1)) > this.range || Math.abs(currentState.get(2)) > this.range || (currentState.getLast() < 0));
-            //zero velocities
+            double x = Math.abs(currentState.get(1));
+            double y = Math.abs(currentState.get(2));
+            atRest = (x > this.range || y > this.range || (currentState.getLast() < 0));
             if(atRest) {
-                currentState.set(3, 0.0);
+                currentState.set(3, 0.0); // Zero velocities
                 currentState.set(4, 0.0);
             }
         }
 
-        //Check if target reached
+        // Check if target reached
         if(!atRest) {
-            atRest = (Math.abs(currentState.get(1) - this.targetX) < this.targetRadius && Math.abs(currentState.get(2) - this.targetY) < this.targetRadius);
+            double x = Math.abs(currentState.get(1) - this.targetX);
+            double y = Math.abs(currentState.get(2) - this.targetY);
+            atRest = (x < this.targetRadius && y < this.targetRadius);
             if(atRest) {
                 System.out.println("Score!");
             }
@@ -249,7 +254,7 @@ public class PhysicsEngine {
 
     private ArrayList<IFunc<Double, Double>> chooseFunctions(GVec4 currentState) {
         ArrayList<IFunc<Double, Double>> functions = new ArrayList<IFunc<Double, Double>>();
-        if(Math.abs(currentState.get(3)) < Math.abs(0.05) && currentState.get(4) < 0.05) { //speed gets too low, 0.05 is threshold
+        if(minSpeedReached(currentState)) { //speed gets too low, 0.05 is threshold
           functions.add(this.ax_s_gr);
           functions.add(this.ay_s_gr);
         }
@@ -273,5 +278,7 @@ public class PhysicsEngine {
         //Allow the user to choose the next starting velocities
     }
 
-
+    private boolean minSpeedReached(GVec4 currentState) {
+        return (Math.abs(currentState.get(3)) < 0.02 && Math.abs(currentState.get(4)) < 0.02);
+    }
 }

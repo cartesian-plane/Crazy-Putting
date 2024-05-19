@@ -227,8 +227,8 @@ public class FirstScreen implements Screen {
         GVec4 temp = engine.nextStep();
 
         // Get the velocities from the state vector
-        float vx = (float) temp.getVx0();
-        float vy = (float) temp.getVy0();
+        float vx = (float) temp.get_vx();
+        float vy = (float) temp.get_vy();
 
         Vector3 nextStep = new Vector3(vx / scalingFactor / 60, 0, vy / scalingFactor / 60);
         scene.modelInstance.transform.translate(nextStep);

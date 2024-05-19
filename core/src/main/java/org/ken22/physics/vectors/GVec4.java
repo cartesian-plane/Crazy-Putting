@@ -8,7 +8,7 @@ public class GVec4 implements Vec {
     double timeStep;
 
     public GVec4(double timeStep) {
-        this.timeStep = 0.01;
+        this.timeStep = this.timeStep;
     }
 
     public GVec4() {

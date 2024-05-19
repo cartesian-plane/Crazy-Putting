@@ -2,93 +2,76 @@ package org.ken22.physics.numerical_derivation;
 
 import net.objecthunter.exp4j.Expression;
 import org.ken22.physics.vectors.GVec4;
-
 import java.util.ArrayList;
 
 public class fivePointDifference implements NumDerivationMethod {
 
     public void gradients(GVec4 stateVector, Expression terrain, double timeStep) {
 
-        //Using timeStep for both ∆x and ∆y for no reason other than it's convenient :D
-        ArrayList<Double> coords = new ArrayList<Double>(); // {x,y}
-        coords.add(stateVector.get(1));
-        coords.add(stateVector.get(2));
+        // Extract x and y coordinates from the state vector
+        double x = stateVector.get(1);
+        double y = stateVector.get(2);
 
-        // Five-point difference is used separately for each gradient
-        // For alternative methods see the following:
-        // Handbook of formulas, 25.3.21 - 33 https://personal.math.ubc.ca/~cbm/aands/abramowitz_and_stegun.pdf
-        // Taylor for 2 variable functions: https://math.libretexts.org/Bookshelves/Calculus/Supplemental_Modules_(Calculus)/Multivariable_Calculus/3%3A_Topics_in_Partial_Derivatives/Taylor__Polynomials_of_Functions_of_Two_Variables
-        // Method for stencils https://en.wikipedia.org/wiki/Five-point_stencil#cite_ref-3
+        // Calculate gradients using the centred stencil method
+        double dhdx = centredStencilX(terrain, timeStep, x, y);
+        double dhdy = centredStencilY(terrain, timeStep, x, y);
 
-        double dhdx = centredStencilX(terrain, timeStep, coords);
-        double dhdy = centredStencilY(terrain, timeStep, coords);
-
+        // Update the state vector with the calculated gradients
         stateVector.set(5, dhdx);
         stateVector.set(6, dhdy);
     }
 
     public void gradients(ArrayList<Double> stateVector, Expression terrain, double timeStep) {
 
-        //Using timeStep for both ∆x and ∆y for no reason other than it's convenient :D
-        ArrayList<Double> coords = new ArrayList<Double>(); // {x,y}
-        coords.add(stateVector.get(1));
-        coords.add(stateVector.get(2));
+        // Extract x and y coordinates from the state vector
+        double x = stateVector.get(1);
+        double y = stateVector.get(2);
 
-        // Five-point difference is used separately for each gradient
-        // For alternative methods see the following:
-        // Handbook of formulas, 25.3.21 - 33 https://personal.math.ubc.ca/~cbm/aands/abramowitz_and_stegun.pdf
-        // Taylor for 2 variable functions: https://math.libretexts.org/Bookshelves/Calculus/Supplemental_Modules_(Calculus)/Multivariable_Calculus/3%3A_Topics_in_Partial_Derivatives/Taylor__Polynomials_of_Functions_of_Two_Variables
-        // Method for stencils https://en.wikipedia.org/wiki/Five-point_stencil#cite_ref-3
+        // Calculate gradients using the centred stencil method
+        double dhdx = centredStencilX(terrain, timeStep, x, y);
+        double dhdy = centredStencilY(terrain, timeStep, x, y);
 
-        double dhdx = centredStencilX(terrain, timeStep, coords);
-        double dhdy = centredStencilY(terrain, timeStep, coords);
-
+        // Update the state vector with the calculated gradients
         stateVector.set(5, dhdx);
         stateVector.set(6, dhdy);
     }
 
-    public double centredStencilX(Expression terrain, double timeStep, ArrayList<Double> coords) {
+    private double centredStencilX(Expression terrain, double timeStep, double x, double y) {
 
-        terrain
-            .setVariable("x", coords.get(0)-timeStep)
-            .setVariable("y", coords.get(1));
-        double backward1 = terrain.evaluate();
-        terrain
-            .setVariable("x", coords.get(0)-2*timeStep)
-            .setVariable("y", coords.get(1));
+        // Set variables and evaluate the terrain function at the required points for x gradient
+        terrain.setVariable("x", x - 2 * timeStep).setVariable("y", y);
         double backward2 = terrain.evaluate();
-        terrain
-            .setVariable("x", coords.get(0)+timeStep)
-            .setVariable("y", coords.get(1));
+
+        terrain.setVariable("x", x - timeStep).setVariable("y", y);
+        double backward1 = terrain.evaluate();
+
+        terrain.setVariable("x", x + timeStep).setVariable("y", y);
         double forward1 = terrain.evaluate();
-        terrain
-            .setVariable("x", coords.get(0)+2*timeStep)
-            .setVariable("y", coords.get(1));
+
+        terrain.setVariable("x", x + 2 * timeStep).setVariable("y", y);
         double forward2 = terrain.evaluate();
 
-        return (backward2 - 8*backward1 + 8*forward1 - forward2)/(12*timeStep);
+        // Calculate the centred finite difference for x gradient
+        return (backward2 - 8 * backward1 + 8 * forward1 - forward2) / (12.0 * timeStep);
     }
 
-    public double centredStencilY(Expression terrain, double timeStep, ArrayList<Double> coords) {
+    private double centredStencilY(Expression terrain, double timeStep, double x, double y) {
 
-        terrain
-            .setVariable("x", coords.get(0))
-            .setVariable("y", coords.get(1)-timeStep);
-        double backward1 = terrain.evaluate();
-        terrain
-            .setVariable("x", coords.get(0))
-            .setVariable("y", coords.get(1)-2*timeStep);
+        // Set variables and evaluate the terrain function at the required points for y gradient
+        terrain.setVariable("x", x).setVariable("y", y - 2 * timeStep);
         double backward2 = terrain.evaluate();
-        terrain
-            .setVariable("x", coords.get(0))
-            .setVariable("y", coords.get(1)+timeStep);
+
+        terrain.setVariable("x", x).setVariable("y", y - timeStep);
+        double backward1 = terrain.evaluate();
+
+        terrain.setVariable("x", x).setVariable("y", y + timeStep);
         double forward1 = terrain.evaluate();
-        terrain
-            .setVariable("x", coords.get(0))
-            .setVariable("y", coords.get(1)+2*timeStep);
+
+        terrain.setVariable("x", x).setVariable("y", y + 2 * timeStep);
         double forward2 = terrain.evaluate();
 
-        return (backward2 - 8*backward1 + 8*forward1 - forward2)/(12*timeStep);
+        // Calculate the centred finite difference for y gradient
+        return (backward2 - 8 * backward1 + 8 * forward1 - forward2) / (12.0 * timeStep);
     }
-
 }
+
