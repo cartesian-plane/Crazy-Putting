@@ -109,7 +109,6 @@ public class PhysicsEngine {
         double vy = lastVector.vy();
 
         VectorDifferentiation4 differentiation;
-
         // Decide which equations to use for updating the acceleration
         if (PhysicsUtils.magnitude(vx, vy) < STOPPING_THRESHOLD) {
             differentiation = vectorDifferentiationFactory.lowSpeedVectorDifferentiation4(lastVector.x(), lastVector.y());
@@ -135,14 +134,14 @@ public class PhysicsEngine {
 
         @Override
         public boolean hasNext() {
-            return isAtRest();
+            return !isAtRest();
         }
 
         @Override
         public StateVector4 next() {
             for (int i = 0; i < kPerFrame; i++) {
                 nextStep();
-                if (!isAtRest()) {
+                if (isAtRest()) {
                     break;
                 }
             }
