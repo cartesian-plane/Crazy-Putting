@@ -82,6 +82,18 @@ public class GVec4 implements Vec {
         return vector.get(4);
     }
 
+    public double get_dhdx() {
+        return vector.get(5);
+    }
+
+    public double get_dhdy() {
+        return vector.get(6);
+    }
+
+    public double get_h() {
+        return vector.get(7);
+    }
+
     public double getTimeStep() {
         return timeStep;
     }
@@ -105,6 +117,7 @@ public class GVec4 implements Vec {
     public void set_vy(double vy0) {
         this.vector.set(4, vy0);
     }
+
 
     public void setTimeStep(double timeStep) {
         this.timeStep = timeStep;

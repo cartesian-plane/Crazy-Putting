@@ -65,7 +65,7 @@ public class RK4 implements NumIntegrationMethod {
         interim.add(0.0); // Placeholder for gradY
 
         // Re-evaluate gradients at the interim point
-        differentiator.gradients(interim, terrain, timeStep / 10.0);
+        differentiator.gradients(interim, terrain, timeStep/10.0);
 
         return interim;
     }

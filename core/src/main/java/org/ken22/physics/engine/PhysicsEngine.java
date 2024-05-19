@@ -27,10 +27,10 @@ public class PhysicsEngine {
             myMath.pythagoras(vars.get(3), vars.get(4)) ));
     //Static
     private IFunc<Double, Double> ax_s_gr = (vars) ->
-        ( -1*this.g*(vars.get(5)+this.kf_gr*vars.get(5) /
+        ( -1*this.g*(vars.get(5)+this.sf_gr*vars.get(5) /
             myMath.pythagoras(vars.get(5), vars.get(6)) ));
     private IFunc<Double, Double> ay_s_gr = (vars) ->
-        ( -1*this.g*(vars.get(6)+this.kf_gr*vars.get(6) /
+        ( -1*this.g*(vars.get(6)+this.sf_gr*vars.get(6) /
             myMath.pythagoras(vars.get(5), vars.get(6)) ));
 
 
@@ -119,7 +119,8 @@ public class PhysicsEngine {
         return stateVectors;
     }
 
-    public void run() {
+    public void run()
+    {
         GVec4 currentState = copy(initialState); // (t,x,y,vx,vy)
         boolean atRest = false;
 
@@ -138,12 +139,12 @@ public class PhysicsEngine {
 
             //GVec4 stateVector, double timeStep, IFunc<Double, Double> funcx, IFunc<Double, Double> funcy, Expression height, NumDerivationMethod differentiator
             if(minSpeedReached(currentState)) { //speed gets too low, 0.05 is threshold
-                if(currentState.get(5) < Math.abs(0.05) && currentState.get(6) < Math.abs(0.05)) { //flat surface
+                if(currentState.get_dhdx() < Math.abs(0.05) && currentState.get_dhdy() < Math.abs(0.05)) { //flat surface
                     atRest = true;
                     integrator.execute(this.stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                 }
                 else { //inclined surface
-                    if(myMath.pythagoras(currentState.get(5), currentState.get(6)) < sf_gr) { //ball stops
+                    if(myMath.pythagoras(currentState.get_dhdx(), currentState.get_dhdy()) < sf_gr) { //ball stops
                         atRest = true;
                         integrator.execute(this.stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
                     }
@@ -158,11 +159,11 @@ public class PhysicsEngine {
             }
 
             //Don't allow to go over max speed
-            currentState.set(3, Math.min(currentState.get(3), this.maxspeed));
-            currentState.set(4, Math.min(currentState.get(4), this.maxspeed));
+            currentState.set(3, Math.min(currentState.get_vx(), this.maxspeed));
+            currentState.set(4, Math.min(currentState.get_vy(), this.maxspeed));
 
             //Add height only for testing, remove later
-            currentState.add(this.terrain.setVariable("x", currentState.get(1)).setVariable("y", currentState.get(2)).evaluate());
+            currentState.add(this.terrain.setVariable("x", currentState.get_x()).setVariable("y", currentState.get_y()).evaluate());
 
             //Collisions? Save for later
             //Think about angle of bounce and conservation of momentum
@@ -173,8 +174,8 @@ public class PhysicsEngine {
         }
 
         this.initialState = new GVec4(this.timeStep);
-        this.initialState.add(stateVectors.getLast().get(1));
-        this.initialState.add(stateVectors.getLast().get(2));
+        this.initialState.add(stateVectors.getLast().get_x());
+        this.initialState.add(stateVectors.getLast().get_y());
         this.stateVectors = null;
 
         //Store the last position which is going to be the next starting position
@@ -188,19 +189,19 @@ public class PhysicsEngine {
         this.seconds += 1.0/60.0;
 
         //Do not allow initial velocity above threshold
-        currentState.set(3, Math.min(currentState.get(3), this.maxspeed));
-        currentState.set(4, Math.min(currentState.get(4), this.maxspeed));
+        currentState.set(3, capVelocity(currentState.get_vx()));
+        currentState.set(4, capVelocity(currentState.get_vy()));
 
         //System.out.println(currentState.getVector().toString()+ " ------ ");
 
         //Calculates partial derivatives and adds them to currentState vector (in place)
-        differentiator.gradients(currentState, this.terrain, this.timeStep/10); // (t,x,y,vx, vy, gradX, gradY)
-        currentState.set(7, terrain.setVariable("x", currentState.get(1)).setVariable("y", currentState.get(2)).evaluate());
+        differentiator.gradients(currentState, this.terrain, this.timeStep/10.0); // (t,x,y,vx, vy, gradX, gradY)
+        currentState.set(7, terrain.setVariable("x", currentState.get_x()).setVariable("y", currentState.get_y()).evaluate());
         ArrayList<IFunc<Double, Double>> functions = chooseFunctions(currentState);
         GVec4 newState = integrator.execute(stateVectors, this.timeStep, functions.getFirst(), functions.get(1), this.terrain, this.differentiator);
 
-        newState.set(3, Math.min(newState.get(3), this.maxspeed));
-        newState.set(4, Math.min(newState.get(4), this.maxspeed));
+        newState.set(3, capVelocity(newState.get_vx()));
+        newState.set(4, capVelocity(newState.get_vy()));
 
         stateVectors.add(newState);
         //System.out.println(currentState.getVector().toString()+ " ------ ");
@@ -216,13 +217,13 @@ public class PhysicsEngine {
 
     public boolean isAtRest(GVec4 currentState) {
         boolean atRest = false;
-        double vx = Math.abs(currentState.get(3));
-        double vy = Math.abs(currentState.get(4));
-        double gradX = Math.abs(currentState.get(5));
-        double gradY = Math.abs(currentState.get(6));
+        double vx = Math.abs(currentState.get_vx());
+        double vy = Math.abs(currentState.get_vy());
+        double gradX = Math.abs(currentState.get_dhdx());
+        double gradY = Math.abs(currentState.get_dhdy());
 
-        if(vx < 0.02 && vy < 0.02) { // speed threshold
-            if(gradX < 0.05 && gradY < 0.05) { // flat surface
+        if(vx < 0.01 && vy < 0.01) { // speed threshold
+            if(gradX < 0.001 && gradY < 0.001) { // flat surface
                 atRest = true;
             } else if(myMath.pythagoras(gradX, gradY) < sf_gr) { // inclined surface but within static friction
                 atRest = true;
@@ -231,8 +232,8 @@ public class PhysicsEngine {
 
         // Check if in water or out of bounds
         if(!atRest) {
-            double x = Math.abs(currentState.get(1));
-            double y = Math.abs(currentState.get(2));
+            double x = Math.abs(currentState.get_x());
+            double y = Math.abs(currentState.get_y());
             atRest = (x > this.range || y > this.range || (currentState.getLast() < 0));
             if(atRest) {
                 currentState.set(3, 0.0); // Zero velocities
@@ -242,8 +243,8 @@ public class PhysicsEngine {
 
         // Check if target reached
         if(!atRest) {
-            double x = Math.abs(currentState.get(1) - this.targetX);
-            double y = Math.abs(currentState.get(2) - this.targetY);
+            double x = Math.abs(currentState.get_x() - this.targetX);
+            double y = Math.abs(currentState.get_y() - this.targetY);
             atRest = (x < this.targetRadius && y < this.targetRadius);
             if(atRest) {
                 System.out.println("Score!");
@@ -254,22 +255,21 @@ public class PhysicsEngine {
 
     private ArrayList<IFunc<Double, Double>> chooseFunctions(GVec4 currentState) {
         ArrayList<IFunc<Double, Double>> functions = new ArrayList<IFunc<Double, Double>>();
-        if(minSpeedReached(currentState)) { //speed gets too low, 0.05 is threshold
-          functions.add(this.ax_s_gr);
-          functions.add(this.ay_s_gr);
-        }
+        double vx = currentState.get_vx();
+        double vy = currentState.get_vy();
+        double gradx = currentState.get_dhdx();
+        double grady = currentState.get_dhdy();
 
-        else { // ball is moving
-            functions.add(this.ax_k_gr);
-            functions.add(this.ay_k_gr);
+        if(Math.abs(vx) < 0.01) {
+            if
         }
         return functions;
     }
 
     public void restart(double vx, double vy) {
         this.initialState = new GVec4(this.timeStep);
-        this.initialState.add(stateVectors.getLast().get(1));
-        this.initialState.add(stateVectors.getLast().get(2));
+        this.initialState.add(stateVectors.getLast().get_x());
+        this.initialState.add(stateVectors.getLast().get_y());
         this.initialState.add(vx);
         this.initialState.add(vy);
         this.stateVectors = new ArrayList<GVec4>();
@@ -279,6 +279,17 @@ public class PhysicsEngine {
     }
 
     private boolean minSpeedReached(GVec4 currentState) {
-        return (Math.abs(currentState.get(3)) < 0.02 && Math.abs(currentState.get(4)) < 0.02);
+        return (Math.abs(currentState.get_vx()) < 0.01 && Math.abs(currentState.get_vy()) < 0.01);
+    }
+
+    private double capVelocity(double velocity) {
+
+        if(velocity > this.maxspeed) {
+            velocity = this.maxspeed;
+        }
+        if(velocity < -this.maxspeed) {
+            velocity = -this.maxspeed;
+        }
+        return velocity;
     }
 }
