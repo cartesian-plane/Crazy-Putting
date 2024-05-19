@@ -19,6 +19,7 @@ import java.util.function.Function;
 public class PhysicsEngine {
 
     private static final double DEFAULT_TIME_STEP = 0.00001;
+    private static final double STOPPING_THRESHOLD = 0.05;
     private final GolfCourse course;
     private final Expression expr;
 
@@ -80,8 +81,8 @@ public class PhysicsEngine {
         double dh_dx = PhysicsUtils.xSlope(x, y, timeStep, expr, differentiator);
         double dh_dy = PhysicsUtils.ySlope(x, y, timeStep, expr, differentiator);
 
-        if (PhysicsUtils.magnitude(x, y) < 0.05) {
-            if (PhysicsUtils.magnitude(dh_dx, dh_dy) < 0.05) {
+        if (PhysicsUtils.magnitude(x, y) < STOPPING_THRESHOLD) {
+            if (PhysicsUtils.magnitude(dh_dx, dh_dy) < STOPPING_THRESHOLD) {
                 return true;
             } else if (course.staticFrictionGrass() > PhysicsUtils.magnitude(dh_dx, dh_dy)) {
                 return true;
