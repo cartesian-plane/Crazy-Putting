@@ -25,13 +25,9 @@ public class VectorDifferentiationFactory {
     private static Function<StateVector4, Double> dy = (stateVector4) -> stateVector4.vy();
 
     public VectorDifferentiation4 vectorDifferentiation4(double xCoord, double yCoord) {
-        // Define the univariate functions at the x and y coordinates
-        Function<Double, Double> fx = (x) -> expr.setVariable("y", yCoord).setVariable("x", x).evaluate();
-        Function<Double, Double> fy = (y) -> expr.setVariable("x", xCoord).setVariable("y", y).evaluate();
 
-        // Aproximate the derivatives of the functions at the x and y coordinates
-        double df_dx = differentiator.differentiate(h, xCoord, fx);
-        double df_dy = differentiator.differentiate(h, yCoord, fy);
+        double df_dx = PhysicsUtils.xSlope(xCoord, yCoord, h, expr, differentiator);
+        double df_dy = PhysicsUtils.ySlope(xCoord, yCoord, h, expr, differentiator);
 
         // Define the velocity differentiation functions
         Function<StateVector4, Double> dvx = (stateVector4) ->
@@ -46,13 +42,9 @@ public class VectorDifferentiationFactory {
     }
 
     public VectorDifferentiation4 lowSpeedVectorDifferentiation4(double xCoord, double yCoord) {
-        // Define the univariate functions at the x and y coordinates
-        Function<Double, Double> fx = (x) -> expr.setVariable("y", yCoord).setVariable("x", x).evaluate();
-        Function<Double, Double> fy = (y) -> expr.setVariable("x", xCoord).setVariable("y", y).evaluate();
 
-        // Aproximate the derivatives of the functions at the x and y coordinates
-        double df_dx = differentiator.differentiate(h, xCoord, fx);
-        double df_dy = differentiator.differentiate(h, yCoord, fy);
+        double df_dx = PhysicsUtils.xSlope(xCoord, yCoord, h, expr, differentiator);
+        double df_dy = PhysicsUtils.ySlope(xCoord, yCoord, h, expr, differentiator);
 
         // Define the velocity differentiation functions
         Function<StateVector4, Double> dvx = (stateVector4) ->
