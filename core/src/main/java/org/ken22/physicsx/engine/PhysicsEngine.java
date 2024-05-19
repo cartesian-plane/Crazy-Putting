@@ -62,16 +62,21 @@ public class PhysicsEngine {
     /**
      * Checks whether the ball is at rest by looking at the last computed state vector.
      *
-     * <p> If the speed is small and the slope is almost flat, the ball stops.
-     * <p>
-     * In the case that the slope is not negligible, it will check if the static friction overcomes
-     * the downhill force.
-     * </p>
+     * <p>The ball is considered to be at rest if any of these conditions are true:</p>
+     * <ul>
+     *     <li>has collided (i.e. went into water)</li>
+     *     <li>the speed is small and the slope is negligible</li>
+     *     <li>the static friction overcomes the downhill force</li>
+     * </ul>
      *
      * @return {@code true} if at rest, {@code false} otherwise
      */
     public boolean isAtRest() {
         StateVector4 lastVector = trajectory.getLast();
+
+        if (underwater()) {
+            return true;
+        }
 
         double x = lastVector.x();
         double y = lastVector.y();
@@ -92,8 +97,27 @@ public class PhysicsEngine {
         return false;
     }
 
+
+    /**
+     * Check if the ball has collided (went into water).
+     *
+     * @return {@code true} if the height is negative, {@code false} otherwise.
+     */
     public boolean underwater() {
-        StateVector4 lastVector;
+        StateVector4 lastVector = trajectory.getLast();
+
+        double x = lastVector.x();
+        double y = lastVector.y();
+
+        expr.setVariable("x", x)
+            .setVariable("y", y);
+
+        double height = expr.evaluate();
+
+        if (height < 0) {
+            return true;
+        }
+
         return false;
     }
 
