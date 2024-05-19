@@ -9,12 +9,14 @@ import java.util.function.Function;
  * The functions are used to calculate the rate of change of the x, y, vx and vy components of the vector.
  */
 public class VectorDifferentiation4 {
-    private Function<StateVector4, Double> dx;
-    private Function<StateVector4, Double> dy;
-    private Function<StateVector4, Double> dvx;
-    private Function<StateVector4, Double> dvy;
+    private final Function<StateVector4, Double> dx;
+    private final Function<StateVector4, Double> dy;
+    private final Function<StateVector4, Double> dvx;
+    private final Function<StateVector4, Double> dvy;
 
-    public VectorDifferentiation4(Function<StateVector4, Double> dx, Function<StateVector4, Double> dy, Function<StateVector4, Double> dvx, Function<StateVector4, Double> dvy) {
+    public VectorDifferentiation4(Function<StateVector4, Double> dx, Function<StateVector4, Double> dy,
+                                  Function<StateVector4, Double> dvx, Function<StateVector4, Double> dvy)
+    {
         this.dx = dx;
         this.dy = dy;
         this.dvx = dvx;

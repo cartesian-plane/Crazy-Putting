@@ -1,15 +1,14 @@
 package org.ken22.physicsx.differentiation;
 
-public enum Lambdas {
-    X(0), Y(1), VX(2), VY(3);
+import org.ken22.physicsx.vectors.StateVector4;
 
-    private final int index;
+import java.util.function.Function;
 
-    Lambdas(int index) {
-        this.index = index;
-    }
+public class Lambdas {
 
-    public int getIndex() {
-        return index;
-    }
+    Function<StateVector4, Double> x = (stateVector4) -> stateVector4.vx();
+    Function<StateVector4, Double> y = (stateVector4) -> stateVector4.vy();
+
+    Function<StateVector4, Double> vx = (stateVector4) -> stateVector4.;
+
 }
