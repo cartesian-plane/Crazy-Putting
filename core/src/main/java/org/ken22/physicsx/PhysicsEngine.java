@@ -1,6 +1,7 @@
 package org.ken22.physicsx;
 
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physicsx.differentiation.Differentiator;
 import org.ken22.physicsx.odesolvers.ODESolver;
 import org.ken22.physicsx.vectors.StateVector4;
 
@@ -14,7 +15,7 @@ public class PhysicsEngine {
     private double timeStep;
     private Differentiator differentiator;
     private ODESolver solver;
-    public Iterator frameIterator implements Iterator;
+    // public Iterator frameIterator implements Iterator;
     private ArrayList<StateVector4> trajectory;
 
 
@@ -36,8 +37,8 @@ public class PhysicsEngine {
         this.course = course;
         this.initialStateVector = initialStateVector;
         this.timeStep = timeStep;
-        this.differentiator = differentiator(GolfCourse);
-        this.solver = solver(GolfCourse);
+        this.differentiator = differentiator;
+        this.solver = solver;
         trajectory.add(initialStateVector);
     }
 
@@ -48,6 +49,7 @@ public class PhysicsEngine {
     private StateVector4 nextStep() {
         StateVector4 lastVector = trajectory.getLast();
 
-        solver.nextStep(timeStep, lastVector, Vecto);
+        // solver.nextStep(timeStep, lastVector, Vecto);
+        return null;
     }
 }

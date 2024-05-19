@@ -9,4 +9,15 @@ dependencies {
   implementation group: 'net.objecthunter', name: 'exp4j', version: '0.4.8'
   // https://github.com/mgsx-dev/gdx-gltf
   api "com.github.mgsx-dev.gdx-gltf:gltf:2.1.0"
+  // Junit testing
+  testImplementation(platform("org.junit:junit-bom:5.10.2"))
+
+  testImplementation(platform('org.junit:junit-bom:5.10.2'))
+  testImplementation('org.junit.jupiter:junit-jupiter')
+  testRuntimeOnly('org.junit.platform:junit-platform-launcher')
 }
+
+test {
+  useJUnitPlatform()
+}
+
