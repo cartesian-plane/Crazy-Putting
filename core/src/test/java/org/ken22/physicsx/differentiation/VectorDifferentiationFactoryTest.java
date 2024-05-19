@@ -38,10 +38,11 @@ class VectorDifferentiationFactoryTest {
         VectorDifferentiationFactory vectorDifferentiationFactory = new VectorDifferentiationFactory(0.00001, expr, course, new FivePointCenteredDifference());
         VectorDifferentiation4 vd = vectorDifferentiationFactory.vectorDifferentiation4(0.0, 0.0);
 
-        StateVector4 sv = new StateVector4(0.0, 0.0, 0.0, 0.0);
-        assertEquals(vd.dsv(sv), new StateVector4(0.0, 0.0, 0.0, 0.0));
+        //assertEquals();
 
-        assertNotNull(vd);
+        StateVector4 sv = new StateVector4(0.0, 0.0, 1.0, 1.0);
+        //System.out.println(vd.dsv(sv).toString());
+        assertEquals(vd.dsv(sv), new StateVector4(1.0, 1.0, -10.0*2-10*2*1/Math.sqrt(2), -10.0-10*2*1/Math.sqrt(2)));
     }
 
 }

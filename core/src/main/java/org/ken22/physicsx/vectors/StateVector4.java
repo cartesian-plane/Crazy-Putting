@@ -16,16 +16,17 @@ public class StateVector4 {
     public double x() {
         return x;
     }
-
     public double y() {
         return y;
     }
-
     public double vx() {
         return vx;
     }
-
     public double vy() {
         return vy;
+    }
+
+    public String toString() {
+        return "x: " + x + ", y: " + y + ", vx: " + vx + ", vy: " + vy;
     }
 }

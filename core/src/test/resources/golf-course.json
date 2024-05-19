@@ -2,7 +2,7 @@
   "name": "Example Golf Course",
   "courseProfile": "2 * x + y",
   "range": 5.0,
-  "mass": 0.5,
+  "mass": 1,
   "gravitationalConstant": 10,
   "kineticFrictionGrass": 2,
   "staticFrictionGrass": 2,
