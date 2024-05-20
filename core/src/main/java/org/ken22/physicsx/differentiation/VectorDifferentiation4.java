@@ -23,9 +23,11 @@ public class VectorDifferentiation4 {
         this.dvy = dvy;
     }
 
+    @SuppressWarnings("unused")
     public double dx(StateVector4 sv) {
         return dx.apply(sv);
     }
+    @SuppressWarnings("unused")
     public double dy(StateVector4 sv) {
         return dy.apply(sv);
     }

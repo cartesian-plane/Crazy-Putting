@@ -1,6 +1,5 @@
 package org.ken22.physicsx.engine;
 
-import com.badlogic.gdx.math.Vector4;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
@@ -29,7 +28,7 @@ public class PhysicsEngine {
 
     private ArrayList<StateVector4> trajectory = new ArrayList<>();
     private StateVector4 initialStateVector;
-    private double timeStep; // Default time step
+    private final double timeStep; // Default time step
 
 
     /// Constructors
@@ -71,6 +70,7 @@ public class PhysicsEngine {
      *
      * @return {@code true} if at rest, {@code false} otherwise
      */
+    @SuppressWarnings("RedundantIfStatement")
     public boolean isAtRest() {
         StateVector4 lastVector = trajectory.getLast();
 
@@ -139,8 +139,9 @@ public class PhysicsEngine {
      * Generates, appends and returns the next state vector in the trajectory according to the step size
      * Does not check whether the ball is at rest
      *
-     * @return
+     * @return {@link StateVector4} the next state vector
      */
+    @SuppressWarnings("UnusedReturnValue")
     private StateVector4 nextStep() {
         StateVector4 lastVector = trajectory.getLast();
         double vx = lastVector.vx();
@@ -165,8 +166,8 @@ public class PhysicsEngine {
      * Assumes that time matches dt = 1 -> 1s has passed, and frame rate of 60FPS
      */
     public class frameRateIterator implements Iterator<StateVector4> {
-        private static int FRAME_RATE = 60;
-        private double kPerFrame = (1.0 / FRAME_RATE) / timeStep;
+        private static final int FRAME_RATE = 60;
+        private final double kPerFrame = (1.0 / FRAME_RATE) / timeStep;
         private int index = 0;
 
 

@@ -14,7 +14,7 @@ public class PhysicsUtils {
                                 Expression expr, Differentiator differentiator) {
         // Define the univariate functions at the x coordinate
         Function<Double, Double> fx = (x) -> expr.setVariable("y", yCoord).setVariable("x", x).evaluate();
-        // Aproximate the derivatives of the functions at the x coordinate
+        // Approximate the derivatives of the functions at the x coordinate
         return differentiator.differentiate(h, xCoord, fx);
     }
 
@@ -22,7 +22,8 @@ public class PhysicsUtils {
                                 double h, Expression expr, Differentiator differentiator) {
         // Define the univariate functions at the y coordinate
         Function<Double, Double> fy = (y) -> expr.setVariable("x", xCoord).setVariable("y", y).evaluate();
-        // Aproximate the derivatives of the functions at the y coordinate
+        // Approximate the derivatives of the functions at the y coordinate
+        //noinspection SuspiciousNameCombination
         return differentiator.differentiate(h, yCoord, fy);
     }
 }

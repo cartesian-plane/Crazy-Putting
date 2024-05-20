@@ -27,11 +27,13 @@ public class RK4 implements ODESolver {
         double k1vx = h * dif.dvx(sv);
         double k1vy = h * dif.dvy(sv);
 
+        //noinspection DuplicatedCode
         double k2x = h * (vx + 0.5 * k1vx);
         double k2y = h * (vy + 0.5 * k1vy);
         double k2vx = h * dif.dvx(new StateVector4(x + 0.5 * k1x, y + 0.5 * k1y, vx + 0.5 * k1vx, vy + 0.5 * k1vy));
         double k2vy = h * dif.dvy(new StateVector4(x + 0.5 * k1x, y + 0.5 * k1y, vx + 0.5 * k1vx, vy + 0.5 * k1vy));
 
+        //noinspection DuplicatedCode
         double k3x = h * (vx + 0.5 * k2vx);
         double k3y = h * (vy + 0.5 * k2vy);
         double k3vx = h * dif.dvx(new StateVector4(x + 0.5 * k2x, y + 0.5 * k2y, vx + 0.5 * k2vx, vy + 0.5 * k2vy));
