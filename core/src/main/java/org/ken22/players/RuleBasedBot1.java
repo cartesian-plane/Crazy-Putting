@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * Assumes the course is a plane that go
  */
 public class RuleBasedBot1 {
-    public ArrayList<Double> play(GVec4 state, GolfCourse course) {
+    public ArrayList<Double> play(StateVector4 state, GolfCourse course) {
         //code to determine next shot
         return null;
     }
