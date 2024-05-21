@@ -1,7 +1,7 @@
 package org.ken22.physicsx.utils;
 
 import net.objecthunter.exp4j.Expression;
-import org.ken22.physicsx.differentiation.Differentiator;
+import org.ken22.physicsx.differentiators.Differentiator;
 
 import java.util.function.Function;
 

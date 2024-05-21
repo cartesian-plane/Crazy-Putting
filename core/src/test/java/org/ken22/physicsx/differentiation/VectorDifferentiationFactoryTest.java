@@ -6,6 +6,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physicsx.differentiators.FivePointCenteredDifference;
 import org.ken22.physicsx.vectors.StateVector4;
 
 import java.io.File;

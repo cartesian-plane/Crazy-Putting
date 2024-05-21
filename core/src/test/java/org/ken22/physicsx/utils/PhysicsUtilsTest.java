@@ -5,7 +5,7 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.junit.jupiter.api.Test;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.physicsx.differentiation.FivePointCenteredDifference;
+import org.ken22.physicsx.differentiators.FivePointCenteredDifference;
 
 import java.io.File;
 import java.io.IOException;

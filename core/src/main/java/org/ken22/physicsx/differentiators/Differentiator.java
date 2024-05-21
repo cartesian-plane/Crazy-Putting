@@ -1,4 +1,4 @@
-package org.ken22.physicsx.differentiation;
+package org.ken22.physicsx.differentiators;
 
 import java.util.function.Function;
 

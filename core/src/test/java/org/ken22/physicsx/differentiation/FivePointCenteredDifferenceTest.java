@@ -1,6 +1,7 @@
 package org.ken22.physicsx.differentiation;
 
 import org.junit.jupiter.api.Test;
+import org.ken22.physicsx.differentiators.FivePointCenteredDifference;
 
 import static org.junit.jupiter.api.Assertions.*;
 

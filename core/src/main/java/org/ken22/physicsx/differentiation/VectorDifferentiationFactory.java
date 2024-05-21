@@ -2,61 +2,57 @@ package org.ken22.physicsx.differentiation;
 
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physicsx.differentiators.Differentiator;
 import org.ken22.physicsx.utils.PhysicsUtils;
 import org.ken22.physicsx.vectors.StateVector4;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class VectorDifferentiationFactory {
-    private final Differentiator differentiator;
-    private final double h;
+    private Differentiator differentiator;
+    private double h;
 
-    private final GolfCourse course;
-    private final Expression expr;
+    private GolfCourse course;
+    private Expression expr;
+
+    InstantaneousVectorDifferentiationFactory instDiffFact;
 
     public VectorDifferentiationFactory(double h, Expression expr, GolfCourse course, Differentiator differentiator) {
         this.h = h;
         this.expr = expr;
         this.course = course;
         this.differentiator = differentiator;
+        instDiffFact= new InstantaneousVectorDifferentiationFactory(h, expr, course, differentiator);
     }
 
-    @SuppressWarnings("Convert2MethodRef")
-    private static final Function<StateVector4, Double> dx = (stateVector4) -> stateVector4.vx();
-    @SuppressWarnings("Convert2MethodRef")
-    private static final Function<StateVector4, Double> dy = (stateVector4) -> stateVector4.vy();
-
     public VectorDifferentiation4 normalSpeedVectorDifferentiation4(double xCoord, double yCoord) {
-
-        double df_dx = PhysicsUtils.xSlope(xCoord, yCoord, h, expr, differentiator);
-        double df_dy = PhysicsUtils.ySlope(xCoord, yCoord, h, expr, differentiator);
-
-        // Define the velocity differentiation functions
-        Function<StateVector4, Double> dvx = (stateVector4) ->
-            (-course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * stateVector4.vx() /
-                PhysicsUtils.magnitude(stateVector4.vx(), stateVector4.vy())));
-        Function<StateVector4, Double> dvy = (stateVector4) ->
-            (-course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * stateVector4.vy() /
-                PhysicsUtils.magnitude(stateVector4.vx(), stateVector4.vy())));
-
-        // Return the vector differentiation object
-        return new VectorDifferentiation4(dx, dy, dvx, dvy);
+        InstantaneousVectorDifferentiation4 instDiff = instDiffFact.instantaneousVectorDifferentiation4();
+        VectorDifferentiation4 dif = (h, sv) -> {
+            StateVector4 dsv = instDiff.apply(sv);
+            StateVector4 svh = sv.add(dsv.multiply(h));
+            StateVector4 dsvh = instDiff.apply(svh);
+            return dsvh;
+        };
+        return dif;
     }
 
     public VectorDifferentiation4 lowSpeedVectorDifferentiation4(double xCoord, double yCoord) {
+        InstantaneousVectorDifferentiation4 instDiff = instDiffFact.altInstantaneousVectorDifferentiation4();
+        VectorDifferentiation4 dif = (h, sv) -> {
+            StateVector4 dsv = instDiff.apply(sv);
+            StateVector4 svh = sv.add(dsv.multiply(h));
+            StateVector4 dsvh = instDiff.apply(svh);
+            return dsvh;
+        };
+        return dif;
+    }
 
-        double df_dx = PhysicsUtils.xSlope(xCoord, yCoord, h, expr, differentiator);
-        double df_dy = PhysicsUtils.ySlope(xCoord, yCoord, h, expr, differentiator);
+    public double xSlope(double x, double y) {
+        return PhysicsUtils.xSlope(x, y, h, expr, differentiator);
+    }
 
-        // Define the velocity differentiation functions
-        Function<StateVector4, Double> dvx = (stateVector4) ->
-            (-course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * df_dx /
-            PhysicsUtils.magnitude(df_dx, df_dy)));
-        Function<StateVector4, Double> dvy = (stateVector4) ->
-            (-course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * df_dy /
-                PhysicsUtils.magnitude(df_dx, df_dy)));
-
-        // Return the vector differentiation object
-        return new VectorDifferentiation4(dx, dy, dvx, dvy);
+    public double ySlope(double x, double y) {
+        return PhysicsUtils.ySlope(x, y, h, expr, differentiator);
     }
 }
