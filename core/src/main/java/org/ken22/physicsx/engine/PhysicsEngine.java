@@ -170,7 +170,7 @@ public class PhysicsEngine {
     }
 
 
-    public FrameRateIterator iterator() { //https://feb22012.ese.eur.nl/week5/2-collection-interfaces
+    public FrameRateIterator iterator() {
         return new FrameRateIterator();
     }
 
