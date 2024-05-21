@@ -1,7 +1,6 @@
 package org.ken22.physicsx.testing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physicsx.engine.PhysicsEngine;
 import org.ken22.physicsx.vectors.StateVector4;
@@ -35,13 +34,9 @@ public class PhysicsTest {
 
         ArrayList<StateVector4> trajectory = new ArrayList<>();
 
-        while (!engine.isAtRest()) {
-            previous = current;
-//            System.out.println("previous = " + previous);
-//            System.out.println("current = " + current);
-
-            current = engine.iterator().next();
-            trajectory.add(current);
+        for (PhysicsEngine.FrameRateIterator it = engine.iterator(); it.hasNext(); ) {
+            StateVector4 sv = it.next();
+            trajectory.add(sv);
         }
 
         String filePath = "assets/enginetest.csv";

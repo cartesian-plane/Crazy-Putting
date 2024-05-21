@@ -46,7 +46,7 @@ class PhysicsEngineTest {
         // Expression expr = expr(course);
         StateVector4 initialStateVector = new StateVector4(0.0, 0.0, 1.0, 1.0);
         PhysicsEngine engine = new PhysicsEngine(course, initialStateVector);
-        Iterator<StateVector4> iterator = engine.new frameRateIterator();
+        Iterator<StateVector4> iterator = engine.new FrameRateIterator();
         while (iterator.hasNext()) {
             StateVector4 stateVector4 = iterator.next();
             System.out.println(stateVector4.toString());

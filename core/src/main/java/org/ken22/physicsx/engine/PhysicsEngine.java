@@ -169,8 +169,8 @@ public class PhysicsEngine {
         return newVector;
     }
 
-    public frameRateIterator iterator() {
-        return new frameRateIterator();
+    public FrameRateIterator iterator() {
+        return new FrameRateIterator();
     }
 
     /**
@@ -178,7 +178,7 @@ public class PhysicsEngine {
      * <p>
      * Assumes that time matches dt = 1 -> 1s has passed, and frame rate of 60FPS
      */
-    public class frameRateIterator implements Iterator<StateVector4> {
+    public class FrameRateIterator implements Iterator<StateVector4> {
         private static final int FRAME_RATE = 60;
         private final int kPerFrame = (int) ((1.0 / FRAME_RATE) / timeStep);
         private int index = 0;
