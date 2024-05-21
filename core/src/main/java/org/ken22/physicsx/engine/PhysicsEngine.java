@@ -169,16 +169,17 @@ public class PhysicsEngine {
         return newVector;
     }
 
-    public frameRateIterator iterator() {
-        return new frameRateIterator();
-    } //https://feb22012.ese.eur.nl/week5/2-collection-interfaces
+
+    public FrameRateIterator iterator() { //https://feb22012.ese.eur.nl/week5/2-collection-interfaces
+        return new FrameRateIterator();
+    }
 
     /**
      * Returns an iterator that will iterate over the trajectory of the golf ball for graphical display
      * <p>
      * Assumes that time matches dt = 1 -> 1s has passed, and frame rate of 60FPS
      */
-    public class frameRateIterator implements Iterator<StateVector4> {
+    public class FrameRateIterator implements Iterator<StateVector4> {
         private static final int FRAME_RATE = 60;
         private final int kPerFrame = (int) ((1.0 / FRAME_RATE) / timeStep);
         private int index = 0; //Iterator must keep reference to the current element/index
