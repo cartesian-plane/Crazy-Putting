@@ -1,10 +1,11 @@
 package org.ken22.physicsx.vectors;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class StateVector4 {
-    private double x;
-    private double y;
-    private double vx;
-    private double vy;
+    private final double x;
+    private final double y;
+    private final double vx;
+    private final double vy;
 
     public StateVector4(double x, double y, double vx, double vy) {
         this.x = x;

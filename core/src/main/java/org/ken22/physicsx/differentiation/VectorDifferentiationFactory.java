@@ -8,11 +8,11 @@ import org.ken22.physicsx.vectors.StateVector4;
 import java.util.function.Function;
 
 public class VectorDifferentiationFactory {
-    private Differentiator differentiator;
-    private double h;
+    private final Differentiator differentiator;
+    private final double h;
 
-    private GolfCourse course;
-    private Expression expr;
+    private final GolfCourse course;
+    private final Expression expr;
 
     public VectorDifferentiationFactory(double h, Expression expr, GolfCourse course, Differentiator differentiator) {
         this.h = h;
@@ -21,8 +21,10 @@ public class VectorDifferentiationFactory {
         this.differentiator = differentiator;
     }
 
-    private static Function<StateVector4, Double> dx = (stateVector4) -> stateVector4.vx();
-    private static Function<StateVector4, Double> dy = (stateVector4) -> stateVector4.vy();
+    @SuppressWarnings("Convert2MethodRef")
+    private static final Function<StateVector4, Double> dx = (stateVector4) -> stateVector4.vx();
+    @SuppressWarnings("Convert2MethodRef")
+    private static final Function<StateVector4, Double> dy = (stateVector4) -> stateVector4.vy();
 
     public VectorDifferentiation4 normalSpeedVectorDifferentiation4(double xCoord, double yCoord) {
 
