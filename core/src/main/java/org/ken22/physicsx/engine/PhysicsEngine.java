@@ -74,7 +74,7 @@ public class PhysicsEngine {
     public boolean isAtRest() {
         StateVector4 lastVector = trajectory.getLast();
 
-        if (underwater() || reachedTarget()) {
+        if (underwater() || reachedTarget() || outOfBounds()) {
             return true;
         }
 
@@ -137,6 +137,14 @@ public class PhysicsEngine {
     }
 
     /**
+     * Check if the ball has gone out of bounds.
+     * @return TRUE if the ball is out of bounds, FALSE otherwise
+     */
+    public boolean outOfBounds() {
+        return Math.abs(trajectory.getLast().x()) > course.range() || Math.abs(trajectory.getLast().y()) > course.range();
+    }
+
+    /**
      * Generates, appends and returns the next state vector in the trajectory according to the step size
      * Does not check whether the ball is at rest
      *
@@ -161,6 +169,10 @@ public class PhysicsEngine {
         return newVector;
     }
 
+    public frameRateIterator iterator() {
+        return new frameRateIterator();
+    }
+
     /**
      * Returns an iterator that will iterate over the trajectory of the golf ball for graphical display
      * <p>
@@ -168,7 +180,7 @@ public class PhysicsEngine {
      */
     public class frameRateIterator implements Iterator<StateVector4> {
         private static final int FRAME_RATE = 60;
-        private final double kPerFrame = (1.0 / FRAME_RATE) / timeStep;
+        private final int kPerFrame = (int) ((1.0 / FRAME_RATE) / timeStep);
         private int index = 0;
 
 
