@@ -80,13 +80,14 @@ public class PhysicsEngine {
 
         double x = lastVector.x();
         double y = lastVector.y();
-
+        double vx = lastVector.vx();
+        double vy = lastVector.vy();
 
         // Evaluate the partial derivatives for x and y
         double dh_dx = PhysicsUtils.xSlope(x, y, timeStep, expr, differentiator);
         double dh_dy = PhysicsUtils.ySlope(x, y, timeStep, expr, differentiator);
 
-        if (PhysicsUtils.magnitude(x, y) < STOPPING_THRESHOLD) {
+        if (PhysicsUtils.magnitude(vx, vy) < STOPPING_THRESHOLD) {
             if (PhysicsUtils.magnitude(dh_dx, dh_dy) < STOPPING_THRESHOLD) {
                 return true;
             } else if (course.staticFrictionGrass() > PhysicsUtils.magnitude(dh_dx, dh_dy)) {
