@@ -6,6 +6,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physicsx.TestUtils;
 import org.ken22.physicsx.differentiators.FivePointCenteredDifference;
 import org.ken22.physicsx.vectors.StateVector4;
 
@@ -19,69 +20,77 @@ class VectorDifferentiationFactoryTest {
     @Test
     @DisplayName("Dummy test")
     void normalSpeedVectorDifferentiation4() {
-        GolfCourse course;
+        GolfCourse course = TestUtils.course("golf-course.json");
+        Expression expr = TestUtils.expr(course);
 
-        File resourcesDirectory = new File("src/test/resources");
-        File courseFile = new File(resourcesDirectory, "golf-course.json");
+        InstantaneousVectorDifferentiationFactory instDiffFact =
+            new InstantaneousVectorDifferentiationFactory(1, expr, course, new FivePointCenteredDifference());
+        InstantaneousVectorDifferentiation4 instDiff = instDiffFact.instantaneousVectorDifferentiation4();
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        VectorDifferentiationFactory factory =
+            new VectorDifferentiationFactory(1, expr, course, new FivePointCenteredDifference());
+        VectorDifferentiation4 vd = factory.normalSpeedVectorDifferentiation4();
 
-        try {
-            course = objectMapper.readValue(courseFile, GolfCourse.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        StateVector4 initial = new StateVector4(4.0, 4.0, 1.0, 1.0);
+        StateVector4 result = vd.apply(1.0, initial);
 
-        Expression expr = new ExpressionBuilder(course.courseProfile())
-            .variables("x", "y")
-            .build();
+        StateVector4 initialDiff = instDiff.apply(initial);
+        StateVector4 initialPlusDiff = initial.add(initialDiff.multiply(1));
+        StateVector4 resultDiff = instDiff.apply(initialPlusDiff);
+        StateVector4 resultDiff2 = instDiff.apply(result);
 
-        VectorDifferentiationFactory vectorDifferentiationFactory = new VectorDifferentiationFactory(0.00001, expr, course, new FivePointCenteredDifference());
-        VectorDifferentiation4 vd = vectorDifferentiationFactory.normalSpeedVectorDifferentiation4(0.0, 0.0);
+        System.out.println("Initial: " + initial);
+        System.out.println("InitialDiff: " + initialDiff);
+        System.out.println("InitialPlusDiff: " + initialPlusDiff);
+        System.out.println("Result: " + result);
 
-        //assertEquals();
-
-        StateVector4 sv = new StateVector4(0.0, 0.0, 1.0, 1.0);
-        //System.out.println(vd.dsv(sv).toString());
-        double d = 0.000000000001;
-        assertEquals(vd.dsv(sv).x(), 1.0, d);
-        assertEquals(vd.dsv(sv).y(), 1.0, d);
-        assertEquals(vd.dsv(sv).vx(), -10.0*2-10*2*1/Math.sqrt(2), d);
-        assertEquals(vd.dsv(sv).vy(), -10.0-10*2*1/Math.sqrt(2), d);
+        double d = 0.001;
+        assertEquals(1.0 -0.00001*34.1421, result.x(), d);
+        assertEquals(1.0 -0.00001*24.1421, result.y(), d);
+        assertEquals(-10.0*2-10*2*1/Math.sqrt(2), result.vx(), d);
+        assertEquals(-10.0-10*2*1/Math.sqrt(2), result.vy(), d);
     }
 
     @Test
     @DisplayName("Dummy test")
     void lowSpeedVectorDifferentiation4() {
-        GolfCourse course;
+        GolfCourse course = TestUtils.course("golf-course.json");
+        Expression expr = TestUtils.expr(course);
 
-        File resourcesDirectory = new File("src/test/resources");
-        File courseFile = new File(resourcesDirectory, "golf-course.json");
+        InstantaneousVectorDifferentiationFactory instDiffFact =
+            new InstantaneousVectorDifferentiationFactory(0.00001, expr, course, new FivePointCenteredDifference());
+        InstantaneousVectorDifferentiation4 instDiff = instDiffFact.altInstantaneousVectorDifferentiation4();
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        VectorDifferentiationFactory factory =
+            new VectorDifferentiationFactory(0.00001, expr, course, new FivePointCenteredDifference());
+        VectorDifferentiation4 vd = factory.lowSpeedVectorDifferentiation4();
 
-        try {
-            course = objectMapper.readValue(courseFile, GolfCourse.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        StateVector4 initial = new StateVector4(4.0, 4.0, 1.0, 1.0);
+        StateVector4 result = vd.apply(0.00001, initial);
 
-        Expression expr = new ExpressionBuilder(course.courseProfile())
-            .variables("x", "y")
-            .build();
+        StateVector4 initialDiff = instDiff.apply(initial);
+        StateVector4 initialPlusDiff = initial.add(initialDiff.multiply(0.00001));
+        StateVector4 resultDiff = instDiff.apply(initialPlusDiff);
+        StateVector4 resultDiff2 = instDiff.apply(result);
 
-        VectorDifferentiationFactory vectorDifferentiationFactory = new VectorDifferentiationFactory(0.00001, expr, course, new FivePointCenteredDifference());
-        VectorDifferentiation4 vd = vectorDifferentiationFactory.lowSpeedVectorDifferentiation4(0.0, 0.0);
+        System.out.println("Initial: " + initial);
+        System.out.println("InitialDiff: " + initialDiff);
+        System.out.println("InitialPlusDiff: " + initialPlusDiff);
+        System.out.println("Result: " + result);
 
-        //assertEquals();
+        double d = 0.001;
+        assertEquals(1.0 -0.00001*34.1421, result.x(), d);
+        assertEquals(1.0 -0.00001*24.1421, result.y(), d);
+        assertEquals(-10.0*2-10*2*2/Math.sqrt(5), result.vx(), d);
+        assertEquals(-10.0-10*2*1/Math.sqrt(5), result.vy(), d);
+    }
 
-        StateVector4 sv = new StateVector4(0.0, 0.0, 1.0, 1.0);
-        //System.out.println(vd.dsv(sv).toString());
-        double d = 0.000000000001;
-        assertEquals(vd.dsv(sv).x(), 1.0, d);
-        assertEquals(vd.dsv(sv).y(), 1.0, d);
-        assertEquals(vd.dsv(sv).vx(), -10.0*2-10.0*2*2/Math.sqrt(5), d);
-        assertEquals(vd.dsv(sv).vy(), -10.0-10.0*2*1/Math.sqrt(5), d);
+    @Test
+    void testNormalSpeedVectorDifferentiation4() {
+    }
+
+    @Test
+    void testLowSpeedVectorDifferentiation4() {
     }
 }
 

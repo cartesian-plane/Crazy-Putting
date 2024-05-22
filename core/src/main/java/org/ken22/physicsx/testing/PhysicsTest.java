@@ -1,6 +1,8 @@
 package org.ken22.physicsx.testing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physicsx.engine.PhysicsEngine;
 import org.ken22.physicsx.vectors.StateVector4;
@@ -12,36 +14,18 @@ import java.util.ArrayList;
 
 public class PhysicsTest {
     public static void main(String[] args) {
-        File courseFile = new File("assets/input/golf-course.json");
-        ObjectMapper objectMapper = new ObjectMapper();
-        GolfCourse course = null;
+        GolfCourse course = course("golf-course.json");
+        Expression expr = expr(course);
 
-        try {
-            course = objectMapper.readValue(courseFile, GolfCourse.class);
-
-        } catch (
-            IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(course.courseProfile());
-
-        StateVector4 initialState = new StateVector4(0, 0, 1, 1);
+        StateVector4 initialState = new StateVector4(2, 2, 4, 4);
         PhysicsEngine engine = new PhysicsEngine(course, initialState);
 
-        StateVector4 previous  = initialState;
-        StateVector4 current = null;
-
-        ArrayList<StateVector4> trajectory = new ArrayList<>();
-
-        for (PhysicsEngine.FrameRateIterator it = engine.iterator(); it.hasNext(); ) {
-            StateVector4 sv = it.next();
-            trajectory.add(sv);
-        }
+        while(!engine.isAtRest())
+            engine.nextStep();
 
         String filePath = "assets/enginetest.csv";
         System.out.println("Starting write");
-        writeToCSV(trajectory, filePath);
+        writeToCSV(engine.getTrajectory(), filePath);
     }
 
     private static void writeToCSV(ArrayList<StateVector4> trajectory, String filePath) {
@@ -56,5 +40,26 @@ public class PhysicsTest {
             System.out.println("An error occurred while writing the trajectory to a CSV file.");
             e.printStackTrace();
         }
+    }
+
+    public static GolfCourse course(String fileName) {
+        GolfCourse course;
+
+        File resourcesDirectory = new File("assets/input");
+        File courseFile = new File(resourcesDirectory, fileName);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            course = objectMapper.readValue(courseFile, GolfCourse.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return course;
+    }
+    public static Expression expr(GolfCourse course) {
+        return new ExpressionBuilder(course.courseProfile())
+            .variables("x", "y")
+            .build();
     }
 }

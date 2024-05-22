@@ -19,11 +19,11 @@ public class RK4 implements ODESolver<StateVector4> {
 
     @Override
     public StateVector4 nextStep(double h, StateVector4 sv, BiFunction<Double, StateVector4, StateVector4> dif) {
-        StateVector4 k1 = dif.apply(0.0, sv);
-        StateVector4 k2 = dif.apply(h / 2, sv.add(k1.multiply(h / 2)));
-        StateVector4 k3 = dif.apply(h / 2, sv.add(k2.multiply(h / 2)));
-        StateVector4 k4 = dif.apply(h, sv.add(k3.multiply(h)));
-        StateVector4 next = sv.add((k1.add(k2.multiply(2)).add(k3.multiply(2)).add(k4)).multiply(1.0 / 6.0));
+        StateVector4 k1_h = dif.apply(0.0, sv);
+        StateVector4 k2_h = dif.apply(h / 2, sv.add(k1_h.multiply(h / 2)));
+        StateVector4 k3_h = dif.apply(h / 2, sv.add(k2_h.multiply(h / 2)));
+        StateVector4 k4_h = dif.apply(h, sv.add(k3_h.multiply(h)));
+        StateVector4 next = sv.add((k1_h.add(k2_h.multiply(2)).add(k3_h.multiply(2)).add(k4_h)).multiply(h / 6.0));
         return next;
     }
 }

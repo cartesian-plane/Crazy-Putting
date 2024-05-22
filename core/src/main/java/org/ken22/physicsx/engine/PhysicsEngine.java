@@ -151,7 +151,7 @@ public class PhysicsEngine {
      * @return {@link StateVector4} the next state vector
      */
     @SuppressWarnings("UnusedReturnValue")
-    private StateVector4 nextStep() {
+    public StateVector4 nextStep() {
         StateVector4 lastVector = trajectory.getLast();
         double vx = lastVector.vx();
         double vy = lastVector.vy();
@@ -159,9 +159,9 @@ public class PhysicsEngine {
         VectorDifferentiation4 differentiation;
         // Decide which equations to use for updating the acceleration
         if (PhysicsUtils.magnitude(vx, vy) < STOPPING_THRESHOLD) {
-            differentiation = vectorDifferentiationFactory.lowSpeedVectorDifferentiation4(lastVector.x(), lastVector.y());
+            differentiation = vectorDifferentiationFactory.lowSpeedVectorDifferentiation4();
         } else {
-            differentiation = vectorDifferentiationFactory.normalSpeedVectorDifferentiation4(lastVector.x(), lastVector.y());
+            differentiation = vectorDifferentiationFactory.normalSpeedVectorDifferentiation4();
         }
 
         StateVector4 newVector = solver.nextStep(timeStep, lastVector, differentiation);
@@ -199,5 +199,9 @@ public class PhysicsEngine {
             }
             return trajectory.getLast();
         }
+    }
+
+    public ArrayList<StateVector4> getTrajectory() {
+        return trajectory;
     }
 }

@@ -26,26 +26,24 @@ public class VectorDifferentiationFactory {
         instDiffFact= new InstantaneousVectorDifferentiationFactory(h, expr, course, differentiator);
     }
 
-    public VectorDifferentiation4 normalSpeedVectorDifferentiation4(double xCoord, double yCoord) {
+    public VectorDifferentiation4 normalSpeedVectorDifferentiation4() {
         InstantaneousVectorDifferentiation4 instDiff = instDiffFact.instantaneousVectorDifferentiation4();
-        VectorDifferentiation4 dif = (h, sv) -> {
+        return (h1, sv) -> {
             StateVector4 dsv = instDiff.apply(sv);
-            StateVector4 svh = sv.add(dsv.multiply(h));
+            StateVector4 svh = sv.add(dsv.multiply(h1));
             StateVector4 dsvh = instDiff.apply(svh);
             return dsvh;
         };
-        return dif;
     }
 
-    public VectorDifferentiation4 lowSpeedVectorDifferentiation4(double xCoord, double yCoord) {
+    public VectorDifferentiation4 lowSpeedVectorDifferentiation4() {
         InstantaneousVectorDifferentiation4 instDiff = instDiffFact.altInstantaneousVectorDifferentiation4();
-        VectorDifferentiation4 dif = (h, sv) -> {
+        return (h1, sv) -> {
             StateVector4 dsv = instDiff.apply(sv);
-            StateVector4 svh = sv.add(dsv.multiply(h));
+            StateVector4 svh = sv.add(dsv.multiply(h1));
             StateVector4 dsvh = instDiff.apply(svh);
             return dsvh;
         };
-        return dif;
     }
 
     public double xSlope(double x, double y) {
