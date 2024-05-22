@@ -40,7 +40,14 @@ public class PhysicsEngine {
                          Differentiator differentiator, ODESolver solver) {
 
         if (timeStep > 0.016) {
-            throw new IllegalArgumentException("Step size too big for 60FPS");
+            throw new IllegalArgumentException("Step size " + timeStep + " too big for 60FPS");
+        }
+
+        double vx = initialStateVector.vx();
+        double vy = initialStateVector.vy();
+        if (PhysicsUtils.magnitude(vx, vy) > course.maximumSpeed()) {
+            throw new IllegalArgumentException("Initial vector speed too high! (max speed = "
+                + course.maximumSpeed() + ")");
         }
 
         this.course = course;
@@ -64,6 +71,7 @@ public class PhysicsEngine {
      * <p>The ball is considered to be at rest if any of these conditions are true:</p>
      * <ul>
      *     <li>has collided (i.e. went into water)</li>
+     *     <li>has gone out of the terrain bounds</li>
      *     <li>the speed is small and the slope is negligible</li>
      *     <li>the static friction overcomes the downhill force</li>
      * </ul>
