@@ -23,7 +23,7 @@ public class RK4 implements ODESolver<StateVector4> {
         StateVector4 k2 = dif.apply(h / 2, sv.add(k1.multiply(h / 2)));
         StateVector4 k3 = dif.apply(h / 2, sv.add(k2.multiply(h / 2)));
         StateVector4 k4 = dif.apply(h, sv.add(k3.multiply(h)));
-        StateVector4 next = sv.add((k1.add(k2.multiply(2)).add(k3.multiply(2)).add(k4)).multiply(1 / 6));
+        StateVector4 next = sv.add((k1.add(k2.multiply(2)).add(k3.multiply(2)).add(k4)).multiply(1.0 / 6.0));
         return next;
     }
 }
