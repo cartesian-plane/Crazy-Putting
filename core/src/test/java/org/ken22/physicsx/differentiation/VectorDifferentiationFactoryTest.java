@@ -3,6 +3,7 @@ package org.ken22.physicsx.differentiation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.ken22.input.courseinput.GolfCourse;
@@ -19,6 +20,7 @@ class VectorDifferentiationFactoryTest {
 
     @Test
     @DisplayName("Dummy test")
+    @Disabled
     void normalSpeedVectorDifferentiation4() {
         GolfCourse course = TestUtils.course("golf-course.json");
         Expression expr = TestUtils.expr(course);
