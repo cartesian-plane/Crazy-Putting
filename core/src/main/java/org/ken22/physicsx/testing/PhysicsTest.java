@@ -17,7 +17,7 @@ public class PhysicsTest {
         GolfCourse course = course("golf-course.json");
         Expression expr = expr(course);
 
-        StateVector4 initialState = new StateVector4(2, 2, 4, 4);
+        StateVector4 initialState = new StateVector4(2, 2, -2, -2);
         PhysicsEngine engine = new PhysicsEngine(course, initialState);
 
         while(!engine.isAtRest())
@@ -29,7 +29,7 @@ public class PhysicsTest {
     }
 
     private static void writeToCSV(ArrayList<StateVector4> trajectory, String filePath) {
-        try (PrintWriter writer = new PrintWriter(new File(filePath))) {
+        try (PrintWriter writer = new PrintWriter(filePath)) {
 
             writer.println("x,y,vx,vy");
 

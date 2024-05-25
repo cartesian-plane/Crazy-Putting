@@ -21,11 +21,13 @@ import net.mgsx.gltf.scene3d.scene.SceneAsset;
 import net.mgsx.gltf.scene3d.scene.SceneManager;
 import net.mgsx.gltf.scene3d.scene.SceneSkybox;
 import net.mgsx.gltf.scene3d.utils.IBLBuilder;
-import org.ken22.physics.engine.PhysicsEngine;
-import org.ken22.physics.numerical_derivation.fivePointDifference;
-import org.ken22.physics.numerical_integration.RK4;
-import org.ken22.physics.system.PhysicsSystem;
-import org.ken22.physics.vectors.GVec4;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+import org.ken22.input.courseinput.CourseParser;
+import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physicsx.engine.PhysicsEngine;
+import org.ken22.physicsx.vectors.StateVector4;
+import org.ken22.terrains.GameWorldCoordinatesMapper;
 import org.ken22.terrains.HeightMapTerrain;
 
 
@@ -35,14 +37,6 @@ import java.util.LinkedList;
 
 /** First screen of the application. Displayed after the application is created. */
 public class FirstScreen implements Screen {
-    private AssetManager manager;
-    private boolean flash = false;
-    private float flashTimer = 0;
-    private ModelBatch modelBatch;
-    private ModelInstance instance;
-    private PerspectiveCamera cam;
-    private Environment environment;
-    private HeightMapTerrain heightMapTerrain;
     private HeightMapTerrain terrain;
     private Pixmap data = new Pixmap(Gdx.files.internal("heightmaps/pillowmap.png"));
     private Renderable ground;
@@ -65,7 +59,11 @@ public class FirstScreen implements Screen {
 
     // Physics stuff
     private PhysicsEngine engine;
-
+    private PhysicsEngine.FrameRateIterator frameRateIterator;
+    private boolean hasMoved = false;
+    private boolean shootBall = false;
+    private float heightScalingFactor;
+    private Expression courseProfile;
 
 
 
@@ -109,7 +107,7 @@ public class FirstScreen implements Screen {
         System.out.println("scaleFactor = " + scaleFactor);
         waterScene.modelInstance.transform.scl(0.3f, 1f, 1f);
         waterScene.modelInstance.transform.rotate(Vector3.X, 63);
-        waterScene.modelInstance.transform.translate(50, 0, 0);
+        waterScene.modelInstance.transform.translate(50, 3f, 0);
         waterScene.modelInstance.transform.getRotation(rotation);
 
         float euler = rotation.getAngle();
@@ -179,24 +177,59 @@ public class FirstScreen implements Screen {
         //ALL OF tHIS WILL NEED to BE CHANGEd
 
 
-        RK4 integrator = new RK4();
-        fivePointDifference differentiator = new fivePointDifference();
-        GVec4 initialState = new GVec4(0.0, 0.0, 1.0, 1.0, 1.0, 0.01);
-        File coursejson = new File("input/golf-course.json");
-        PhysicsSystem system = new PhysicsSystem(initialState,coursejson);
-        engine = new PhysicsEngine(system, integrator, differentiator);
+        var course = new File("input/golf-course.json");
+        var parser = new CourseParser(course);
+        GolfCourse golfCourse = parser.getCourse();
+        double initialX = 5;
+        double initialY = 5;
 
+        var heightFunction = golfCourse.courseProfile();
+        courseProfile = new ExpressionBuilder(heightFunction)
+            .variables("x", "y")
+            .build();
+        courseProfile
+            .setVariable("x", initialX)
+            .setVariable("y", initialY);
+        double height = courseProfile.evaluate();
+
+        System.out.println("height = " + height);
+
+        // TODO change this way of initialising the ball x and y
+        // if the step size is too small, the frame rate will drop because of too much garbage collection
+        engine = new PhysicsEngine(golfCourse, new StateVector4(initialX, initialY, -2, -2), 0.001);
+
+        BoundingBox modelBounds = new BoundingBox();
+        scene.modelInstance.calculateBoundingBox(modelBounds);
+        float modelHeight = modelBounds.getHeight();
+        System.out.println("modelHeight = " + modelHeight);
+        frameRateIterator = engine.iterator();
+
+
+        heightScalingFactor = (float) GameWorldCoordinatesMapper.getHeightScalingFactor(golfCourse,
+            terrain.getHeightField());
+        scene.modelInstance.transform.setTranslation((float) initialX * 10,
+            (float) height * heightScalingFactor, (float) initialY * 10);
+
+
+        Vector3 sceneAssetPosition = new Vector3();
+        scene.modelInstance.transform.getTranslation(sceneAssetPosition);
+        System.out.println("Scene asset position: " + sceneAssetPosition);
+        System.out.println("initialX = " + initialX);
+        System.out.println("initialY = " + initialY);
+        System.out.println("height = " + height);
+        System.out.println("modelHeight = " + modelHeight);
+        System.out.println("heightScalingFactor = " + heightScalingFactor);
+        System.out.println("Game Height at (0, 0): " + terrain.getHeightField().getPositionAt(new Vector3(), 0 ,0));
     }
-
     private void createTerrain() {
         if (terrain != null) {
             terrain.dispose();
             sceneManager.removeScene(terrainScene);
         }
 
-        terrain = new HeightMapTerrain(new Pixmap(Gdx.files.internal("heightmaps/expheightmap.png")), 20f);
+        terrain = new HeightMapTerrain(new Pixmap(Gdx.files.internal("heightmaps/expheightmap.png")), 10f);
 
-        System.out.println(terrain.getHeightField().getPositionAt(new Vector3(0, 1, 0), 0, 0));
+        System.out.println(terrain.getHeightField().getPositionAt(new Vector3(), 0, 0));
         terrainScene = new Scene(terrain.getModelInstance());
         sceneManager.addScene(terrainScene);
     }
@@ -216,24 +249,29 @@ public class FirstScreen implements Screen {
         positions.add(new Vector3(sceneAssetPosition));
 
         cameraController.update();
-//        scene.modelInstance.transform.rotate(Vector3.Y, 10f * deltaTime);
 
-        // arbitrary scaling factor
-        // 1 game unit = 1m (meter)
-        float scalingFactor = 9.560222f;
-        Vector3 movementVector = new Vector3(0.016f / scalingFactor, 0, 0);
-        // scene.modelInstance.transform.translate(movementVector);
 
-        GVec4 temp = engine.nextStep();
 
         // Get the velocities from the state vector
-        float vx = (float) temp.get_vx();
-        float vy = (float) temp.get_vy();
 
-        Vector3 nextStep = new Vector3(vx / scalingFactor / 60, 0, vy / scalingFactor / 60);
-        scene.modelInstance.transform.translate(nextStep);
+        if (shootBall) {
+            float x = 0;
+            float y = 0;
+            float z = 0;
 
+            if (frameRateIterator.hasNext()) {
+                StateVector4 nextStep = frameRateIterator.next();
+                x = (float) nextStep.x();
+                y = (float) nextStep.y();
+                z = (float) courseProfile
+                    .setVariable("x", x)
+                    .setVariable("y", y)
+                    .evaluate();
 
+                Vector3 nextTranslation = new Vector3(x * 10f, z * heightScalingFactor, y * 10f);
+                scene.modelInstance.transform.setTranslation(nextTranslation);
+            }
+        }
 
 //        // animate camera
 //        camera.position.setFromSpherical(MathUtils.PI/4, time * .3f).scl(.02f);
@@ -244,6 +282,25 @@ public class FirstScreen implements Screen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
             createTerrain();
         }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+            shootBall = true;
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+
+            Vector3 objectPostion = new Vector3();
+            scene.modelInstance.transform.getTranslation(objectPostion);
+            System.out.println("Scene asset position: " + objectPostion);
+        }
+
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
+
+
+            System.out.println("Camera position: " + camera.position);
+        }
+
         // render
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
@@ -265,8 +322,8 @@ public class FirstScreen implements Screen {
             throw new RuntimeException();
         }
 
-
-
+        // print the camera coordinates
+        //System.out.println("Camera position: " + camera.position);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class PhysicsEngine {
     private final Expression expr;
 
     private final VectorDifferentiationFactory vectorDifferentiationFactory;
-    private final ODESolver solver;
+    private final ODESolver<StateVector4> solver;
     private final Differentiator differentiator;
 
     private ArrayList<StateVector4> trajectory = new ArrayList<>();
@@ -36,8 +36,12 @@ public class PhysicsEngine {
         this(course, initialStateVector, DEFAULT_TIME_STEP, new FivePointCenteredDifference(), new RK4());
     }
 
+    public PhysicsEngine(GolfCourse course, StateVector4 initialStateVector, double timeStep) {
+        this(course, initialStateVector, timeStep, new FivePointCenteredDifference(), new RK4());
+    }
+
     public PhysicsEngine(GolfCourse course, StateVector4 initialStateVector, double timeStep,
-                         Differentiator differentiator, ODESolver solver) {
+                         Differentiator differentiator, ODESolver<StateVector4> solver) {
 
         if (timeStep > 0.016) {
             throw new IllegalArgumentException("Step size " + timeStep + " too big for 60FPS");

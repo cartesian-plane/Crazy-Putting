@@ -11,5 +11,7 @@
   "maximumSpeed": 5.0,
   "targetRadius": 0.10,
   "targetXcoord": 2,
-  "targetYcoord": 0.5
+  "targetYcoord": 0.5,
+  "ballXcoord": 2.0,
+  "ballYcoord": 2.0
 }
