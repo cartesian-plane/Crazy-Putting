@@ -4,9 +4,7 @@ package org.ken22.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Quaternion;
@@ -38,8 +36,6 @@ import java.util.LinkedList;
 /** First screen of the application. Displayed after the application is created. */
 public class FirstScreen implements Screen {
     private HeightMapTerrain terrain;
-    private Pixmap data = new Pixmap(Gdx.files.internal("heightmaps/pillowmap.png"));
-    private Renderable ground;
     private SceneManager sceneManager;
     private SceneAsset sceneAsset;
     private Scene scene;
@@ -54,13 +50,9 @@ public class FirstScreen implements Screen {
     private FirstPersonCameraController cameraController;
     private final LinkedList<Vector3> points = new LinkedList<>();
     private final ShapeRenderer shapeRenderer = new ShapeRenderer();
-    private float terrainHeight;
     private LinkedList<Vector3> positions = new LinkedList<>();
 
-    // Physics stuff
-    private PhysicsEngine engine;
     private PhysicsEngine.FrameRateIterator frameRateIterator;
-    private boolean hasMoved = false;
     private boolean shootBall = false;
     private float heightScalingFactor;
     private Expression courseProfile;
@@ -196,7 +188,8 @@ public class FirstScreen implements Screen {
 
         // TODO change this way of initialising the ball x and y
         // if the step size is too small, the frame rate will drop because of too much garbage collection
-        engine = new PhysicsEngine(golfCourse, new StateVector4(initialX, initialY, -2, -2), 0.001);
+        // Physics stuff
+        PhysicsEngine engine = new PhysicsEngine(golfCourse, new StateVector4(initialX, initialY, -2, -2), 0.001);
 
         BoundingBox modelBounds = new BoundingBox();
         scene.modelInstance.calculateBoundingBox(modelBounds);
@@ -255,9 +248,9 @@ public class FirstScreen implements Screen {
         // Get the velocities from the state vector
 
         if (shootBall) {
-            float x = 0;
-            float y = 0;
-            float z = 0;
+            float x;
+            float y;
+            float z;
 
             if (frameRateIterator.hasNext()) {
                 StateVector4 nextStep = frameRateIterator.next();
@@ -315,15 +308,10 @@ public class FirstScreen implements Screen {
 //        }
 //        shapeRenderer.end();
 
-
-        // System.out.println(time);
         if (sceneAssetPosition.x >= 100) {
             System.out.println("object reached x: " + sceneAssetPosition.x);
             throw new RuntimeException();
         }
-
-        // print the camera coordinates
-        //System.out.println("Camera position: " + camera.position);
     }
 
     @Override

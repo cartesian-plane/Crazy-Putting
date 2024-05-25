@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
  * The resulting <code>heightmap.png</code> is then used for rendering the terrain.</p>
  * This allows for dynamic terrain generation.
  */
+@SuppressWarnings({"unused", "CallToPrintStackTrace"})
 public class HeightMapGenerator {
     public static void main(String[] args) {
         String heightFunction = "0.4*(0.9 - e^(-(x^2 + y^2) / 8))";
