@@ -17,7 +17,7 @@ import java.util.Iterator;
 
 public class PhysicsEngine {
 
-    private static final double DEFAULT_TIME_STEP = 0.00001;
+    private static final double DEFAULT_TIME_STEP = 0.0001;
     private static final double STOPPING_THRESHOLD = 0.05;
     private final GolfCourse course;
     private final Expression expr;
