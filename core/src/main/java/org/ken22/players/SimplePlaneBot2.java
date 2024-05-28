@@ -31,36 +31,23 @@ public class SimplePlaneBot2  implements Player {
         var dy = targetState.y() - initState.y();
         var dz = targetHeight - currentHeight;
         var dz_dx = dz/dx;
-        var dz_yx = dz/dy;
+        var dz_dy = dz/dy;
         var g = course.gravitationalConstant();
         var kf = course.kineticFrictionGrass();
+        var coef1 = Math.sqrt((2*kf)/Math.sqrt(2+dz_dx*dz_dx+dz_dy*dz_dy));
+        var coef2 = g/(pyth(dz_dx,dz_dy,1));
 
-        IFunc<Double, Double> Nxy = (vars1) -> (Math.sqrt(2));
-        IFunc<Double, Double> Nz = (vars2) -> (Math.sqrt(2));
-        IFunc<Double, Double> vel = (vars) -> (Math.sqrt(2));
+        //var vel_z = coef1*coef2*Math.sqrt(dz*(dz_dx+dz_dy));
+        var vel_x = coef1*coef2*Math.sqrt(dx);
+        var vel_y = coef1*coef2*Math.sqrt(dy);
 
-
-        //v0^2 = v1^2 + 2*a*d
-        //a = -g*sin(alpha)
-        var sinA = dz / Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-        var cosA = Math.sqrt(1 - Math.pow(sinA, 2));
-
-        var dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2) + Math.pow(dz, 2));
-        var v0p = Math.sqrt(2 * course.kineticFrictionGrass()*course.gravitationalConstant()*cosA * dist);
-        var v0 = v0p * cosA;
-
-        //vx/vy = dx/dy; vx^2 + vy^2 = v0^2
-        //vx = vy * dx/dy; v0^2 = vx^2 + (vx * dx/dy)^2; v0^2 = (1 + (dx/dy)^2) * vx^2; vx = v0 / sqrt(1 + (dx/dy)^2)
-        var vx = v0 / Math.sqrt(1 + Math.pow(dx/dy, 2));
-        var vy = vx * dx/dy;
-
-        return new StateVector4(initState.x(), initState.y(), vx, vy);
+        return new StateVector4(initState.x(), initState.y(), vel_x, vel_y);
     }
 
     private static double pyth(double... nums) {
         double sum = 0;
         for(double num : nums) {
-            sum += Math.pow(nums, 2);
+            sum += Math.pow(num, 2);
         }
         return Math.sqrt(sum);
     }

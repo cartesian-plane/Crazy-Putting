@@ -7,7 +7,7 @@ import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.TestUtils;
 import org.ken22.physicsx.vectors.StateVector4;
 
-class SimplePlanarApproximationBotTest {
+class PlanarBot2Test {
 
     static GolfCourse course;
     static Expression expr;
@@ -20,7 +20,7 @@ class SimplePlanarApproximationBotTest {
 
     @Test
     void play() {
-        SimplePlanarApproximationBot bot = new SimplePlanarApproximationBot();
+        SimplePlaneBot2 bot = new SimplePlaneBot2();
         var result = bot.play(new StateVector4(0, 0, 1, 0), course);
         var expected = TestUtils.prediction.apply(result, course);
         System.out.println(expected);
