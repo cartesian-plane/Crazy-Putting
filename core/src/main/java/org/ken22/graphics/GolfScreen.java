@@ -26,7 +26,7 @@ import org.ken22.physics.numerical_derivation.fivePointDifference;
 import org.ken22.physics.numerical_integration.RK4;
 import org.ken22.physics.system.PhysicsSystem;
 import org.ken22.physics.vectors.GVec4;
-import org.ken22.terrains.HeightMapTerrain;
+import org.ken22.graphics.terrains.HeightMapTerrain;
 
 
 import java.io.File;
@@ -34,7 +34,7 @@ import java.util.LinkedList;
 
 
 /** First screen of the application. Displayed after the application is created. */
-public class FirstScreen implements Screen {
+public class GolfScreen implements Screen {
     private AssetManager manager;
     private boolean flash = false;
     private float flashTimer = 0;
@@ -66,10 +66,11 @@ public class FirstScreen implements Screen {
     // Physics stuff
     private PhysicsEngine engine;
 
-
-
-
     private Scene terrainScene;
+
+
+
+
     // instance
     @Override
     public void show() {

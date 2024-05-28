@@ -14,14 +14,13 @@ import java.util.ArrayList;
 
 public class PhysicsTest {
     public static void main(String[] args) {
-        GolfCourse course = course("golf-course.json");
+        GolfCourse course = course("sin-golf-course.json");
         Expression expr = expr(course);
 
-        StateVector4 initialState = new StateVector4(2, 2, -2, -2);
+        StateVector4 initialState = new StateVector4(0, 0, 1, 0);
         PhysicsEngine engine = new PhysicsEngine(course, initialState);
 
-        while(!engine.isAtRest())
-            engine.nextStep();
+        engine.solve();
 
         String filePath = "assets/enginetest.csv";
         System.out.println("Starting write");

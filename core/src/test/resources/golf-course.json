@@ -1,6 +1,6 @@
 {
   "name": "Example Golf Course",
-  "courseProfile": "2 * x + y",
+  "courseProfile": "0*x + 0*y",
   "range": 5.0,
   "mass": 1,
   "gravitationalConstant": 10,
@@ -9,7 +9,7 @@
   "kineticFrictionSand": 1,
   "staticFrictionSand": 1,
   "maximumSpeed": 100,
-  "targetRadius": 0.10,
-  "targetXcoord": 2,
-  "targetYcoord": 0.5
+  "targetRadius": 0.5,
+  "targetXcoord": 1,
+  "targetYcoord": 1
 }

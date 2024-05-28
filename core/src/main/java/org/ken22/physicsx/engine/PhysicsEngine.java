@@ -86,7 +86,14 @@ public class PhysicsEngine {
     public boolean isAtRest() {
         StateVector4 lastVector = trajectory.getLast();
 
-        if (underwater() || reachedTarget() || outOfBounds()) {
+        if (underwater()) {
+            //System.out.println("Underwater");
+            return true;
+        } else if(outOfBounds()) {
+            //System.out.println("Out of bounds");
+            return true;
+        } else if (reachedTarget()) {
+            //System.out.println("Reached target");
             return true;
         }
 
@@ -179,6 +186,21 @@ public class PhysicsEngine {
         StateVector4 newVector = solver.nextStep(timeStep, lastVector, differentiation);
         trajectory.add(newVector);
         return newVector;
+    }
+
+    /**
+     * Returns the final prediction of the trajectory of the golf ball
+     * Speeds up the rest of the simulation to get the final prediction, causing problems to existing iterators
+     * <p>
+     * The method will keep calling {@link #nextStep()} until the ball is at rest
+     *
+     * @return {@link StateVector4} the final prediction
+     */
+    public StateVector4 solve() {
+        while (!isAtRest()) {
+            nextStep();
+        }
+        return trajectory.getLast();
     }
 
 

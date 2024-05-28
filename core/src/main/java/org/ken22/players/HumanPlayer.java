@@ -14,7 +14,7 @@ import org.ken22.physicsx.vectors.StateVector4;
 
 //////////////////// CLASS //////////////////////////////////////////////
 //for prompting the player to shoot
-public class HumanPlayer implements Player{
+public class HumanPlayer implements Player {
 
     //////////////////// INITIALIZATIONS //////////////////////////////////////////////
     private JFrame frame;
@@ -168,8 +168,7 @@ public class HumanPlayer implements Player{
     ////////////////////  METHODS //////////////////////////////////////////////
 
     //THE method that will take the state and give player option to shoot using vel in y and x
-    public ArrayList<Double> play(StateVector4 state, GolfCourse course, int shot) {
-        this.shotCount = shot;
+    public StateVector4 play(StateVector4 state, GolfCourse course) {
         this.xPosition = state.x();
         this.yPosition = state.y();
         updateLabels();
@@ -183,10 +182,7 @@ public class HumanPlayer implements Player{
             }
         }
 
-        ArrayList<Double> velocities = new ArrayList<>();
-        velocities.add(velocityX);
-        velocities.add(velocityY);
-        return velocities;
+        return new StateVector4(xPosition, yPosition, velocityX, velocityY);
     }
 
 

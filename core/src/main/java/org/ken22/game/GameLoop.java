@@ -69,14 +69,14 @@ public class GameLoop {
     //get the player input for a shot with Y and X velocities
     private void promptHumanPlayer() {
         StateVector4 currentState = physicsEngine.getTrajectory().get(physicsEngine.getTrajectory().size() - 1);
-        ArrayList<Double> velocities = humanPlayer.play(currentState, course, shotCount);
+        StateVector4 velocities = humanPlayer.play(currentState, course);
 
         // setting the new velocities
         StateVector4 newState = new StateVector4(
             currentState.x(),
             currentState.y(),
-            velocities.get(0),
-            velocities.get(1)
+            velocities.vx(),
+            velocities.vy()
         );
         physicsEngine = new PhysicsEngine(course, newState);
         //one more shot
