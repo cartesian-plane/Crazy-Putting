@@ -9,9 +9,9 @@
   "kineticFrictionSand": 0.8,
   "staticFrictionSand": 0.9,
   "maximumSpeed": 5.0,
-  "targetRadius": 0.10,
-  "targetXcoord": 2,
-  "targetYcoord": 0.5,
-  "ballXcoord": 2.0,
-  "ballYcoord": 2.0
+  "targetRadius": 0.15,
+  "targetXcoord": 4,
+  "targetYcoord": 1,
+  "ballXcoord": -3,
+  "ballYcoord": 0
 }

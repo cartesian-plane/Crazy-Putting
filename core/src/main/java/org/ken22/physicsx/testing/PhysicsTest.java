@@ -17,13 +17,13 @@ public class PhysicsTest {
         GolfCourse course = course("golf-course.json");
         Expression expr = expr(course);
 
-        StateVector4 initialState = new StateVector4(2, 2, -2, -2);
+        StateVector4 initialState = new StateVector4(-3.0, 0.0, 4.491572403911195, 1.6239689874674115);
         PhysicsEngine engine = new PhysicsEngine(course, initialState);
 
         while(!engine.isAtRest())
             engine.nextStep();
 
-        String filePath = "assets/enginetest.csv";
+        String filePath = "assets/enginetest2.csv";
         System.out.println("Starting write");
         writeToCSV(engine.getTrajectory(), filePath);
     }
