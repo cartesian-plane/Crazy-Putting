@@ -1,6 +1,5 @@
 package org.ken22.input.courseinput;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -22,6 +21,7 @@ public class CourseParser {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             this.course = objectMapper.readValue(jsonFile, GolfCourse.class);
+            System.out.println(this.course.name());
             this.terrain = course.courseProfile();
             this.expression = new ExpressionBuilder(terrain)
                 .variables("x", "y")

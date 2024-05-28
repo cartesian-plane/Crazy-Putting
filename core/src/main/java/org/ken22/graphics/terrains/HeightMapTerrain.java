@@ -1,4 +1,4 @@
-package org.ken22.terrains;
+package org.ken22.graphics.terrains;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -23,10 +23,10 @@ public class HeightMapTerrain extends Terrain {
             VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal |
                 VertexAttributes.Usage.TextureCoordinates);
         data.dispose();
-        heightField.corner00.set(0, 0, 0);
-        heightField.corner10.set(size, 0, 0);
-        heightField.corner01.set(0, 0, size);
-        heightField.corner11.set(size, 0, size);
+        heightField.corner00.set(-size / 2f, 0, -size / 2f);
+        heightField.corner10.set(size / 2f, 0, -size / 2f);
+        heightField.corner01.set(-size / 2f, 0, size / 2f);
+        heightField.corner11.set(size / 2f, 0, size / 2f);
         //sets some default colors; keep this commented out
 //        heightField.color00.set(0, 0, 1, 1);
 //        heightField.color01.set(0, 1, 1, 1);

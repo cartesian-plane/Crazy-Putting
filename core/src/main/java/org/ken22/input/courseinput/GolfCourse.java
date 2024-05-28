@@ -15,5 +15,7 @@ public record GolfCourse(
     @JsonProperty("maximumSpeed") double maximumSpeed,
     @JsonProperty("targetRadius") double targetRadius,
     @JsonProperty("targetXcoord") double targetXcoord,
-    @JsonProperty("targetYcoord") double targetYcoord
+    @JsonProperty("targetYcoord") double targetYcoord,
+    @JsonProperty("ballXcoord") double ballX,
+    @JsonProperty("ballYcoord") double ballY
 ) {}

@@ -1,158 +1,93 @@
-//package org.ken22.game;
-//
-//import com.badlogic.gdx.Gdx;
-//import com.badlogic.gdx.Input;
-//import com.badlogic.gdx.graphics.Camera;
-//import com.badlogic.gdx.math.Vector3;
-//
-//import java.util.ArrayList;
-//
-//
-//
-//
-//
-//public class GameLoop {
-//    private PhysicsEngine physicsEngine;
-//    private Vector3 ballPosition;
-//    private double ballVelocityX;
-//    private double ballVelocityY;
-//    private Vector3 targetPosition;
-//    private double targetRadius;
-//    private int shotCount;
-//    private int maxStrokes;
-//    private boolean ballInMotion;
-//    private boolean outOfBounds;
-//    private Camera camera;
-//    private float boundaryMinX, boundaryMinY, boundaryMaxX, boundaryMaxY;
-//
-//
-//
-//    public GameLoop(PhysicsEngine physicsEngine, Vector3 initialBallPosition, Vector3 targetPosition,
-//                    double targetRadius, Camera camera, float boundaryMinX, float boundaryMinY, float boundaryMaxX, float boundaryMaxY, int maxStrokes) {
-//        this.physicsEngine = physicsEngine;
-//        this.ballPosition = initialBallPosition;
-//        this.targetPosition = targetPosition;
-//        this.targetRadius = targetRadius;
-//        this.camera = camera;
-//        this.boundaryMinX = boundaryMinX;
-//        this.boundaryMinY = boundaryMinY;
-//        this.boundaryMaxX = boundaryMaxX;
-//        this.boundaryMaxY = boundaryMaxY;
-//        this.shotCount = 0;
-//        this.maxStrokes = maxStrokes;
-//        this.ballInMotion = false;
-//        this.outOfBounds = false;
-//    }
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-////This updates each frame and checks flags
-//    public void update(float deltaTime) {
-//        if (ballInMotion) {
-//            physicsEngine.solve();
-//            updateBallPosition();
-//            checkBallInTarget();
-//            checkBallStopped();
-//            checkOutOfBounds();
-//        } else {
-//            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && shotCount < maxStrokes) {
-//                shootBall();
-//            }
-//        }
-//    }
-//
-//
-//
-////New ball position
-//    private void updateBallPosition() {
-//        ArrayList<Double> lastState = physicsEngine.getStateVectors().get(physicsEngine.getStateVectors().size() - 1);
-//        ballPosition.set(lastState.get(1).floatValue(), lastState.get(2).floatValue(), ballPosition.z);
-//        ballVelocityX = lastState.get(3);
-//        ballVelocityY = lastState.get(4);
-//    }
-//
-//
-//
-//
-////ADAPT ALL TO FIT
-//
-//
-//
-//
-////is it in the target
-//    private void checkBallInTarget() {
-//        float distance = ballPosition.dst(targetPosition);
-//        if (distance <= targetRadius) {
-//            System.out.println("Ball in target my lord");
-//            ballInMotion = false;
-//        }
-//    }
-//
-////if it stopps
-//    private void checkBallStopped() {
-//        if (Math.sqrt(ballVelocityX * ballVelocityX + ballVelocityY * ballVelocityY) < 0.01) {
-//            System.out.println("Ball has stopped");
-//            ballInMotion = false;
-//        }
-//    }
-//
-//    //is it outside bounds
-//    private void checkOutOfBounds() {
-//        if (ballPosition.x < boundaryMinX || ballPosition.x > boundaryMaxX || ballPosition.y < boundaryMinY || ballPosition.y > boundaryMaxY) {
-//            System.out.println("Ball is out");
-//            outOfBounds = true;
-//            ballInMotion = false;
-//        }
-//    }
-//
-//
-//    //to shoot the ball NEEDS CHANGE
-//    private void shootBall() {
-//        // CHANGE THIS
-//        ballVelocityX = 5.0;
-//        ballVelocityY = 5.0;
-//
-//        //reset physics engine
-//        physicsEngine = new PhysicsEngine(
-//            ballPosition.x, ballPosition.y,
-//            ballVelocityX, ballVelocityY,
-//            physicsEngine.getTimeStep(), physicsEngine.getStartTime(), physicsEngine.getEndTime(),
-//            physicsEngine.getkFrictionCoef(), physicsEngine.getsFrictionCoef(), physicsEngine.getgCoef(),
-//            physicsEngine.getHeight()
-//        );
-//
-//        ballInMotion = true;
-//        shotCount++;
-//        System.out.println("Shot count: " + shotCount);
-//
-//        if (shotCount >= maxStrokes) {
-//            System.out.println("Maximum strokes reached. Try again");
-//            resetLevel();
-//        }
-//    }
-//
-//
-//
-//
-//    //this will restart with initial conditions change as well
-//    private void resetLevel() {
-//        shotCount = 0;
-//        ballPosition.set(0, 0, 0);
-//        ballVelocityX = 0;
-//        ballVelocityY = 0;
-//        ballInMotion = false;
-//        outOfBounds = false;
-//    }
-//}
-//
-//
-//
+package org.ken22.game;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
+import org.ken22.physicsx.engine.PhysicsEngine;
+import org.ken22.physicsx.vectors.StateVector4;
+import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.players.HumanPlayer;
+
+import java.util.ArrayList;
+
+public class GameLoop {
+    //init
+    private PhysicsEngine physicsEngine;
+    private HumanPlayer humanPlayer;
+    private GolfCourse course;
+    private Camera camera;
+    private int shotCount;
+    private boolean ballInMotion;
+    private StateVector4 lastValidState;
+
+
+
+    //recieve stuff
+    public GameLoop(PhysicsEngine physicsEngine, GolfCourse course, Camera camera) {
+        this.physicsEngine = physicsEngine;
+        this.course = course;
+        this.camera = camera;
+        this.humanPlayer = new HumanPlayer();
+        this.shotCount = 0;
+        this.ballInMotion = false;
+        this.lastValidState = physicsEngine.getTrajectory().get(0); // initial state
+    }
+
+
+    //update and check for flags in new step
+    public void update(float deltaTime) {
+        if (ballInMotion) {
+            StateVector4 newState = physicsEngine.nextStep();
+            if (physicsEngine.isAtRest()) {
+                handleRestState();
+            } else {
+                lastValidState = newState;
+            }
+        }
+    }
+
+
+    //find out what went wrong and revert to last position to shoot
+    private void handleRestState() {
+        ballInMotion = false;
+        if (physicsEngine.reachedTarget()) {
+            System.out.println("Ball reached the target mi lord!");
+        } else if (physicsEngine.underwater()) {
+            System.out.println("Ball went into the water.");
+            revertToLastValidState();
+        } else if (physicsEngine.outOfBounds()) {
+            System.out.println("Ball went out of bounds.");
+            revertToLastValidState();
+        }
+        promptHumanPlayer();
+    }
+
+
+
+
+
+    //get the player input for a shot with Y and X velocities
+    private void promptHumanPlayer() {
+        StateVector4 currentState = physicsEngine.getTrajectory().get(physicsEngine.getTrajectory().size() - 1);
+        ArrayList<Double> velocities = humanPlayer.play(currentState, course, shotCount);
+
+        // setting the new velocities
+        StateVector4 newState = new StateVector4(
+            currentState.x(),
+            currentState.y(),
+            velocities.get(0),
+            velocities.get(1)
+        );
+        physicsEngine = new PhysicsEngine(course, newState);
+        //one more shot
+        ballInMotion = true;
+        shotCount++;
+    }
+
+
+
+    //return to last game state if something bad
+    private void revertToLastValidState() {
+        physicsEngine = new PhysicsEngine(course, lastValidState);
+    }
+}
