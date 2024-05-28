@@ -16,9 +16,12 @@ rectangle "physicsx" as P {
             +stateVector4 : StateVector4
             +odeSolver : "ODESolver<StateVector4>"
             +differentiator : Differentiator
-            +physicsEngine(sv : StateVector4, odeSolver : ODES, differentiator : DIF)
+            +physicsEngine(sv : StateVector4, course : GolfCourse, h : double)
+            +isAtRest() : boolean
             +nextStep() : StateVector4
             +solve() : StateVector4
+            +iterator() : FrameRateIterator
+            +stepIterator() : StepIterator
         }
 
     rectangle "differentiation" as DN {

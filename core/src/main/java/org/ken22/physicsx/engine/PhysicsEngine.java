@@ -238,4 +238,25 @@ public class PhysicsEngine {
     public ArrayList<StateVector4> getTrajectory() {
         return trajectory;
     }
+
+    public class StepIterator implements Iterator<StateVector4> {
+        private int index = 0;
+
+        @Override
+        public boolean hasNext() {
+            return index < trajectory.size() || !isAtRest();
+        }
+
+        @Override
+        public StateVector4 next() {
+            if (index >= trajectory.size()) {
+                return nextStep();
+            }
+            return trajectory.get(index++);
+        }
+    }
+
+    public StepIterator stepIterator() {
+        return new StepIterator();
+    }
 }
