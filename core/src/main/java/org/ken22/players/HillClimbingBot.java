@@ -32,56 +32,16 @@ public class HillClimbingBot implements Player {
     Input2 currentBest;
     double stepSize; // Default step size
 
-    public HillClimbingBot(StateVector4 currentState) {
-        this.currentState = currentState;
-    }
-
-    public HillClimbingBot(StateVector4 currentState, Player initialGuess, GolfCourse course, Differentiator dif, ODESolver<StateVector4> solver, double stepSize) {
+    public HillClimbingBot(Player initialGuess, Differentiator dif, ODESolver<StateVector4> solver, double stepSize) {
         this.initialGuess = initialGuess;
-        if(initialGuess != null) {
-            this.currentState = initialGuess.play(currentState, course);
-            this.currentBest = new Input2(currentState.vx(), currentState.vy());
-        } else {
-            this.currentState = currentState;
-            this.currentBest = new Input2(currentState.vx(), currentState.vy());
-        }
-        this.targetState = new StateVector4(course.targetXcoord(), course.targetYcoord(), 0, 0);
-        //System.out.println("Target state: " + targetState);
-
         this.stepSize = stepSize;
         this.differentiator = dif;
         this.solver = solver;
-        this.course = course;
-        //this.expr = GolfExpression.expr(course);
-
-        this.vxError = (vx) -> {
-            // Create a new state vector with the inputed x velocity and current best y velocity
-            var probingState = new StateVector4(currentState.x(), currentState.y(), vx, currentBest.vy());
-            // Run a simulation to determine the error of the current best
-            engine = new PhysicsEngine(course, probingState, stepSize, differentiator, solver);
-            StateVector4 finalState = engine.solve();
-
-            //System.out.println("Final state: " + finalState);
-
-            return errorHeuristic(finalState, targetState);
-        };
-
-        this.vyError = (vy) -> {
-            // Create a new state vector with the inputed y velocity and current best x velocity
-            var probingState = new StateVector4(currentState.x(), currentState.y(), currentBest.vx(), vy);
-            // Run a simulation to determine the error of the current best
-            engine = new PhysicsEngine(course, probingState, stepSize, differentiator, solver);
-            StateVector4 finalState = engine.solve();
-
-            //System.out.println("Final state: " + finalState);
-
-            return errorHeuristic(finalState, targetState);
-        };
     }
 
     @Override
     public StateVector4 play(StateVector4 state, GolfCourse course) {
-        //if (expr == null) {expr = GolfExpression.expr(course);}
+        init(state, course);
 
         do {
             climb();
@@ -119,5 +79,41 @@ public class HillClimbingBot implements Player {
     private StateVector4 predict(StateVector4 state, double vx, double vy, GolfCourse course) {
         PhysicsEngine engine = new PhysicsEngine(course, new StateVector4(state.x(), state.y(), vx, vy), stepSize, differentiator, solver);
         return engine.solve();
+    }
+
+    private void  init(StateVector4 state, GolfCourse course) {
+        if(initialGuess != null) {
+            this.currentState = initialGuess.play(currentState, course);
+            this.currentBest = new Input2(currentState.vx(), currentState.vy());
+        } else {
+            this.currentState = state;
+            this.currentBest = new Input2(currentState.vx(), currentState.vy());
+        }
+        this.targetState = new StateVector4(course.targetXcoord(), course.targetYcoord(), 0, 0);
+        //System.out.println("Target state: " + targetState);
+
+        this.vxError = (vx) -> {
+            // Create a new state vector with the inputed x velocity and current best y velocity
+            var probingState = new StateVector4(currentState.x(), currentState.y(), vx, currentBest.vy());
+            // Run a simulation to determine the error of the current best
+            engine = new PhysicsEngine(course, probingState, stepSize, differentiator, solver);
+            StateVector4 finalState = engine.solve();
+
+            //System.out.println("Final state: " + finalState);
+
+            return errorHeuristic(finalState, targetState);
+        };
+
+        this.vyError = (vy) -> {
+            // Create a new state vector with the inputed y velocity and current best x velocity
+            var probingState = new StateVector4(currentState.x(), currentState.y(), currentBest.vx(), vy);
+            // Run a simulation to determine the error of the current best
+            engine = new PhysicsEngine(course, probingState, stepSize, differentiator, solver);
+            StateVector4 finalState = engine.solve();
+
+            //System.out.println("Final state: " + finalState);
+
+            return errorHeuristic(finalState, targetState);
+        };
     }
 }

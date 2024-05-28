@@ -16,16 +16,16 @@ class HillClimbingBotTest {
 
     @BeforeAll
     static void setUp() {
-        course = TestUtils.course("flat-golf-course.json");
+        course = TestUtils.course("test-golf-course.json");
         expr = TestUtils.expr(course);
     }
 
     @Test
     void play() {
         //System.out.println(expr.setVariable("x", 5).setVariable("y", 5).evaluate());
-        HillClimbingBot bot = new HillClimbingBot(new StateVector4(0, 0, 1, 0), null, course, new ThreePointCenteredDifference(),
+        HillClimbingBot bot = new HillClimbingBot( null, new ThreePointCenteredDifference(),
             new RK4(), 0.016);
-        var result = bot.play(new StateVector4(0, 0, 1, 0), course);
+        var result = bot.play(new StateVector4(2, 2, 3, 3), course);
         System.out.println(result);
     }
 }
