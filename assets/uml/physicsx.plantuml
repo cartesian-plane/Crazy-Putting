@@ -27,6 +27,8 @@ rectangle "physicsx" as P {
             +stepIterator() : StepIterator
         }
 
+
+
     rectangle "differentiation" as DN {
 
         class "InstantaneousVectorDifferentiation4" as IVD4 {
@@ -70,7 +72,7 @@ rectangle "physicsx" as P {
         TPCD -up-|> DIF
 
         PE --> DIF
-        DIF --> VD4
+        DIF -up-> VD4
     }
 
     rectangle "odesolvers" as ES {
@@ -99,7 +101,7 @@ rectangle "physicsx" as P {
 rectangle "game_engine" as GE {
 }
 
-GE -->"FrameRateIterator" PE
+GE -down->"FrameRateIterator" PE
 
 rectangle "graphics_engine" as GR {
 }
