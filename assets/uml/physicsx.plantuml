@@ -18,6 +18,9 @@ rectangle "physicsx" as P {
             +differentiator : Differentiator
             +physicsEngine(sv : StateVector4, course : GolfCourse, h : double)
             +isAtRest() : boolean
+            -underwater() : boolean
+            -reachedTarget() : boolean
+            -outOfBounds() : boolean
             +nextStep() : StateVector4
             +solve() : StateVector4
             +iterator() : FrameRateIterator
@@ -91,8 +94,16 @@ rectangle "physicsx" as P {
 
         PE --> ODES
     }
-
-
 }
+
+rectangle "game_engine" as GE {
+}
+
+GE -->"FrameRateIterator" PE
+
+rectangle "graphics_engine" as GR {
+}
+
+GR <-left- "FrameRateIterator" GE
 
 @enduml

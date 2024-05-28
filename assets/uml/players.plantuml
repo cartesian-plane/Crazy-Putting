@@ -1,0 +1,46 @@
+@startuml Players
+
+rectangle "players" as PL {
+    class "Input2" as I2 {
+        + vx : double
+        + vy : double
+    }
+
+    interface "Player" as P {
+        + play(current : SVec4, golfCourse : GolfCourse) : Input2
+    }
+
+    class "HumanPlayer" as HP {
+        - inputDialog() : Input2
+        + play(current : SVec4, golfCourse : GolfCourse) : Input2
+
+    }
+
+    class "PlanarApproximationBot" as PA {
+        + play(current : SVec4, golfCourse : GolfCourse) : Input2
+    }
+
+    class "HillClimbingBot" as HC {
+        - initialGueser : Player
+        - dif : Differentiator
+        - odesolver : ODESolver<SVec4>
+        - vxError : Function<Double, Double>
+        - vyError : Function<Double, Double>
+        - errorHeuristic() : double
+        - climb() : void
+        - simulate(current : SVec4, golfCourse : GolfCourse, input : Input2) : SVec4
+        + play(current : SVec4, golfCourse : GolfCourse) : Input2
+    }
+
+    HP -up-|> P
+    PA -up-|> P
+    HC -up-|> P
+    P -left-> I2
+}
+
+rectangle "game_engine" as GE {
+}
+
+GE -down->"Input2" PL
+
+@enduml

@@ -1,0 +1,98 @@
+@startuml physicsx
+
+rectangle "physicsx" as P {
+
+        class "SVec4" as SV4 {
+            +x : double
+            +y : double
+            +vx : double
+            +vy : double
+            +SVec4(x : double, y : double, vx : double, vy : double)
+            +add(sv : SVec4) : SVec4
+            +multiply(scalar : double) : SVec4
+        }
+
+        class "PhysicsEngine" as PE {
+            +SVec4 : SVec4
+            +odeSolver : "ODESolver<SVec4>"
+            +differentiator : Differentiator
+            +physicsEngine(sv : SVec4, course : GolfCourse, h : double)
+            +isAtRest() : boolean
+            +nextStep() : SVec4
+            +solve() : SVec4
+            +iterator() : FrameRateIterator
+            +stepIterator() : StepIterator
+        }
+
+    rectangle "differentiation" as DN {
+
+        class "InstVecDif" as IVD4 {
+            +apply(v : SVec4) : SVec4
+        }
+
+        class "VecDif" as VD4{
+            +apply(dt : Double, v : SVec4) : SVec4
+        }
+
+        class "InstVecDifFact" as IVDF {
+            +normalSpeed() : InstVecDif
+            +lowSpeed() : InstVecDif
+        }
+
+        class "VecDifFact" as VDF {
+            +normalSpeed() : VecDif
+            +lowSpeed() : VecDif
+        }
+
+        IVDF -up-> IVD4
+        VDF --> VD4
+        VDF -left-> IVD4
+    }
+
+    rectangle "differentiators" as DR {
+
+        class "Differentiator" as DIF {
+            +differentiate(...) : SVec4
+        }
+
+        class "ThreePointCenteredDifference" as TPCD {
+            +differentiate(...) : SVec4
+        }
+
+        class "FivePointCenteredDifference" as FPCD {
+            +differentiate(...) : SVec4
+        }
+
+        FPCD -up-|> DIF
+        TPCD -up-|> DIF
+
+        PE --> DIF
+        DIF --> VD4
+    }
+
+    rectangle "odesolvers" as ES {
+        class "ODESolver<State>" as ODES {
+            +solve(...) : State
+            +nextStep(...) : State
+        }
+
+        class "RK4" as RK4 {
+            +solve(...) : SVec4
+            +nextStep(...) : SVec4
+        }
+
+        class "RK2" as RK2 {
+            +solve(...) : SVec4
+            +nextStep(...) : SVec4
+        }
+
+        RK4 -up-|> ODES
+        RK2 -up-|> ODES
+
+        PE --> ODES
+    }
+
+
+}
+
+@enduml
