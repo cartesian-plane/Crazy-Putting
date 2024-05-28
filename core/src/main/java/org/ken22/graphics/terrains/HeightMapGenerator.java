@@ -1,4 +1,4 @@
-package org.ken22.terrains;
+package org.ken22.graphics.terrains;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
