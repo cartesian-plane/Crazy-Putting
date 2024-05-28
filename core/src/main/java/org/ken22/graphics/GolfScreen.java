@@ -1,5 +1,4 @@
-
-package org.ken22.game;
+package org.ken22.graphics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
