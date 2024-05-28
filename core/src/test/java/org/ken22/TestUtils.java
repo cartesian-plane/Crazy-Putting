@@ -1,12 +1,17 @@
-package org.ken22.physicsx;
+package org.ken22;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physicsx.differentiators.FivePointCenteredDifference;
+import org.ken22.physicsx.engine.PhysicsEngine;
+import org.ken22.physicsx.odesolvers.RK4;
+import org.ken22.physicsx.vectors.StateVector4;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.BiFunction;
 
 public class TestUtils {
     public static GolfCourse course(String fileName) {
@@ -29,4 +34,9 @@ public class TestUtils {
             .variables("x", "y")
             .build();
     }
+
+    public static BiFunction<StateVector4,GolfCourse, StateVector4> prediction = (state, course) -> {
+        PhysicsEngine engine = new PhysicsEngine(course, state, 0.0001, new FivePointCenteredDifference(), new RK4());
+        return engine.solve();
+    };
 }

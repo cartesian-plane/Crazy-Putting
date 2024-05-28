@@ -3,7 +3,7 @@ package org.ken22.physicsx.odesolvers;
 import net.objecthunter.exp4j.Expression;
 import org.junit.jupiter.api.Test;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.physicsx.TestUtils;
+import org.ken22.TestUtils;
 import org.ken22.physicsx.differentiation.InstantaneousVectorDifferentiation4;
 import org.ken22.physicsx.differentiation.InstantaneousVectorDifferentiationFactory;
 import org.ken22.physicsx.differentiation.VectorDifferentiation4;
