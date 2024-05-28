@@ -14,7 +14,7 @@ import org.ken22.physicsx.vectors.StateVector4;
 
 //////////////////// CLASS //////////////////////////////////////////////
 //for prompting the player to shoot
-public class HumanPlayer {
+public class HumanPlayer implements Player{
 
     //////////////////// INITIALIZATIONS //////////////////////////////////////////////
     private JFrame frame;
@@ -138,7 +138,7 @@ public class HumanPlayer {
 
 
 
-        
+
         // Control panel spawn
         JPanel controlsPanel = new JPanel();
         controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.Y_AXIS));
@@ -204,7 +204,7 @@ public class HumanPlayer {
 
 
 
-    // method that creates a text field for numbers from way before 
+    // method that creates a text field for numbers from way before
     private JTextField createNumberField(Font font) {
         JTextField numberField = new JTextField("0", 7);
         numberField.setFont(font);

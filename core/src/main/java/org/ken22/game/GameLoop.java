@@ -10,11 +10,6 @@ import org.ken22.players.HumanPlayer;
 
 import java.util.ArrayList;
 
-
-
-
-
-
 public class GameLoop {
     //init
     private PhysicsEngine physicsEngine;

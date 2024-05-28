@@ -1,4 +1,4 @@
-package org.ken22.terrains;
+package org.ken22.graphics.terrains;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.utils.Disposable;

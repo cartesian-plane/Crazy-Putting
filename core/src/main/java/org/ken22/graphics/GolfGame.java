@@ -1,4 +1,4 @@
-package org.ken22.game;
+package org.ken22.graphics;
 
 import com.badlogic.gdx.Game;
 
@@ -6,6 +6,6 @@ import com.badlogic.gdx.Game;
 public class GolfGame extends Game {
     @Override
     public void create() {
-        setScreen(new FirstScreen());
+        setScreen(new GolfScreen());
     }
 }

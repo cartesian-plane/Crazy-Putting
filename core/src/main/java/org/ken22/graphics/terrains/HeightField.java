@@ -1,5 +1,5 @@
 
-package org.ken22.terrains;
+package org.ken22.graphics.terrains;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;

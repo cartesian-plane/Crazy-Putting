@@ -3,7 +3,7 @@ package org.ken22.game.lwjgl3;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.glutils.HdpiMode;
-import org.ken22.game.GolfGame;
+import org.ken22.graphics.GolfGame;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {

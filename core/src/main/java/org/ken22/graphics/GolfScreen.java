@@ -1,5 +1,5 @@
 
-package org.ken22.game;
+package org.ken22.graphics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -25,8 +25,8 @@ import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physicsx.engine.PhysicsEngine;
 import org.ken22.physicsx.vectors.StateVector4;
-import org.ken22.terrains.GameWorldCoordinatesMapper;
-import org.ken22.terrains.HeightMapTerrain;
+import org.ken22.graphics.terrains.GameWorldCoordinatesMapper;
+import org.ken22.graphics.terrains.HeightMapTerrain;
 
 
 import java.io.File;
@@ -34,7 +34,7 @@ import java.util.LinkedList;
 
 
 /** First screen of the application. Displayed after the application is created. */
-public class FirstScreen implements Screen {
+public class GolfScreen implements Screen {
     private HeightMapTerrain terrain;
     private SceneManager sceneManager;
     private SceneAsset sceneAsset;
