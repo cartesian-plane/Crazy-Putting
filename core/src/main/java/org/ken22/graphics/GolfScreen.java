@@ -169,7 +169,7 @@ public class GolfScreen implements Screen {
         //ALL OF tHIS WILL NEED to BE CHANGEd
 
 
-        var course = new File("input/golf-course.json");
+        var course = new File("input/exp-golf-course.json");
         var parser = new CourseParser(course);
         GolfCourse golfCourse = parser.getCourse();
         double initialX = 5;
