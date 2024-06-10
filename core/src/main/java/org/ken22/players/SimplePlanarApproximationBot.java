@@ -2,7 +2,7 @@ package org.ken22.players;
 
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.physicsx.vectors.StateVector4;
+import org.ken22.physics.vectors.StateVector4;
 import org.ken22.utils.GolfExpression;
 
 public class SimplePlanarApproximationBot implements Player {

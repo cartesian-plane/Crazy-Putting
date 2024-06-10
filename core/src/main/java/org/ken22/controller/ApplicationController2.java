@@ -3,7 +3,7 @@ package org.ken22.controller;
 //////////////////// IMPORTS //////////////////////////////////////////////
 import org.ken22.ui.InputPage2;
 import org.ken22.ui.LevelSelectPage;
-import org.ken22.interfaces.Level;
+import org.ken22.ui.Level;
 import java.util.ArrayList;
 import java.util.List;
 //////////////////// IMPORTS //////////////////////////////////////////////
@@ -24,21 +24,21 @@ public class ApplicationController2 {
 
 
 
-    //////////////////// METHODS ////////////////////////////////////////////// 
+    //////////////////// METHODS //////////////////////////////////////////////
     //get the initial levels
     public ApplicationController2() {
         this.sampleLevels = createSampleLevels();
     }
-  
 
 
-    
+
+
     //running the stuff
     private void run() {
         new InputPage2(this);
     }
 
-   
+
 
 
 
@@ -53,8 +53,8 @@ public class ApplicationController2 {
         sampleLevels.add(new Level("Paradise Park", "x * log(y)", 0.6, 4, 4, 10, 10, 1.3));
         sampleLevels.add(new Level("Sandy Swing", "abs(x - y)", 0.75, 6, 6, 11, 11, 1.9));
         sampleLevels.add(new Level("Golfer's Lagoon", "sin(x * y)", 0.58, 1, 1, 17, 17, 2.3));
-    
-        return sampleLevels; 
+
+        return sampleLevels;
     }
 
 
@@ -72,14 +72,14 @@ public class ApplicationController2 {
                     break;
                 }
             }
-    
+
             if (levelIndex != -1) {
                 sampleLevels.set(levelIndex, editedLevel);
             }
         });
         levelSelectPage.setVisible(true);
     }
-    
+
 
 
 
@@ -88,7 +88,7 @@ public class ApplicationController2 {
     public void onPhaseOne() {
         new ApplicationController().run();
     }
-    //////////////////// METHODS ////////////////////////////////////////////// 
+    //////////////////// METHODS //////////////////////////////////////////////
 
 }
 //////////////////// CLASS //////////////////////////////////////////////

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.TestUtils;
-import org.ken22.physicsx.vectors.StateVector4;
+import org.ken22.physics.vectors.StateVector4;
 
 class SimplePlanarApproximationBotTest {
 

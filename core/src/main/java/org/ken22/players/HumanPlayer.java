@@ -6,10 +6,9 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 import java.awt.*;
-import java.util.ArrayList;
 
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.physicsx.vectors.StateVector4;
+import org.ken22.physics.vectors.StateVector4;
 //////////////////// IMPORTS //////////////////////////////////////////////
 
 //////////////////// CLASS //////////////////////////////////////////////

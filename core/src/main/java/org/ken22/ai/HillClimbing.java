@@ -2,9 +2,9 @@ package org.ken22.ai;
 
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.physicsx.engine.PhysicsEngine;
-import org.ken22.physicsx.utils.PhysicsUtils;
-import org.ken22.physicsx.vectors.StateVector4;
+import org.ken22.physics.engine.PhysicsEngine;
+import org.ken22.physics.utils.PhysicsUtils;
+import org.ken22.physics.vectors.StateVector4;
 
 import java.io.File;
 import java.util.*;

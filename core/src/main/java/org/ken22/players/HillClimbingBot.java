@@ -2,13 +2,11 @@ package org.ken22.players;
 
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.physicsx.odesolvers.ODESolver;
-import org.ken22.physicsx.engine.PhysicsEngine;
-import org.ken22.physicsx.differentiators.Differentiator;
-import org.ken22.physicsx.differentiators.FivePointCenteredDifference;
-import org.ken22.physicsx.utils.PhysicsUtils;
-import org.ken22.physicsx.vectors.StateVector4;
-import org.ken22.utils.GolfExpression;
+import org.ken22.physics.odesolvers.ODESolver;
+import org.ken22.physics.engine.PhysicsEngine;
+import org.ken22.physics.differentiators.Differentiator;
+import org.ken22.physics.utils.PhysicsUtils;
+import org.ken22.physics.vectors.StateVector4;
 
 import java.util.function.Function;
 

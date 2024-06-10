@@ -1,296 +1,262 @@
 package org.ken22.physics.engine;
 
 import net.objecthunter.exp4j.Expression;
-import org.ken22.physics.numerical_derivation.NumDerivationMethod;
-import org.ken22.physics.numerical_integration.NumIntegrationMethod;
-import org.ken22.physics.system.PhysicsSystem;
-import org.ken22.physics.vectors.GVec4;
-import org.ken22.physics.mathTools.MyMath;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.interfaces.IFunc;
-import java.util.ArrayList;
-import java.util.Map;
+import org.ken22.physics.differentiators.Differentiator;
+import org.ken22.physics.differentiators.FivePointCenteredDifference;
+import org.ken22.physics.differentiation.VectorDifferentiation4;
+import org.ken22.physics.differentiation.VectorDifferentiationFactory;
+import org.ken22.physics.odesolvers.ODESolver;
+import org.ken22.physics.odesolvers.RK4;
+import org.ken22.physics.utils.PhysicsUtils;
+import org.ken22.physics.vectors.StateVector4;
 
-import static org.ken22.physics.vectors.GVec4.copy;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class PhysicsEngine {
-    // Parameter order (t,x,y,vx, vy, gradx, grady, height)
 
-    //Grass equations
+    private static final double DEFAULT_TIME_STEP = 0.0001;
+    private static final double STOPPING_THRESHOLD = 0.05;
+    private final GolfCourse course;
+    private final Expression expr;
 
-    //Kinetic
-    private IFunc<Double, Double> ax_k_gr = (vars) ->
-        ( -1*this.g*(vars.get(5)+this.kf_gr*vars.get(3) /
-            MyMath.pythagoras(vars.get(3), vars.get(4)) ));
-    private IFunc<Double, Double> ay_k_gr = (vars) ->
-        ( -1*this.g*(vars.get(6)+this.kf_gr*vars.get(4) /
-            MyMath.pythagoras(vars.get(3), vars.get(4)) ));
-    //Static
-    private IFunc<Double, Double> ax_s_gr = (vars) ->
-        ( -1*this.g*(vars.get(5)+this.kf_gr*vars.get(5) /
-            MyMath.pythagoras(vars.get(5), vars.get(6)) ));
-    private IFunc<Double, Double> ay_s_gr = (vars) ->
-        ( -1*this.g*(vars.get(6)+this.kf_gr*vars.get(6) /
-            MyMath.pythagoras(vars.get(5), vars.get(6)) ));
+    private final VectorDifferentiationFactory vectorDifferentiationFactory;
+    private final ODESolver<StateVector4> solver;
+    private final Differentiator differentiator;
+
+    private ArrayList<StateVector4> trajectory = new ArrayList<>();
+    private StateVector4 initialStateVector;
+    private final double timeStep; // Default time step
 
 
-    //Sand equations
+    /// Constructors
+    public PhysicsEngine(GolfCourse course, StateVector4 initialStateVector) {
+        this(course, initialStateVector, DEFAULT_TIME_STEP, new FivePointCenteredDifference(), new RK4());
+    }
 
-    //Kinetic
-    private IFunc<Double, Double> ax_k_sa = (vars) ->
-        ( -1*this.g*(vars.get(5)+this.kf_sa*vars.get(3) /
-            MyMath.pythagoras(vars.get(3), vars.get(4)) ));
-    private IFunc<Double, Double> ay_k_sa = (vars) ->
-        ( -1*this.g*(vars.get(6)+this.kf_sa*vars.get(4) /
-            MyMath.pythagoras(vars.get(3), vars.get(4)) ));
-    //Static
-    private IFunc<Double, Double> ax_s_sa = (vars) ->
-        ( -1*this.g*(vars.get(5)+this.sf_sa*vars.get(5) /
-            MyMath.pythagoras(vars.get(5), vars.get(6)) ));
-    private IFunc<Double, Double> ay_s_sa = (vars) ->
-        ( -1*this.g*(vars.get(6)+this.sf_sa*vars.get(6) /
-            MyMath.pythagoras(vars.get(5), vars.get(6)) ));
+    public PhysicsEngine(GolfCourse course, StateVector4 initialStateVector, double timeStep) {
+        this(course, initialStateVector, timeStep, new FivePointCenteredDifference(), new RK4());
+    }
 
-    //Json
-    private Expression terrain; //Parameters are (x,y), passed in constructor
-    private Map<String, Double> vars;
-    private GolfCourse courseInfo;
-    private String name;
-    private double kf_gr;
-    private double sf_gr;
-    private double g;
-    private double sf_sa;
-    private double kf_sa;
-    private double maxspeed;
-    private double range;
-    private double targetX;
-    private double targetY;
-    private double targetRadius;
+    public PhysicsEngine(GolfCourse course, StateVector4 initialStateVector, double timeStep,
+                         Differentiator differentiator, ODESolver<StateVector4> solver) {
 
-    //Math
-    private double timeStep;
-    private NumIntegrationMethod integrator;
-    private NumDerivationMethod differentiator;
-    private GVec4 initialState; // (t,x,y,vx, vy)
-    private ArrayList<GVec4> stateVectors = new ArrayList<GVec4>(); // (t,x,y,vx, vy, gradX, gradY)
+        if (timeStep > 0.016) {
+            throw new IllegalArgumentException("Step size " + timeStep + " too big for 60FPS");
+        }
 
-    //Game and graphics
-    double seconds = 0.0;
-    boolean atRest = false;
-    public PhysicsEngine(PhysicsSystem system, NumIntegrationMethod integrator, NumDerivationMethod differentiator) {
-        //Initial conditions
-        this.initialState = system.getInitialState();
-        this.stateVectors.add(initialState);
-        this.initialState.add(0.0); //initiialising values for gradX
-        this.initialState.add(0.0); //initialising values for gradY since they are edited in place
-        this.initialState.add(0.0); //initialising values for height since they are edited in place
+        double vx = initialStateVector.vx();
+        double vy = initialStateVector.vy();
+        if (PhysicsUtils.magnitude(vx, vy) > course.maximumSpeed()) {
+            throw new IllegalArgumentException("Initial vector speed too high! (max speed = "
+                + course.maximumSpeed() + ")");
+        }
 
-        //Math information
-        this.timeStep = system.getTimeStep();
-        this.integrator = integrator;
+        this.course = course;
+        this.initialStateVector = initialStateVector;
+        this.timeStep = timeStep;
         this.differentiator = differentiator;
-        this.vars = system.getMap();
-
-        //Course info
-        this.courseInfo = system.getCourse();
-        this.kf_gr = this.courseInfo.kineticFrictionGrass();
-        this.sf_gr = this.courseInfo.staticFrictionGrass();
-        this.g = this.courseInfo.gravitationalConstant();
-        this.sf_sa = this.courseInfo.kineticFrictionSand();
-        this.kf_sa = this.courseInfo.staticFrictionSand();
-        this.terrain = system.getTerrain();
-        this.maxspeed = courseInfo.maximumSpeed();
-        this.range = courseInfo.range();
-        this.targetX = courseInfo.targetXcoord();
-        this.targetY = courseInfo.targetYcoord();
-
-//      System.out.println("kf_grass: " + kf_gr + ", sf_grass: " + sf_gr + ", g: " + g + ", sf_sand: " + sf_sa + ", kf_sand: " + kf_sa + ", maxspeed: " + maxspeed);
+        this.solver = solver;
+        this.expr = new ExpressionBuilder(course.courseProfile())
+            .variables("x", "y")
+            .build();
+        this.vectorDifferentiationFactory = new VectorDifferentiationFactory(timeStep, expr, course, differentiator);
+        trajectory.add(initialStateVector);
     }
 
-    public Expression getTerrain() {
-        return terrain;
+
+    /// Methods
+
+    /**
+     * Checks whether the ball is at rest by looking at the last computed state vector.
+     *
+     * <p>The ball is considered to be at rest if any of these conditions are true:</p>
+     * <ul>
+     *     <li>has collided (i.e. went into water)</li>
+     *     <li>has gone out of the terrain bounds</li>
+     *     <li>the speed is small and the slope is negligible</li>
+     *     <li>the static friction overcomes the downhill force</li>
+     * </ul>
+     *
+     * @return {@code true} if at rest, {@code false} otherwise
+     */
+    @SuppressWarnings("RedundantIfStatement")
+    public boolean isAtRest() {
+        StateVector4 lastVector = trajectory.getLast();
+
+        if (underwater()) {
+            //System.out.println("Underwater");
+            return true;
+        } else if(outOfBounds()) {
+            //System.out.println("Out of bounds");
+            return true;
+        } else if (reachedTarget()) {
+            //System.out.println("Reached target");
+            return true;
+        }
+
+        double x = lastVector.x();
+        double y = lastVector.y();
+        double vx = lastVector.vx();
+        double vy = lastVector.vy();
+
+        // Evaluate the partial derivatives for x and y
+        double dh_dx = PhysicsUtils.xSlope(x, y, timeStep, expr, differentiator);
+        double dh_dy = PhysicsUtils.ySlope(x, y, timeStep, expr, differentiator);
+
+        if (PhysicsUtils.magnitude(vx, vy) < STOPPING_THRESHOLD) {
+            if (PhysicsUtils.magnitude(dh_dx, dh_dy) < STOPPING_THRESHOLD) {
+                return true;
+            } else if (course.staticFrictionGrass() > PhysicsUtils.magnitude(dh_dx, dh_dy)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    public GVec4 getInitialState() {
-        return initialState;
+
+    /**
+     * Check if the ball has collided (went into water).
+     *
+     * @return {@code true} if the height is negative, {@code false} otherwise.
+     */
+    public boolean underwater() {
+        StateVector4 lastVector = trajectory.getLast();
+
+        double x = lastVector.x();
+        double y = lastVector.y();
+
+        expr.setVariable("x", x)
+            .setVariable("y", y);
+
+        double height = expr.evaluate();
+
+        return height < 0;
     }
 
-    public ArrayList<GVec4> getStateVectors() {
-        return stateVectors;
+    /**
+     * Checks if the ball has reached the target.
+     *
+     * @return {@code true} if reached, {@code false} otherwise
+     */
+    public boolean reachedTarget() {
+        StateVector4 lastVector = trajectory.getLast();
+
+        double x = lastVector.x();
+        double y = lastVector.y();
+
+        double targetRadius = course.targetRadius();
+        double targetX = course.targetXcoord();
+        double targetY = course.targetYcoord();
+
+        return PhysicsUtils.magnitude(x - targetX, y - targetY) < targetRadius;
     }
 
-    public void run()
-    {
-        GVec4 currentState = copy(initialState); // (t,x,y,vx,vy)
-        boolean atRest = false;
+    /**
+     * Check if the ball has gone out of bounds.
+     * @return TRUE if the ball is out of bounds, FALSE otherwise
+     */
+    public boolean outOfBounds() {
+        return Math.abs(trajectory.getLast().x()) > course.range() || Math.abs(trajectory.getLast().y()) > course.range();
+    }
 
-        //Do not allow initial velocity above threshold
-        currentState.set(3, Math.min(currentState.get(3), this.maxspeed));
-        currentState.set(4, Math.min(currentState.get(4), this.maxspeed));
+    /**
+     * Generates, appends and returns the next state vector in the trajectory according to the step size
+     * Does not check whether the ball is at rest
+     *
+     * @return {@link StateVector4} the next state vector
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public StateVector4 nextStep() {
+        StateVector4 lastVector = trajectory.getLast();
+        double vx = lastVector.vx();
+        double vy = lastVector.vy();
 
-        while(!atRest) { //stop when target is reached
-            System.out.println(currentState.getVector().toString() + " ------ ");
+        VectorDifferentiation4 differentiation;
+        // Decide which equations to use for updating the acceleration
+        if (PhysicsUtils.magnitude(vx, vy) < STOPPING_THRESHOLD) {
+            differentiation = vectorDifferentiationFactory.lowSpeedVectorDifferentiation4();
+        } else {
+            differentiation = vectorDifferentiationFactory.normalSpeedVectorDifferentiation4();
+        }
 
-            assert (currentState.size() == 5);
-            //calculates partial derivatives and adds them to currentState vector
-            differentiator.gradients(currentState, this.terrain, this.range); // (t,x,y,vx, vy, gradX, gradY)
+        StateVector4 newVector = solver.nextStep(timeStep, lastVector, differentiation);
+        trajectory.add(newVector);
+        return newVector;
+    }
 
-            //Check if on grass or sand
+    /**
+     * Returns the final prediction of the trajectory of the golf ball
+     * Speeds up the rest of the simulation to get the final prediction, causing problems to existing iterators
+     * <p>
+     * The method will keep calling {@link #nextStep()} until the ball is at rest
+     *
+     * @return {@link StateVector4} the final prediction
+     */
+    public StateVector4 solve() {
+        while (!isAtRest()) {
+            nextStep();
+        }
+        return trajectory.getLast();
+    }
 
-            //GVec4 stateVector, double timeStep, IFunc<Double, Double> funcx, IFunc<Double, Double> funcy, Expression height, NumDerivationMethod differentiator
-            if(minSpeedReached(currentState)) { //speed gets too low, 0.05 is threshold
-                if(currentState.get_dhdx() < Math.abs(0.05) && currentState.get_dhdy() < Math.abs(0.05)) { //flat surface
-                    atRest = true;
-                    integrator.execute(this.stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
+
+    public FrameRateIterator iterator() {
+        return new FrameRateIterator();
+    }
+
+    /**
+     * Returns an iterator that will iterate over the trajectory of the golf ball for graphical display
+     * <p>
+     * Assumes that time matches dt = 1 -> 1s has passed, and frame rate of 60FPS
+     */
+    public class FrameRateIterator implements Iterator<StateVector4> {
+        private static final int FRAME_RATE = 60;
+        private final int kPerFrame = (int) ((1.0 / FRAME_RATE) / timeStep);
+        private int index = 0; //Iterator must keep reference to the current element/index
+
+        @Override
+        public boolean hasNext() {
+            return !isAtRest();
+        }
+
+        @Override
+        public StateVector4 next() {
+            for (int i = 0; i < kPerFrame; i++) {
+                nextStep();
+                if (isAtRest()) {
+                    break;
                 }
-                else { //inclined surface
-                    if(MyMath.pythagoras(currentState.get_dhdx(), currentState.get_dhdy()) < sf_gr) { //ball stops
-                        atRest = true;
-                        integrator.execute(this.stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
-                    }
-                    else { //ball keeps rolling
-                        integrator.execute(this.stateVectors, this.timeStep, ax_s_gr, ay_s_gr, this.terrain, this.differentiator);
-                    }
-                }
             }
+            return trajectory.getLast();
+        }
+    }
 
-            else { // ball is moving
-                integrator.execute(stateVectors, this.timeStep, ax_k_gr, ay_k_gr, this.terrain, this.differentiator);
+    public ArrayList<StateVector4> getTrajectory() {
+        return trajectory;
+    }
+
+    public class StepIterator implements Iterator<StateVector4> {
+        private int index = 0;
+
+        @Override
+        public boolean hasNext() {
+            return index < trajectory.size() || !isAtRest();
+        }
+
+        @Override
+        public StateVector4 next() {
+            if (index >= trajectory.size()) {
+                return nextStep();
             }
-
-            //Don't allow to go over max speed
-            currentState.set(3, Math.min(currentState.get_vx(), this.maxspeed));
-            currentState.set(4, Math.min(currentState.get_vy(), this.maxspeed));
-
-            //Add height only for testing, remove later
-            currentState.add(this.terrain.setVariable("x", currentState.get_x()).setVariable("y", currentState.get_y()).evaluate());
-
-            //Collisions? Save for later
-            //Think about angle of bounce and conservation of momentum
-
-            stateVectors.add(GVec4.copy(currentState));
-            currentState.skim();
-            System.out.println(currentState.getVector().toString()+ " ------ ");
+            return trajectory.get(index++);
         }
-
-        this.initialState = new GVec4(this.timeStep);
-        this.initialState.add(stateVectors.getLast().get_x());
-        this.initialState.add(stateVectors.getLast().get_y());
-        this.stateVectors = null;
-
-        //Store the last position which is going to be the next starting position
-        //Remove completed trajectory from memory
-        //Allow the user to choose the next starting velocities
     }
 
-    public GVec4 nextStep() {
-
-        GVec4 currentState = this.stateVectors.getLast(); // (t,x,y,vx,vy, gradX, gradY)
-        this.seconds += 1.0/60.0;
-
-        //Do not allow initial velocity above threshold
-        currentState.set(3, capVelocity(currentState.get_vx()));
-        currentState.set(4, capVelocity(currentState.get_vy()));
-
-        //System.out.println(currentState.getVector().toString()+ " ------ ");
-
-        //Calculates partial derivatives and adds them to currentState vector (in place)
-        differentiator.gradients(currentState, this.terrain, this.timeStep/10.0); // (t,x,y,vx, vy, gradX, gradY)
-        currentState.set(7, terrain.setVariable("x", currentState.get_x()).setVariable("y", currentState.get_y()).evaluate());
-        ArrayList<IFunc<Double, Double>> functions = chooseFunctions(currentState);
-        GVec4 newState = integrator.execute(stateVectors, this.timeStep, functions.getFirst(), functions.get(1), this.terrain, this.differentiator);
-
-        newState.set(3, capVelocity(newState.get_vx()));
-        newState.set(4, capVelocity(newState.get_vy()));
-
-        stateVectors.add(newState);
-        //System.out.println(currentState.getVector().toString()+ " ------ ");
-
-        /* if (this.seconds == 5) {
-            this.initialState = copy(stateVectors.getLast());
-            this.stateVectors = new ArrayList<GVec4>();
-            this.stateVectors.add(initialState);
-        }*/
-
-        return stateVectors.getLast();
-    }
-
-    public boolean isAtRest(GVec4 currentState) {
-        boolean atRest = false;
-        double vx = Math.abs(currentState.get_vx());
-        double vy = Math.abs(currentState.get_vy());
-        double gradX = Math.abs(currentState.get_dhdx());
-        double gradY = Math.abs(currentState.get_dhdy());
-
-        if(vx < 0.01 && vy < 0.01) { // speed threshold
-            if(gradX < 0.001 && gradY < 0.001) { // flat surface
-                atRest = true;
-            } else if(MyMath.pythagoras(gradX, gradY) < sf_gr) { // inclined surface but within static friction
-                atRest = true;
-            }
-        }
-
-        // Check if in water or out of bounds
-        if(!atRest) {
-            double x = Math.abs(currentState.get_x());
-            double y = Math.abs(currentState.get_y());
-            atRest = (x > this.range || y > this.range || (currentState.getLast() < 0));
-            if(atRest) {
-                currentState.set(3, 0.0); // Zero velocities
-                currentState.set(4, 0.0);
-            }
-        }
-
-        // Check if target reached
-        if(!atRest) {
-            double x = Math.abs(currentState.get_x() - this.targetX);
-            double y = Math.abs(currentState.get_y() - this.targetY);
-            atRest = (x < this.targetRadius && y < this.targetRadius);
-            if(atRest) {
-                System.out.println("Score!");
-            }
-        }
-        return atRest;
-    }
-
-    private ArrayList<IFunc<Double, Double>> chooseFunctions(GVec4 currentState) {
-        ArrayList<IFunc<Double, Double>> functions = new ArrayList<IFunc<Double, Double>>();
-        if(minSpeedReached(currentState)) { //speed gets too low, 0.05 is threshold
-            functions.add(this.ax_s_gr);
-            functions.add(this.ay_s_gr);
-        }
-
-        else { // ball is moving
-            functions.add(this.ax_k_gr);
-            functions.add(this.ay_k_gr);
-        }
-        return functions;
-    }
-
-    public void restart(double vx, double vy) {
-        this.initialState = new GVec4(this.timeStep);
-        this.initialState.add(stateVectors.getLast().get_x());
-        this.initialState.add(stateVectors.getLast().get_y());
-        this.initialState.add(vx);
-        this.initialState.add(vy);
-        this.stateVectors = new ArrayList<GVec4>();
-        this.stateVectors.add(initialState);
-        //Store the last position which is going to be the next starting position
-        //Allow the user to choose the next starting velocities
-    }
-
-    private boolean minSpeedReached(GVec4 currentState) {
-        return (Math.abs(currentState.get_vx()) < 0.01 && Math.abs(currentState.get_vy()) < 0.01);
-    }
-
-    private double capVelocity(double velocity) {
-
-        if(velocity > this.maxspeed) {
-            velocity = this.maxspeed;
-        }
-        if(velocity < -this.maxspeed) {
-            velocity = -this.maxspeed;
-        }
-        return velocity;
+    public StepIterator stepIterator() {
+        return new StepIterator();
     }
 }

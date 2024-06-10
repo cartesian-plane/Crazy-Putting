@@ -2,12 +2,10 @@ package org.ken22.ui;
 
 
 //////////////////// IMPORTS //////////////////////////////////////////////
-import org.ken22.interfaces.Level;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.ken22.ui.LevelEditor;
 //////////////////// IMPORTS //////////////////////////////////////////////
 
 
@@ -24,7 +22,7 @@ public class LevelSelectPage {
     private JFrame frame;
     private JPanel mainPanel;
     private JScrollPane scrollPane;
-    private List<Level> levels; 
+    private List<Level> levels;
 
 
 
@@ -34,7 +32,7 @@ public class LevelSelectPage {
     }
 
     private LevelSelectListener selectListener;
-    private LevelEditor.LevelEditListener editListener; 
+    private LevelEditor.LevelEditListener editListener;
 
 
 
@@ -44,12 +42,12 @@ public class LevelSelectPage {
     // Constructor
     public LevelSelectPage(List<Level> levels, LevelSelectListener listener) {
         this.selectListener = listener;
-        this.levels = new ArrayList<>(levels); 
+        this.levels = new ArrayList<>(levels);
         frame = new JFrame("Level Selection");
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBackground(Color.LIGHT_GRAY);
-        
+
         // refreshing sprite cranberry
         refreshLevels();
 
@@ -69,19 +67,19 @@ public class LevelSelectPage {
 
 
 
-    //////////////////// METHODS ////////////////////////////////////////////// 
+    //////////////////// METHODS //////////////////////////////////////////////
 
     // refreshing the levels after modifications
     public void refreshLevels() {
-        mainPanel.removeAll(); 
+        mainPanel.removeAll();
 
         for (Level level : levels) {
             JPanel levelPanel = createLevelPanel(level);
             mainPanel.add(levelPanel);
         }
 
-        mainPanel.revalidate(); 
-        mainPanel.repaint(); 
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
 
@@ -95,7 +93,7 @@ public class LevelSelectPage {
 
 
 
-    
+
     //creating them panels
     private JPanel createLevelPanel(Level level) {
         JPanel levelPanel = new JPanel();
@@ -119,9 +117,9 @@ public class LevelSelectPage {
         modifyButton.addActionListener(e -> new LevelEditor(level, editedLevel -> {
             int levelIndex = levels.indexOf(level);
             if (levelIndex != -1) {
-                levels.set(levelIndex, editedLevel); 
+                levels.set(levelIndex, editedLevel);
             }
-            refreshLevels(); 
+            refreshLevels();
         }));
         modifyButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         levelPanel.add(modifyButton);
@@ -130,7 +128,7 @@ public class LevelSelectPage {
         selectButton.addActionListener(e -> {
             if (selectListener != null) {
                 selectListener.onLevelSelected(level);
-                frame.dispose(); 
+                frame.dispose();
             }
         });
         levelPanel.add(selectButton);
@@ -139,7 +137,7 @@ public class LevelSelectPage {
 
         return levelPanel;
     }
-     //////////////////// METHODS ////////////////////////////////////////////// 
+     //////////////////// METHODS //////////////////////////////////////////////
 
 }
 //////////////////// CLASS //////////////////////////////////////////////

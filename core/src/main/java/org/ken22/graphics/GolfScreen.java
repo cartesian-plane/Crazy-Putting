@@ -23,8 +23,8 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.physicsx.engine.PhysicsEngine;
-import org.ken22.physicsx.vectors.StateVector4;
+import org.ken22.physics.engine.PhysicsEngine;
+import org.ken22.physics.vectors.StateVector4;
 import org.ken22.graphics.terrains.GameWorldCoordinatesMapper;
 import org.ken22.graphics.terrains.HeightMapTerrain;
 

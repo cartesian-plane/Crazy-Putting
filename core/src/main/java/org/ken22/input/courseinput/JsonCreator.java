@@ -2,7 +2,7 @@ package org.ken22.input.courseinput;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.ken22.interfaces.Level;
+import org.ken22.ui.Level;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.io.IOException;
 public class JsonCreator {
 
     // public static void main(String[] args) {
-    //     Level level = new Level("default cube", "1+sin(x+y)/7.0", 0.05, 
+    //     Level level = new Level("default cube", "1+sin(x+y)/7.0", 0.05,
     //                             0.0, 0.0, 2.0, 0.5, 0.10);
 
 
@@ -36,21 +36,21 @@ public class JsonCreator {
         ObjectNode jsonNode = mapper.createObjectNode();
         jsonNode.put("name", level.getName());
         jsonNode.put("courseProfile", level.getHeightProfile());
-        
-        
-        //change?
-        jsonNode.put("range", 10.0); 
-        jsonNode.put("mass", 0.0459); 
 
-
-        jsonNode.put("gravitationalConstant", 9.80665); 
-        jsonNode.put("kineticFrictionGrass", level.getFrictionCoefficient()); 
 
         //change?
-        jsonNode.put("staticFrictionGrass", 0.10); 
-        jsonNode.put("kineticFrictionSand", 0.8); 
-        jsonNode.put("staticFrictionSand", 0.9); 
-        jsonNode.put("maximumSpeed", 5.0); 
+        jsonNode.put("range", 10.0);
+        jsonNode.put("mass", 0.0459);
+
+
+        jsonNode.put("gravitationalConstant", 9.80665);
+        jsonNode.put("kineticFrictionGrass", level.getFrictionCoefficient());
+
+        //change?
+        jsonNode.put("staticFrictionGrass", 0.10);
+        jsonNode.put("kineticFrictionSand", 0.8);
+        jsonNode.put("staticFrictionSand", 0.9);
+        jsonNode.put("maximumSpeed", 5.0);
 
 
         jsonNode.put("targetRadius", level.getTargetRadius());
