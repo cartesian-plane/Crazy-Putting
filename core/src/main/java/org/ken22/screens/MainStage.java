@@ -9,6 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class MainStage extends Stage {
 
@@ -25,11 +27,14 @@ public class MainStage extends Stage {
     private TextButton exitButton;
 
     public MainStage(ScreenManager manager) {
+        // if you don't do this viewport thing, the buttons won't look nice on high dpi displays
+        super(ViewportType.SCREEN.getViewport());
         this.manager = manager;
 
         this.table = new Table();
         this.table.setFillParent(true);
         this.addActor(table);
+        this.table.defaults().pad(10);
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
@@ -89,5 +94,12 @@ public class MainStage extends Stage {
     public void dispose() {
         super.dispose();
         playButton.getSkin().dispose();
+    }
+
+    private static Viewport makeViewport() {
+        var viewport = new ScreenViewport();
+        viewport.setUnitsPerPixel(0.5f/Gdx.graphics.getDensity());
+
+        return viewport;
     }
 }
