@@ -45,7 +45,6 @@ public class MainStage extends Stage {
         playButton = createStyledButton("Play", skin, Color.GREEN, () -> manager.toGolfScreen());
 
         courseSelectorButton = createStyledButton("Course Selector", skin, null, () -> {
-            // Create the list of GolfCourse objects
             List<GolfCourse> courses = Arrays.asList(
                 new GolfCourse("Mountain Peak", "sin(x) * cos(y)", 100, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 50, 50, 10, 10),
                 new GolfCourse("Desert Dunes", "tan(x) + tan(y)", 200, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 50, 50, 20, 20),
@@ -54,7 +53,6 @@ public class MainStage extends Stage {
                 new GolfCourse("Canyon Run", "x * y", 100, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 80, 80, 12, 12),
                 new GolfCourse("Sunset Valley", "exp(x) - y", 200, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 90, 90, 22, 22)
             );
-            // Navigate to the CourseSelectorScreen
             manager.toCourseSelectorScreen(courses);
         });
 

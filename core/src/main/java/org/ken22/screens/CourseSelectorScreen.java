@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CourseSelectorScreen extends Stage {
+
+
     private ScreenManager manager;
     private Table table;
     private List<GolfCourse> courses;
@@ -30,7 +32,7 @@ public class CourseSelectorScreen extends Stage {
     private TextButton backButton;
     private TextButton addButton;
 
-    // Declare TextFields as fields
+
     private TextField nameField;
     private TextField profileField;
     private TextField startXField;
@@ -38,10 +40,14 @@ public class CourseSelectorScreen extends Stage {
     private TextField targetXField;
     private TextField targetYField;
 
+
+
+
+
     public CourseSelectorScreen(ScreenManager manager, List<GolfCourse> courses) {
         super(new ScreenViewport());
         this.manager = manager;
-        this.courses = new ArrayList<>(courses); // Ensure the list is modifiable
+        this.courses = new ArrayList<>(courses);
 
         this.skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
@@ -79,6 +85,10 @@ public class CourseSelectorScreen extends Stage {
         table.add(backButton).pad(10).align(Align.bottom);
     }
 
+
+
+
+    //panel of courses
     private Table createCoursePanel(GolfCourse course) {
         Table courseTable = new Table();
         courseTable.setBackground(skin.newDrawable("default-round", Color.DARK_GRAY));
@@ -94,8 +104,7 @@ public class CourseSelectorScreen extends Stage {
         selectButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Handle level selection
-                // manager.setCurrentCourse(course); // Example
+                // NEED IMPLEMENTATION
             }
         });
 
@@ -108,6 +117,9 @@ public class CourseSelectorScreen extends Stage {
         return courseTable;
     }
 
+
+
+    //adding new levels
     private void openAddCourseDialog() {
         Dialog dialog = new Dialog("Add New Course", skin) {
             @Override
@@ -127,6 +139,9 @@ public class CourseSelectorScreen extends Stage {
                 }
             }
         };
+
+
+
 
         nameField = new TextField("", skin);
         profileField = new TextField("", skin);
@@ -154,6 +169,9 @@ public class CourseSelectorScreen extends Stage {
         dialog.key(com.badlogic.gdx.Input.Keys.ESCAPE, false);
         dialog.show(this);
     }
+
+
+
 
     @Override
     public void draw() {
