@@ -28,7 +28,7 @@ public class MainStage extends Stage {
 
     public MainStage(ScreenManager manager) {
         // if you don't do this viewport thing, the buttons won't look nice on high dpi displays
-        super(ViewportType.SCREEN.getViewport());
+        //super(ViewportType.SCREEN.getViewport());
         this.manager = manager;
 
         this.table = new Table();

@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 
 
@@ -18,6 +20,8 @@ public class SettingsStage extends Stage {
     private TextButton backButton;
 
     public SettingsStage(ScreenManager manager) {
+        // if you don't do this viewport thing, the buttons won't look nice on high dpi displays
+      //  super(ViewportType.SCREEN.getViewport());
         this.manager = manager;
 
         this.table = new Table();
