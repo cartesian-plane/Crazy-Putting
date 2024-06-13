@@ -1,6 +1,7 @@
 package org.ken22.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
@@ -22,10 +23,14 @@ public class ScreenManager extends ScreenAdapter {
     private Screen currentScreen;
     private boolean isStage = true; //whether current is a stage or a screen
 
+    private KeyboardNavigator keyboardNavigator;
+
     public ScreenManager(Application app) {
         this.app = app;
 
         this.currentStage = new MainStage(this);
+        keyboardNavigator = new KeyboardNavigator(this.currentStage);
+        Gdx.input.setInputProcessor(keyboardNavigator);
         Gdx.input.setInputProcessor(this.currentStage);
     }
 
