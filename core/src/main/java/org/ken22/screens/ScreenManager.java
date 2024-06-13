@@ -84,7 +84,7 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toCourseEditorScreen() {
         this.currentStage.dispose();
-        this.currentStage = new CourseEditorScreen(this);
+        this.currentStage = new CourseEditorStage(this);
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
@@ -100,7 +100,6 @@ public class ScreenManager extends ScreenAdapter {
         if (this.currentStage != null) this.currentStage.dispose();
         ApplicationController.main(new String[0]);
     }
-
 
 
     public void exit() {

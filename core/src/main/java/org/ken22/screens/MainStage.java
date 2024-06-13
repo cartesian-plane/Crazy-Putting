@@ -38,14 +38,14 @@ public class MainStage extends Stage {
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
-        playButton = createStyledButton("Play", skin, Color.GREEN, () -> manager.toGolfScreen());
-        courseSelectorButton = createStyledButton("Course Selector", skin, null, () -> manager.toCourseSelectorScreen());
-        terrainEditorButton = createStyledButton("Terrain Editor", skin, null, () -> manager.toTerrainEditorScreen());
-        courseEditorButton = createStyledButton("Course Editor", skin, null, () -> manager.toCourseEditorScreen());
-        botSettingsButton = createStyledButton("Bot Settings", skin, null, () -> manager.toBotSettingsScreen());
-        generalSettingsButton = createStyledButton("General Settings", skin, null, () -> manager.toSettingsStage());
-        odeSolverButton = createStyledButton("ODE Solver", skin, null, () -> manager.toOdeSolverScreen());
-        exitButton = createStyledButton("Exit", skin, Color.RED, () -> manager.exit());
+        playButton = createStyledButton("Play", skin, Color.GREEN, manager::toGolfScreen);
+        courseSelectorButton = createStyledButton("Course Selector", skin, null, manager::toCourseSelectorScreen);
+        terrainEditorButton = createStyledButton("Terrain Editor", skin, null, manager::toTerrainEditorScreen);
+        courseEditorButton = createStyledButton("Course Editor", skin, null, manager::toCourseEditorScreen);
+        botSettingsButton = createStyledButton("Bot Settings", skin, null, manager::toBotSettingsScreen);
+        generalSettingsButton = createStyledButton("General Settings", skin, null, manager::toSettingsStage);
+        odeSolverButton = createStyledButton("ODE Solver", skin, null, manager::toOdeSolverScreen);
+        exitButton = createStyledButton("Exit", skin, Color.RED, manager::exit);
 
         table.defaults().pad(10).width(300).height(50);
 
