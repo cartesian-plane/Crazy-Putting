@@ -1,7 +1,8 @@
-package org.ken22;
+package org.ken22.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -18,7 +19,7 @@ import org.ken22.utils.GolfExpression;
 
 import java.io.File;
 
-public class CubeScreen implements Screen  {
+public class GolfScreen extends ScreenAdapter {
 
     private PerspectiveCamera camera;
     private FirstPersonCameraController controller;
@@ -37,8 +38,12 @@ public class CubeScreen implements Screen  {
 
     private float MESH_RESOLUTION = 0.1f;
 
-    @Override
-    public void show() {
+    /**
+     * Everything in GolfScreen is initialized here, rather than in the show() method.
+     * This is because the show() method is only called when the screen is set as the current screen
+     * in the Game class, which is not the case here.
+     */
+    public GolfScreen() {
         CourseParser parser = new CourseParser(new File("input/sin(x)sin(y).json"));
         course = parser.getCourse();
         expr = GolfExpression.expr(course);
@@ -113,26 +118,6 @@ public class CubeScreen implements Screen  {
         modelBatch.begin(camera);
         modelBatch.render(cubeInstance, environment);
         modelBatch.end();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
     }
 
     @Override

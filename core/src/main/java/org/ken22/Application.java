@@ -1,13 +1,15 @@
 package org.ken22;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.Gdx;
+import org.ken22.screens.ScreenManager;
 
 public class Application extends Game {
+
+    private ScreenManager stageManager;
+
     @Override
     public void create() {
-        this.setScreen(new CubeScreen());
+        this.stageManager = new ScreenManager(this);
+        this.setScreen(stageManager);
     }
 }
