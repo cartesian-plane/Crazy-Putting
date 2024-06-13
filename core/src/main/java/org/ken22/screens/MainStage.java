@@ -3,14 +3,12 @@ package org.ken22.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+
+import static org.ken22.screens.UIElementCreator.createStyledButton;
 
 public class MainStage extends Stage {
 
@@ -67,22 +65,6 @@ public class MainStage extends Stage {
     }
 
 
-    //fancy buttons
-    private TextButton createStyledButton(String text, Skin skin, Color color, Runnable action) {
-        TextButton button = new TextButton(text, skin);
-        if (color != null) {
-            button.setColor(color);
-        }
-        button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                action.run();
-            }
-        });
-        return button;
-    }
-
-
     //color
     @Override
     public void draw() {
@@ -96,10 +78,4 @@ public class MainStage extends Stage {
         playButton.getSkin().dispose();
     }
 
-    private static Viewport makeViewport() {
-        var viewport = new ScreenViewport();
-        viewport.setUnitsPerPixel(0.5f/Gdx.graphics.getDensity());
-
-        return viewport;
-    }
 }
