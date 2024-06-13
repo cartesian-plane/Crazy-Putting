@@ -14,6 +14,10 @@ public class SettingsStage extends Stage {
     private Table table;
 
     private TextButton mainButton;
+    private TextButton courseSelector;
+    private TextButton terrainEditor;
+    private TextButton courseEditor;
+    private TextButton generalSettings;
 
     public SettingsStage(ScreenManager manager) {
         this.manager = manager;
@@ -24,6 +28,11 @@ public class SettingsStage extends Stage {
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
         this.mainButton = new TextButton("Main Menu", skin);
+        this.courseSelector = new TextButton("Course Selector", skin);
+        this.terrainEditor = new TextButton("Terrain Editor", skin);
+        this.courseEditor = new TextButton("Course Editor", skin);
+        this.generalSettings = new TextButton("General Settings", skin);
+
 
         this.mainButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
@@ -31,7 +40,17 @@ public class SettingsStage extends Stage {
             }
         });
 
+        this.table.defaults().pad(10);
+
         this.table.add(mainButton);
+        table.row();
+        this.table.add(courseSelector);
+        table.row();
+        this.table.add(terrainEditor);
+        table.row();
+        this.table.add(courseEditor);
+        table.row();
+        this.table.add(generalSettings);
     }
 
     @Override
