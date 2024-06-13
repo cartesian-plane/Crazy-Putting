@@ -102,6 +102,11 @@ public class ScreenManager extends ScreenAdapter {
     }
 
 
+    @Override
+    public void resize(int width, int height) {
+        currentStage.getViewport().update(width, height);
+    }
+
     public void exit() {
         Gdx.app.exit();
     }
