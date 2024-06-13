@@ -57,9 +57,9 @@ public class ScreenManager extends ScreenAdapter {
         this.isStage = true;
     }
 
-    public void toTerrainStage() {
+    public void toSettingsStage() {
         this.currentStage.dispose();
-        this.currentStage = new TerrainStage(this);
+        this.currentStage = new SettingsStage(this);
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }

@@ -41,9 +41,9 @@ public class MainStage extends Stage {
 
         table.row();
 
-        terrainButton = new TextButton("Terrain Settings", skin);
+        terrainButton = new TextButton("Settings", skin);
         terrainButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {manager.toTerrainStage();}
+            public void clicked(InputEvent event, float x, float y) {manager.toSettingsStage();}
         });
         table.add(terrainButton);
 
