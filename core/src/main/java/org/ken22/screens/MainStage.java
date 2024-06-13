@@ -34,6 +34,7 @@ public class MainStage extends Stage {
         this.table = new Table();
         this.table.setFillParent(true);
         this.addActor(table);
+        this.table.defaults().pad(10);
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 

@@ -29,6 +29,7 @@ public class SettingsStage extends Stage {
         this.table = new Table();
         this.table.setFillParent(true);
         this.addActor(table);
+        this.table.defaults().pad(10);
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
         this.mainButton = new TextButton("Main Menu", skin);
@@ -37,14 +38,11 @@ public class SettingsStage extends Stage {
         this.courseEditor = new TextButton("Course Editor", skin);
         this.generalSettings = new TextButton("General Settings", skin);
 
-
         this.mainButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 manager.toMainStage();
             }
         });
-
-        this.table.defaults().pad(10);
 
         this.table.add(mainButton);
         table.row();
