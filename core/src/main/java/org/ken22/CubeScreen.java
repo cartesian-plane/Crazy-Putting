@@ -82,7 +82,7 @@ public class CubeScreen implements Screen  {
 
         // Initialize the camera
         camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(0f, 0f, 0f);
+        camera.position.set(0f, 0f, 10f);
         camera.lookAt(0f, 0f, 0f);
         camera.near = 1f;
         camera.far = 300f;
