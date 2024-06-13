@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class MainStage extends Stage {
 
@@ -25,6 +27,8 @@ public class MainStage extends Stage {
     private TextButton leaderboardButton;
 
     public MainStage(ScreenManager manager) {
+        // if you don't do this viewport thing, the buttons won't look nice on high dpi displays
+        super(ViewportType.SCREEN.getViewport());
         this.manager = manager;
 
         this.table = new Table();
@@ -59,5 +63,12 @@ public class MainStage extends Stage {
     public void dispose() {
         super.dispose();
         terrainButton.getSkin().dispose();
+    }
+
+    private static Viewport makeViewport() {
+        var viewport = new ScreenViewport();
+        viewport.setUnitsPerPixel(0.5f/Gdx.graphics.getDensity());
+
+        return viewport;
     }
 }
