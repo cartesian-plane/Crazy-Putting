@@ -6,19 +6,18 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import org.ken22.input.courseinput.Settings;
 
 public class SettingsStage extends Stage {
     private ScreenManager manager;
 
     private Table table;
-    private TextButton backButton;
     private SelectBox<String> odeSolverBox;
     private TextField stepSizeField;
     private TextField differentiationField;
-    private ButtonGroup<CheckBox> physicsGroup;
-    private CheckBox simplifiedPhysics;
-    private CheckBox completePhysics;
+    private CheckBox simplifiedPhysicsCheckBox;
     private CheckBox allowPlayingCheckBox;
+    private Skin skin;
 
     public SettingsStage(ScreenManager manager) {
         super(new ScreenViewport());
@@ -28,61 +27,88 @@ public class SettingsStage extends Stage {
         this.table.setFillParent(true);
         this.addActor(table);
 
-        Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
+        skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
-        // ODE Solver Selection
-        Label odeSolverLabel = new Label("ODE Solver", skin);
+
+
+        // ODE solver
+        table.add(new Label("ODE Solver", skin)).pad(10);
         odeSolverBox = new SelectBox<>(skin);
         odeSolverBox.setItems("Euler", "Runge Kutta 2", "Runge Kutta 4");
+        table.add(odeSolverBox).pad(10).row();
 
-        // Step Size Input
-        Label stepSizeLabel = new Label("Step Size", skin);
+        // Step size
+        table.add(new Label("Step Size", skin)).pad(10);
         stepSizeField = new TextField("", skin);
+        table.add(stepSizeField).pad(10).row();
 
-        // Differentiation Input
-        Label differentiationLabel = new Label("Differentiation", skin);
+        // differentiation
+        table.add(new Label("Differentiation", skin)).pad(10);
         differentiationField = new TextField("", skin);
+        table.add(differentiationField).pad(10).row();
 
-        // Physics Selection
-        Label physicsLabel = new Label("Physics", skin);
-        simplifiedPhysics = new CheckBox("Simplified Physics", skin);
-        completePhysics = new CheckBox("Complete Physics", skin);
-        physicsGroup = new ButtonGroup<>(simplifiedPhysics, completePhysics);
-        physicsGroup.setMaxCheckCount(1);
-        physicsGroup.setMinCheckCount(1);
+        // physics
+        simplifiedPhysicsCheckBox = new CheckBox(" Simplified Physics", skin);
+        table.add(simplifiedPhysicsCheckBox).pad(10).colspan(2).left().row();
 
-        // Allow Playing Checkbox
-        allowPlayingCheckBox = new CheckBox("Allow Playing", skin);
+        // playing
+        allowPlayingCheckBox = new CheckBox(" Allow Playing", skin);
+        table.add(allowPlayingCheckBox).pad(10).colspan(2).left().row();
 
-        // Back Button
-        this.backButton = new TextButton("Back", skin);
-        this.backButton.addListener(new ClickListener() {
+
+
+
+
+        // save button
+        TextButton saveButton = new TextButton("Save", skin);
+        saveButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                saveSettings();
+            }
+        });
+        table.add(saveButton).pad(10).colspan(2).center().row();
+
+        // back button
+        TextButton backButton = new TextButton("Back", skin);
+        backButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 manager.toMainStage();
             }
         });
+        table.add(backButton).pad(10).colspan(2).center().row();
 
-        this.table.defaults().pad(10);
-
-        // Adding widgets to the table
-        table.add(odeSolverLabel).left();
-        table.add(odeSolverBox).width(200).row();
-        table.add(stepSizeLabel).left();
-        table.add(stepSizeField).width(200).row();
-        table.add(differentiationLabel).left();
-        table.add(differentiationField).width(200).row();
-        table.add(physicsLabel).left();
-        table.add(simplifiedPhysics).left().row();
-        table.add().left();
-        table.add(completePhysics).left().row();
-        table.add(allowPlayingCheckBox).colspan(2).left().row();
-        table.add(backButton).colspan(2).center().padTop(20);
-
+        loadSettings();
     }
+
+
+
+    //save settings
+    private void saveSettings() {
+        Settings settings = Settings.getInstance();
+        settings.setOdeSolver(odeSolverBox.getSelected());
+        settings.setStepSize(Double.parseDouble(stepSizeField.getText()));
+        settings.setDifferentiation(Double.parseDouble(differentiationField.getText()));
+        settings.setSimplifiedPhysics(simplifiedPhysicsCheckBox.isChecked());
+        settings.setAllowPlaying(allowPlayingCheckBox.isChecked());
+    }
+
+
+    //load settings
+    private void loadSettings() {
+        Settings settings = Settings.getInstance();
+        odeSolverBox.setSelected(settings.getOdeSolver());
+        stepSizeField.setText(Double.toString(settings.getStepSize()));
+        differentiationField.setText(Double.toString(settings.getDifferentiation()));
+        simplifiedPhysicsCheckBox.setChecked(settings.isSimplifiedPhysics());
+        allowPlayingCheckBox.setChecked(settings.isAllowPlaying());
+    }
+
+
 
     @Override
     public void dispose() {
         super.dispose();
-        backButton.getSkin().dispose();
+        skin.dispose();
     }
 }

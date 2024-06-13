@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.input.courseinput.Settings;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +21,9 @@ import java.util.List;
 public class MainStage extends Stage {
 
     private ScreenManager manager;
-    private Table table;
+    private Table mainTable;
+    private Table buttonTable;
+    private Table infoTable;
 
     private TextButton playButton;
     private TextButton courseSelectorButton;
@@ -30,20 +34,25 @@ public class MainStage extends Stage {
     private TextButton odeSolverButton;
     private TextButton exitButton;
 
+
+
     public MainStage(ScreenManager manager) {
-        // if you don't do this viewport thing, the buttons won't look nice on high dpi displays
-        // super(makeViewport());
+       // super(makeViewport());
         this.manager = manager;
 
-        this.table = new Table();
-        this.table.setFillParent(true);
-        this.addActor(table);
-        this.table.defaults().pad(10);
+        this.mainTable = new Table();
+        this.mainTable.setFillParent(true);
+        this.addActor(mainTable);
+
+        this.buttonTable = new Table();
+        this.infoTable = new Table();
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
         playButton = createStyledButton("Play", skin, Color.GREEN, () -> manager.toGolfScreen());
 
+
+        //premade levels
         courseSelectorButton = createStyledButton("Course Selector", skin, null, () -> {
             List<GolfCourse> courses = Arrays.asList(
                 new GolfCourse("Mountain Peak", "sin(x) * cos(y)", 100, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 50, 50, 10, 10),
@@ -56,6 +65,8 @@ public class MainStage extends Stage {
             manager.toCourseSelectorScreen(courses);
         });
 
+
+
         terrainEditorButton = createStyledButton("Terrain Editor", skin, null, () -> manager.toTerrainEditorScreen());
         courseEditorButton = createStyledButton("Course Editor", skin, null, () -> manager.toCourseEditorScreen());
         botSettingsButton = createStyledButton("Bot Settings", skin, null, () -> manager.toBotSettingsScreen());
@@ -63,26 +74,47 @@ public class MainStage extends Stage {
         odeSolverButton = createStyledButton("ODE Solver", skin, null, () -> manager.toOdeSolverScreen());
         exitButton = createStyledButton("Exit", skin, Color.RED, () -> manager.exit());
 
-        table.defaults().pad(10).width(300).height(50);
+        buttonTable.defaults().pad(10).width(300).height(50);
 
-        table.add(playButton).padBottom(30).center();
-        table.row();
-        table.add(courseSelectorButton).center();
-        table.row();
-        table.add(terrainEditorButton).center();
-        table.row();
-        table.add(courseEditorButton).center();
-        table.row();
-        table.add(botSettingsButton).center();
-        table.row();
-        table.add(generalSettingsButton).center();
-        table.row();
-        table.add(odeSolverButton).center();
-        table.row();
-        table.add(exitButton).padTop(30).center();
+        buttonTable.add(playButton).padBottom(30).center();
+        buttonTable.row();
+        buttonTable.add(courseSelectorButton).center();
+        buttonTable.row();
+        buttonTable.add(terrainEditorButton).center();
+        buttonTable.row();
+        buttonTable.add(courseEditorButton).center();
+        buttonTable.row();
+        buttonTable.add(botSettingsButton).center();
+        buttonTable.row();
+        buttonTable.add(generalSettingsButton).center();
+        buttonTable.row();
+        buttonTable.add(odeSolverButton).center();
+        buttonTable.row();
+        buttonTable.add(exitButton).padTop(30).center();
+
+
+
+        // info table about level
+        GolfCourse selectedCourse = Settings.getInstance().getSelectedCourse();
+        if (selectedCourse != null) {
+            infoTable.add(new Label("Selected Course: " + selectedCourse.name(), skin)).row();
+            infoTable.add(new Label("Height Profile: " + selectedCourse.courseProfile(), skin)).row();
+            infoTable.add(new Label("Start Location: (" + selectedCourse.ballX() + ", " + selectedCourse.ballY() + ")", skin)).row();
+            infoTable.add(new Label("Target Location: (" + selectedCourse.targetXcoord() + ", " + selectedCourse.targetYcoord() + ")", skin)).row();
+        } else {
+            infoTable.add(new Label("Selected Course: None", skin)).row();
+        }
+
+        infoTable.add(new Label("ODE Solver: " + Settings.getInstance().getOdeSolver(), skin)).row();
+        infoTable.add(new Label("Step Size: " + Settings.getInstance().getStepSize(), skin)).row();
+        infoTable.add(new Label("Differentiation: " + Settings.getInstance().getDifferentiation(), skin)).row();
+
+        mainTable.add(buttonTable).expand().fill().left();
+        mainTable.add(infoTable).expand().fill().right();
     }
 
-    //fancy buttons
+
+    //button creation
     private TextButton createStyledButton(String text, Skin skin, Color color, Runnable action) {
         TextButton button = new TextButton(text, skin);
         if (color != null) {
@@ -97,7 +129,8 @@ public class MainStage extends Stage {
         return button;
     }
 
-    //color
+
+
     @Override
     public void draw() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -112,8 +145,7 @@ public class MainStage extends Stage {
 
     private static Viewport makeViewport() {
         var viewport = new ScreenViewport();
-        viewport.setUnitsPerPixel(0.5f/Gdx.graphics.getDensity());
-
+        viewport.setUnitsPerPixel(0.5f / Gdx.graphics.getDensity());
         return viewport;
     }
 }

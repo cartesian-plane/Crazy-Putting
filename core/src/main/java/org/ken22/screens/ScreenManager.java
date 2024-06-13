@@ -10,6 +10,8 @@ import org.ken22.Application;
 import org.ken22.controller.ApplicationController;
 import org.ken22.input.courseinput.GolfCourse;
 import java.util.List;
+import java.util.ArrayList;
+
 
 /**
  * Screen adaptor class for managing active screens and stages.
@@ -53,7 +55,7 @@ public class ScreenManager extends ScreenAdapter {
 
 
 
-    /// Transitions
+    /// transitions
     public void toGolfScreen() {
         if(this.currentScreen != null) this.currentScreen.dispose();
         this.currentScreen = new GolfScreen();
@@ -77,12 +79,10 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toCourseSelectorScreen(List<GolfCourse> courses) {
         this.currentStage.dispose();
-        this.currentStage = new CourseSelectorScreen(this, courses);
+        this.currentStage = new CourseSelectorScreen(this, new ArrayList<>(courses));
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
-
-
 
     public void toTerrainEditorScreen() {
         this.currentStage.dispose();
