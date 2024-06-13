@@ -6,6 +6,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import org.ken22.Application;
+import org.ken22.controller.ApplicationController;
 
 /**
  * Screen adaptor class for managing active screens and stages.
@@ -42,6 +43,9 @@ public class ScreenManager extends ScreenAdapter {
 
     }
 
+
+
+
     /// Transitions
     public void toGolfScreen() {
         if(this.currentScreen != null) this.currentScreen.dispose();
@@ -63,6 +67,41 @@ public class ScreenManager extends ScreenAdapter {
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
+
+    public void toCourseSelectorScreen() {
+        this.currentStage.dispose();
+        this.currentStage = new CourseSelectorScreen(this);
+        Gdx.input.setInputProcessor(this.currentStage);
+        this.isStage = true;
+    }
+
+    public void toTerrainEditorScreen() {
+        this.currentStage.dispose();
+        this.currentStage = new TerrainEditorScreen(this);
+        Gdx.input.setInputProcessor(this.currentStage);
+        this.isStage = true;
+    }
+
+    public void toCourseEditorScreen() {
+        this.currentStage.dispose();
+        this.currentStage = new CourseEditorScreen(this);
+        Gdx.input.setInputProcessor(this.currentStage);
+        this.isStage = true;
+    }
+
+    public void toBotSettingsScreen() {
+        this.currentStage.dispose();
+        this.currentStage = new BotSettingsScreen(this);
+        Gdx.input.setInputProcessor(this.currentStage);
+        this.isStage = true;
+    }
+
+    public void toOdeSolverScreen() {
+        if (this.currentStage != null) this.currentStage.dispose();
+        ApplicationController.main(new String[0]);
+    }
+
+
 
     public void exit() {
         Gdx.app.exit();
