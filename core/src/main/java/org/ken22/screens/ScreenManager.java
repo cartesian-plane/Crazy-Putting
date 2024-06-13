@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import org.ken22.Application;
 import org.ken22.controller.ApplicationController;
+import org.ken22.input.courseinput.GolfCourse;
+import java.util.List;
 
 /**
  * Screen adaptor class for managing active screens and stages.
@@ -68,12 +70,14 @@ public class ScreenManager extends ScreenAdapter {
         this.isStage = true;
     }
 
-    public void toCourseSelectorScreen() {
+    public void toCourseSelectorScreen(List<GolfCourse> courses) {
         this.currentStage.dispose();
-        this.currentStage = new CourseSelectorScreen(this);
+        this.currentStage = new CourseSelectorScreen(this, courses);
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
+
+
 
     public void toTerrainEditorScreen() {
         this.currentStage.dispose();
