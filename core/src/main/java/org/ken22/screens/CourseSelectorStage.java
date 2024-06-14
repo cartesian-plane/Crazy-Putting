@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 
 
-public class CourseSelectorScreen extends Stage {
+public class CourseSelectorStage extends Stage {
     private ScreenManager manager;
     private ArrayList<GolfCourse> courses;
     private Table table;
@@ -21,7 +21,7 @@ public class CourseSelectorScreen extends Stage {
 
 
 
-    public CourseSelectorScreen(ScreenManager manager, ArrayList<GolfCourse> courses) {
+    public CourseSelectorStage(ScreenManager manager, ArrayList<GolfCourse> courses) {
         super(new ScreenViewport());
         this.manager = manager;
         this.courses = courses;

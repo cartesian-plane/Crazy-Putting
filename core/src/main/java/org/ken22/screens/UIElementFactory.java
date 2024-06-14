@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 /**
  * Utility class that contains methods to help maintain a consistent style across the app.
  */
-public class UIElementCreator {
+public class UIElementFactory {
     public static TextButton createStyledButton(String text, Skin skin, Color color, Runnable action) {
         TextButton button = new TextButton(text, skin);
         if (color != null) {

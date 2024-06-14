@@ -8,16 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-
-
-public class OdeSolverScreen extends Stage {
+public class BotSettingsStage extends Stage {
     private ScreenManager manager;
 
     private Table table;
 
     private TextButton backButton;
 
-    public OdeSolverScreen(ScreenManager manager) {
+    public BotSettingsStage(ScreenManager manager) {
         this.manager = manager;
 
         this.table = new Table();

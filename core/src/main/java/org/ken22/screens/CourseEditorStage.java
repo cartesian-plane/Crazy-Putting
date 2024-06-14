@@ -1,7 +1,6 @@
 package org.ken22.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -10,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import java.util.ArrayList;
 
-import static org.ken22.screens.UIElementCreator.createNumericalTextField;
+import static org.ken22.screens.UIElementFactory.createNumericalTextField;
 public class CourseEditorStage extends Stage {
     private ScreenManager manager;
 
@@ -24,7 +23,7 @@ public class CourseEditorStage extends Stage {
 
     public CourseEditorStage(ScreenManager manager) {
         // if you don't do this viewport thing, the buttons won't look nice on high dpi displays
-        super(ViewportType.SCREEN.getViewport());
+        super();
         this.manager = manager;
 
         this.table = new Table();

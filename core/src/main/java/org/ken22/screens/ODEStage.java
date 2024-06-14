@@ -10,14 +10,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 
 
-public class TerrainEditorScreen extends Stage {
+public class ODEStage extends Stage {
     private ScreenManager manager;
 
     private Table table;
 
     private TextButton backButton;
 
-    public TerrainEditorScreen(ScreenManager manager) {
+    public ODEStage(ScreenManager manager) {
         this.manager = manager;
 
         this.table = new Table();

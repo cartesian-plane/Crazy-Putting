@@ -5,6 +5,7 @@ public class Settings {
 
     private String odeSolver;
     private double stepSize;
+    private String differentiator;
     private double differentiation;
     private boolean simplifiedPhysics;
     private boolean allowPlaying;

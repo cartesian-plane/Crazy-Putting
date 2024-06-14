@@ -25,6 +25,7 @@ public class MainStage extends Stage {
     private ScreenManager manager;
 
     private static Viewport viewport = new ScreenViewport();
+
     private Table mainTable;
     private Table buttonTable;
     private Table infoTable;
@@ -52,11 +53,11 @@ public class MainStage extends Stage {
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
-        playButton = createStyledButton("Play", skin, Color.GREEN, () -> manager.toGolfScreen());
+        playButton = UIElementFactory.createStyledButton("Play", skin, Color.GREEN, () -> manager.toGolfScreen());
 
 
         //premade levels
-        courseSelectorButton = createStyledButton("Course Selector", skin, null, () -> {
+        courseSelectorButton = UIElementFactory.createStyledButton("Course Selector", skin, null, () -> {
             List<GolfCourse> courses = Arrays.asList(
                 new GolfCourse("Mountain Peak", "sin(x) * cos(y)", 100, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 50, 50, 10, 10),
                 new GolfCourse("Desert Dunes", "tan(x) + tan(y)", 200, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 50, 50, 20, 20),
@@ -68,14 +69,12 @@ public class MainStage extends Stage {
             manager.toCourseSelectorScreen(courses);
         });
 
-
-
-        terrainEditorButton = createStyledButton("Terrain Editor", skin, null, () -> manager.toTerrainEditorScreen());
-        courseEditorButton = createStyledButton("Course Editor", skin, null, () -> manager.toCourseEditorScreen());
-        botSettingsButton = createStyledButton("Bot Settings", skin, null, () -> manager.toBotSettingsScreen());
-        generalSettingsButton = createStyledButton("General Settings", skin, null, () -> manager.toSettingsStage());
-        odeSolverButton = createStyledButton("ODE Solver", skin, null, () -> manager.toOdeSolverScreen());
-        exitButton = createStyledButton("Exit", skin, Color.RED, () -> manager.exit());
+        terrainEditorButton = UIElementFactory.createStyledButton("Terrain Editor", skin, null, () -> manager.toTerrainEditorScreen());
+        courseEditorButton = UIElementFactory.createStyledButton("Course Editor", skin, null, () -> manager.toCourseEditorScreen());
+        botSettingsButton = UIElementFactory.createStyledButton("Bot Settings", skin, null, () -> manager.toBotSettingsScreen());
+        generalSettingsButton = UIElementFactory.createStyledButton("General Settings", skin, null, () -> manager.toSettingsStage());
+        odeSolverButton = UIElementFactory.createStyledButton("ODE Solver", skin, null, () -> manager.toOdeSolverScreen());
+        exitButton = UIElementFactory.createStyledButton("Exit", skin, Color.RED, () -> manager.exit());
 
         buttonTable.defaults().pad(10).width(300).height(50);
 
@@ -95,8 +94,6 @@ public class MainStage extends Stage {
         buttonTable.row();
         buttonTable.add(exitButton).padTop(30).center();
 
-
-
         // info table about level
         GolfCourse selectedCourse = Settings.getInstance().getSelectedCourse();
         if (selectedCourse != null) {
@@ -114,22 +111,6 @@ public class MainStage extends Stage {
 
         mainTable.add(buttonTable).expand().fill().left();
         mainTable.add(infoTable).expand().fill().right();
-    }
-
-
-    //button creation
-    private TextButton createStyledButton(String text, Skin skin, Color color, Runnable action) {
-        TextButton button = new TextButton(text, skin);
-        if (color != null) {
-            button.setColor(color);
-        }
-        button.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                action.run();
-            }
-        });
-        return button;
     }
 
     @Override

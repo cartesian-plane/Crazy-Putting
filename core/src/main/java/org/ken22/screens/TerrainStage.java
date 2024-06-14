@@ -8,14 +8,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class BotSettingsScreen extends Stage {
+
+
+public class TerrainStage extends Stage {
     private ScreenManager manager;
 
     private Table table;
 
     private TextButton backButton;
 
-    public BotSettingsScreen(ScreenManager manager) {
+    public TerrainStage(ScreenManager manager) {
         this.manager = manager;
 
         this.table = new Table();

@@ -5,7 +5,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import org.ken22.Application;
 import org.ken22.controller.ApplicationController;
 import org.ken22.input.courseinput.GolfCourse;
@@ -22,6 +21,8 @@ import java.util.ArrayList;
  */
 public class ScreenManager extends ScreenAdapter {
     private Application app;
+
+    private GolfCourse selectedCourse;
 
     private Stage currentStage;
     private Screen currentScreen;
@@ -81,14 +82,14 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toCourseSelectorScreen(List<GolfCourse> courses) {
         this.currentStage.dispose();
-        this.currentStage = new CourseSelectorScreen(this, new ArrayList<>(courses));
+        this.currentStage = new CourseSelectorStage(this, new ArrayList<>(courses));
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
 
     public void toTerrainEditorScreen() {
         this.currentStage.dispose();
-        this.currentStage = new TerrainEditorScreen(this);
+        this.currentStage = new TerrainStage(this);
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
@@ -102,7 +103,7 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toBotSettingsScreen() {
         this.currentStage.dispose();
-        this.currentStage = new BotSettingsScreen(this);
+        this.currentStage = new BotSettingsStage(this);
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
