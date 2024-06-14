@@ -20,7 +20,8 @@ public class SettingsStage extends Stage {
     private Skin skin;
 
     public SettingsStage(ScreenManager manager) {
-        super(new ScreenViewport());
+        super();
+
         this.manager = manager;
 
         this.table = new Table();
@@ -103,8 +104,6 @@ public class SettingsStage extends Stage {
         simplifiedPhysicsCheckBox.setChecked(settings.isSimplifiedPhysics());
         allowPlayingCheckBox.setChecked(settings.isAllowPlaying());
     }
-
-
 
     @Override
     public void dispose() {

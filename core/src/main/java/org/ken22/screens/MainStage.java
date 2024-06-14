@@ -3,6 +3,7 @@ package org.ken22.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.ken22.input.courseinput.GolfCourse;
@@ -21,6 +23,8 @@ import java.util.List;
 public class MainStage extends Stage {
 
     private ScreenManager manager;
+
+    private static Viewport viewport = new ScreenViewport();
     private Table mainTable;
     private Table buttonTable;
     private Table infoTable;
@@ -34,10 +38,9 @@ public class MainStage extends Stage {
     private TextButton odeSolverButton;
     private TextButton exitButton;
 
-
-
     public MainStage(ScreenManager manager) {
-       // super(makeViewport());
+        super(viewport);
+
         this.manager = manager;
 
         this.mainTable = new Table();
@@ -129,8 +132,6 @@ public class MainStage extends Stage {
         return button;
     }
 
-
-
     @Override
     public void draw() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -143,9 +144,7 @@ public class MainStage extends Stage {
         playButton.getSkin().dispose();
     }
 
-    private static Viewport makeViewport() {
-        var viewport = new ScreenViewport();
-        viewport.setUnitsPerPixel(0.5f / Gdx.graphics.getDensity());
+    public Viewport getViewport() {
         return viewport;
     }
 }

@@ -1,11 +1,11 @@
 package org.ken22.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import org.ken22.Application;
 import org.ken22.controller.ApplicationController;
 import org.ken22.input.courseinput.GolfCourse;
@@ -48,19 +48,21 @@ public class ScreenManager extends ScreenAdapter {
         } else {
             this.currentScreen.render(deltaTime);
         }
-
-
     }
 
-
-
+    @Override
+    public void resize(int width, int height) {
+        if(this.isStage) {
+            this.currentStage.getViewport().update(width, height, true);
+        }
+    }
 
     /// transitions
     public void toGolfScreen() {
         if(this.currentScreen != null) this.currentScreen.dispose();
         this.currentScreen = new GolfScreen();
         this.isStage = false;
-        //Gdx.input.setInputProcessor(this.currentScreen);
+        // Gdx.input.setInputProcessor(this.currentScreen);
     }
 
     public void toMainStage() {
@@ -108,12 +110,6 @@ public class ScreenManager extends ScreenAdapter {
     public void toOdeSolverScreen() {
         if (this.currentStage != null) this.currentStage.dispose();
         ApplicationController.main(new String[0]);
-    }
-
-
-    @Override
-    public void resize(int width, int height) {
-        currentStage.getViewport().update(width, height);
     }
 
     public void exit() {
