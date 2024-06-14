@@ -32,6 +32,10 @@ public class PhysicsEngine {
 
 
     /// Constructors
+    public PhysicsEngine(GolfCourse course) {
+        this(course, new StateVector4(course.ballX(), course.ballY(), 0, 0));
+    }
+
     public PhysicsEngine(GolfCourse course, StateVector4 initialStateVector) {
         this(course, initialStateVector, DEFAULT_TIME_STEP, new FivePointCenteredDifference(), new RK4());
     }
@@ -258,5 +262,14 @@ public class PhysicsEngine {
 
     public StepIterator stepIterator() {
         return new StepIterator();
+    }
+
+    public StateVector4 getState() {
+        return trajectory.getLast();
+    }
+
+    public void setState(StateVector4 stateVector) {
+        this.trajectory.clear();
+        this.trajectory.add(stateVector);
     }
 }

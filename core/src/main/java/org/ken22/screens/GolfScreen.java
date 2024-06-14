@@ -1,56 +1,49 @@
 package org.ken22.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Vector3;
 import net.objecthunter.exp4j.Expression;
-import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.models.*;
+import org.ken22.physics.engine.PhysicsEngine;
+import org.ken22.physics.vectors.StateVector4;
+import org.ken22.players.SimplePlanarApproximationBot;
 import org.ken22.utils.GolfExpression;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Vector;
-
 public class GolfScreen extends ScreenAdapter {
+    private static float PADDING_SIZE = 10f;
+    private float xMin, xMax, yMin, yMax;
 
     private PerspectiveCamera camera;
     private FirstPersonCameraController controller;
-    private Model cubeModel;
-    private Model terrainModel;
 
-    private ModelBuilder[][] modelBuilders;
-    private MeshPartBuilder[][] meshPartBuilders;
-    private ModelInstance[][] terrainInstances;
     private ModelBatch[][] modelBatches;
+    private ModelBatch[][] shadowBatches;
+    private ModelInstance[][] terrainInstances;
 
     private ModelBuilder waterBuilder;
     private MeshPartBuilder waterMeshPartBuilder;
     private ModelInstance waterInstance;
     private ModelBatch waterBatch;
 
+    private ModelInstance golfBallInstance;
+    private ModelBatch golfBallBatch;
+
+    private ModelInstance targetInstance;
+    private ModelBatch targetBatch;
+
     private Environment environment;
-    private ModelBatch[][] shadowBatches;
-    private ModelBatch waterShadowBatch;
+
+    PhysicsEngine.FrameRateIterator iterator;
 
     private GolfCourse course;
     private Expression expr;
-
-    private float xMin, xMax, yMin, yMax;
-    private float PADDING_SIZE = 10f;
-    private float MESH_RESOLUTION = 0.1f;
-    private float BATCH_SIZE = 10;
-
-
 
     /**
      * Everything in GolfScreen is initialized here, rather than in the show() method.
@@ -59,7 +52,7 @@ public class GolfScreen extends ScreenAdapter {
      */
     public GolfScreen(GolfCourse course) {
         this.course = course;
-        expr = GolfExpression.expr(course);
+        this.expr = GolfExpression.expr(course);
 
         // Set map limits
         xMin = (float) (course.ballX() > course.targetXcoord() ? course.targetXcoord() -  PADDING_SIZE : course.ballX() - PADDING_SIZE);
@@ -67,76 +60,32 @@ public class GolfScreen extends ScreenAdapter {
         yMin = (float) (course.ballY() > course.targetYcoord() ? course.targetYcoord() -  PADDING_SIZE : course.ballY() - PADDING_SIZE);
         yMax = (float) (course.ballY() < course.targetYcoord() ? course.targetYcoord() +  PADDING_SIZE : course.ballY() + PADDING_SIZE);
 
+        // Initialize the environment
         environment = new Environment();
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        // Create terrain models
-        modelBatches = new ModelBatch[(int) Math.ceil((xMax - xMin) / BATCH_SIZE)][(int) Math.ceil((yMax - yMin) / BATCH_SIZE)];
-        for(int i = 0; i < modelBatches.length; i++) {
-            for(int j = 0; j < modelBatches[0].length; j++) {
-                modelBatches[i][j] = new ModelBatch();
-            }
-        }
-        modelBuilders = new ModelBuilder[modelBatches.length][modelBatches[0].length];
-        for(int i = 0; i < modelBuilders.length; i++) {
-            for(int j = 0; j < modelBuilders[0].length; j++) {
-                modelBuilders[i][j] = new ModelBuilder();
-            }
-        }
-        meshPartBuilders = new MeshPartBuilder[modelBatches.length][modelBatches[0].length];
-        terrainInstances = new ModelInstance[modelBatches.length][modelBatches[0].length];
-        shadowBatches = new ModelBatch[modelBatches.length][modelBatches[0].length];
-
-        Material textureMaterial = new Material(ColorAttribute.createDiffuse(Color.GREEN));
-        Material waterMaterial = new Material(ColorAttribute.createDiffuse(Color.BLUE));
-        Material sandMaterial = new Material(ColorAttribute.createDiffuse(Color.YELLOW));
-        Material treeMaterial = new Material(ColorAttribute.createDiffuse(Color.BROWN));
-
-        for(int bi = 0; bi < modelBatches.length; bi++)
-            for(int bj = 0; bj < modelBatches[0].length; bj++) {
-                modelBuilders[bi][bj] = new ModelBuilder();
-                modelBuilders[bi][bj].begin();
-                meshPartBuilders[bi][bj] = modelBuilders[bi][bj].part("terrain", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, textureMaterial);
-                //shadows
-                shadowBatches[bi][bj] = new ModelBatch(new DepthShaderProvider());
-                for (float i = xMin + bi * BATCH_SIZE; i < xMin + (bi + 1) * BATCH_SIZE; i += MESH_RESOLUTION)
-                    for (float j = yMin + bj * BATCH_SIZE; j < yMin + (bj + 1) * BATCH_SIZE; j += MESH_RESOLUTION) {
-                        float x0 = i;
-                        float z0 = j;
-                        float x1 = i + MESH_RESOLUTION;
-                        float z1 = j + MESH_RESOLUTION;
-
-                        float y00 = (float) expr.setVariable("x", x0).setVariable("y", z0).evaluate();
-                        float y01 = (float) expr.setVariable("x", x0).setVariable("y", z1).evaluate();
-                        float y10 = (float) expr.setVariable("x", x1).setVariable("y", z0).evaluate();
-                        float y11 = (float) expr.setVariable("x", x1).setVariable("y", z1).evaluate();
-
-                        Vector3 p1 = new Vector3(x0, y00, z0);
-                        Vector3 p2 = new Vector3(x0, y01, z1);
-                        Vector3 p3 = new Vector3(x1, y10, z0);
-                        Vector3 p4 = new Vector3(x1, y11, z1);
-
-                        meshPartBuilders[bi][bj].triangle(p1, p2, p3);
-                        meshPartBuilders[bi][bj].triangle(p3, p2, p4);
-                    }
-                terrainModel = modelBuilders[bi][bj].end();
-                terrainInstances[bi][bj] = new ModelInstance(terrainModel);
-            }
+        // create terrain model
+        TerrainModel terrainModel= new TerrainModel(expr, xMin, xMax, yMin, yMax);
+        modelBatches = terrainModel.getModelBatches();
+        shadowBatches = terrainModel.getShadowBatches();
+        terrainInstances = terrainModel.getTerrainInstances();
 
         // Create water model
-        waterBuilder = new ModelBuilder();
-        waterBuilder.begin();
-        waterMeshPartBuilder = waterBuilder.part("water", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, waterMaterial);
-        //TODO: figure out what's wrong with the coordinates.
-        Vector3 p1 = new Vector3(xMin, 0, yMin);
-        Vector3 p2 = new Vector3(xMin, 0, yMax + 10f);
-        Vector3 p3 = new Vector3(xMax + 10f, 0, yMin);
-        Vector3 p4 = new Vector3(xMax+ 10f, 0, yMax + 10f);
-        waterMeshPartBuilder.triangle(p1, p2, p3);
-        waterMeshPartBuilder.triangle(p3, p2, p4);
-        waterInstance = new ModelInstance(waterBuilder.end());
-        waterBatch = new ModelBatch();
+        WaterModel waterModel = new WaterModel(-0.005f, xMin, xMax, yMin, yMax);
+        waterInstance = waterModel.getWaterInstance();
+        waterBatch = waterModel.getWaterBatch();
 
+        // Create golf ball model
+        GolfBallModel golfBallModel = new GolfBallModel();
+        golfBallInstance = golfBallModel.getModelInstance();
+        golfBallBatch = new ModelBatch();
+        golfBallInstance.transform.setTranslation((float) course.ballX(), 0f, (float) course.ballY());
+
+        // Create target model
+        TargetModel targetModel = new TargetModel((float) course.targetRadius());
+        targetInstance = targetModel.getModelInstance();
+        targetBatch = new ModelBatch();
+        targetInstance.transform.setTranslation((float) course.targetXcoord(), 0f, (float) course.targetYcoord());
 
         // Initialize the camera
         camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -150,6 +99,12 @@ public class GolfScreen extends ScreenAdapter {
         controller = new FirstPersonCameraController(camera);
         Gdx.input.setInputProcessor(controller);
         controller.update();
+
+        //test physics
+        PhysicsEngine engine = new PhysicsEngine(course);
+        var bot = new SimplePlanarApproximationBot();
+        engine.setState(bot.play(engine.getState(), course));
+        iterator = engine.iterator();
     }
 
     @Override
@@ -161,6 +116,19 @@ public class GolfScreen extends ScreenAdapter {
         // Update the camera
         controller.update();
         camera.update();
+
+        // Render golf ball
+        StateVector4 state = iterator.next();
+        var height = 0.05 + expr.setVariable("x", state.x()).setVariable("y", state.y()).evaluate();
+        golfBallInstance.transform.setTranslation((float) state.x(), (float) height, (float) state.y());
+        golfBallBatch.begin(camera);
+        golfBallBatch.render(golfBallInstance, environment);
+        golfBallBatch.end();
+
+        // Render target
+        targetBatch.begin(camera);
+        targetBatch.render(targetInstance, environment);
+        targetBatch.end();
 
         // Render shadows
         for(int i = 0; i < shadowBatches.length; i++)
@@ -186,12 +154,16 @@ public class GolfScreen extends ScreenAdapter {
 
     @Override
     public void dispose() {
-        cubeModel.dispose();
         for (int i = 0; i < modelBatches.length; i++)
             for(int j = 0; j < modelBatches[0].length; j++)
                 modelBatches[i][j].dispose();
         for (ModelBatch[] shadowBatch : shadowBatches)
             for (ModelBatch aShadowBatch : shadowBatch)
                 aShadowBatch.dispose();
+        waterBatch.dispose();
+        waterInstance.model.dispose();
+        for (ModelInstance[] terrainInstance : terrainInstances)
+            for (ModelInstance aTerrainInstance : terrainInstance)
+                aTerrainInstance.model.dispose();
     }
 }
