@@ -1,4 +1,4 @@
-package org.ken22.screens;
+package org.ken22.stages;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -7,17 +7,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import org.ken22.screens.ScreenManager;
 
-
-
-public class ODEStage extends Stage {
+public class BotSettingsStage extends Stage {
     private ScreenManager manager;
 
     private Table table;
 
     private TextButton backButton;
 
-    public ODEStage(ScreenManager manager) {
+    public BotSettingsStage(ScreenManager manager) {
         this.manager = manager;
 
         this.table = new Table();

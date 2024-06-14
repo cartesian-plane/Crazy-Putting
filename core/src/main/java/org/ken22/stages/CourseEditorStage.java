@@ -1,4 +1,4 @@
-package org.ken22.screens;
+package org.ken22.stages;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -6,10 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import org.ken22.screens.KeyboardNavigator;
+import org.ken22.screens.ScreenManager;
 
 import java.util.ArrayList;
 
-import static org.ken22.screens.UIElementFactory.createNumericalTextField;
+import static org.ken22.stages.UIElementFactory.createNumericalTextField;
 public class CourseEditorStage extends Stage {
     private ScreenManager manager;
 

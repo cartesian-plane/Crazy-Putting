@@ -7,7 +7,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import org.ken22.Application;
 import org.ken22.controller.ApplicationController;
+import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.stages.*;
+
+import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -22,7 +26,9 @@ import java.util.ArrayList;
 public class ScreenManager extends ScreenAdapter {
     private Application app;
 
-    private GolfCourse selectedCourse;
+    // very much temporary
+    private CourseParser parser = new CourseParser(new File("input/sin(x)sin(y).json"));
+    private GolfCourse selectedCourse = parser.getCourse();
 
     private Stage currentStage;
     private Screen currentScreen;
@@ -61,7 +67,7 @@ public class ScreenManager extends ScreenAdapter {
     /// transitions
     public void toGolfScreen() {
         if(this.currentScreen != null) this.currentScreen.dispose();
-        this.currentScreen = new GolfScreen();
+        this.currentScreen = new GolfScreen(selectedCourse);
         this.isStage = false;
         // Gdx.input.setInputProcessor(this.currentScreen);
     }

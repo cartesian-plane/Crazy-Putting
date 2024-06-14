@@ -18,6 +18,7 @@ import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.utils.GolfExpression;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class GolfScreen extends ScreenAdapter {
 
@@ -25,70 +26,97 @@ public class GolfScreen extends ScreenAdapter {
     private FirstPersonCameraController controller;
     private Model cubeModel;
     private Model terrainModel;
-    private ModelBuilder modelBuilder;
-    private MeshPartBuilder meshPartBuilder;
-    private ModelInstance cubeInstance;
-    private ModelBatch modelBatch;
+
+    private ModelBuilder[][] modelBuilders;
+    private MeshPartBuilder[][] meshPartBuilders;
+    private ModelInstance[][] terrainInstances;
+    private ModelBatch[][] modelBatches;
 
     private Environment environment;
-    private ModelBatch shadowBatch;
+    private ModelBatch[][] shadowBatches;
 
     private GolfCourse course;
     private Expression expr;
 
+    private float xMin, xMax, yMin, yMax;
+    private float PADDING_SIZE = 10f;
     private float MESH_RESOLUTION = 0.1f;
+    private float BATCH_SIZE = 10;
+
+
 
     /**
      * Everything in GolfScreen is initialized here, rather than in the show() method.
      * This is because the show() method is only called when the screen is set as the current screen
      * in the Game class, which is not the case here.
      */
-    public GolfScreen() {
-        CourseParser parser = new CourseParser(new File("input/sin(x)sin(y).json"));
-        course = parser.getCourse();
+    public GolfScreen(GolfCourse course) {
+        this.course = course;
         expr = GolfExpression.expr(course);
+
+        // Set map limits
+        xMin = (float) (course.ballX() > course.targetXcoord() ? course.targetXcoord() -  PADDING_SIZE : course.ballX() - PADDING_SIZE);
+        xMax = (float) (course.ballX() < course.targetXcoord() ? course.targetXcoord() +  PADDING_SIZE : course.ballX() + PADDING_SIZE);
+        yMin = (float) (course.ballY() > course.targetYcoord() ? course.targetYcoord() -  PADDING_SIZE : course.ballY() - PADDING_SIZE);
+        yMax = (float) (course.ballY() < course.targetYcoord() ? course.targetYcoord() +  PADDING_SIZE : course.ballY() + PADDING_SIZE);
 
         environment = new Environment();
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        this.modelBatch = new ModelBatch();
-        this.shadowBatch = new ModelBatch(new DepthShaderProvider());
-
-        // Create a cube
-        ModelBuilder modelBuilder = new ModelBuilder();
-        modelBuilder.begin();
+        // Create terrain models
+        modelBatches = new ModelBatch[(int) Math.ceil((xMax - xMin) / BATCH_SIZE)][(int) Math.ceil((yMax - yMin) / BATCH_SIZE)];
+        for(int i = 0; i < modelBatches.length; i++) {
+            for(int j = 0; j < modelBatches[0].length; j++) {
+                modelBatches[i][j] = new ModelBatch();
+            }
+        }
+        modelBuilders = new ModelBuilder[modelBatches.length][modelBatches[0].length];
+        for(int i = 0; i < modelBuilders.length; i++) {
+            for(int j = 0; j < modelBuilders[0].length; j++) {
+                modelBuilders[i][j] = new ModelBuilder();
+            }
+        }
+        meshPartBuilders = new MeshPartBuilder[modelBatches.length][modelBatches[0].length];
+        terrainInstances = new ModelInstance[modelBatches.length][modelBatches[0].length];
+        shadowBatches = new ModelBatch[modelBatches.length][modelBatches[0].length];
 
         Material textureMaterial = new Material(ColorAttribute.createDiffuse(Color.GREEN));
-        this.meshPartBuilder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, textureMaterial);
 
-        for(float i = 0; i < 5f; i += MESH_RESOLUTION)
-            for (float j = 0; j < 5f; j += MESH_RESOLUTION) {
-                float x0 = i;
-                float z0 = j;
-                float x1 = i + MESH_RESOLUTION;
-                float z1 = j + MESH_RESOLUTION;
+        for(int bi = 0; bi < modelBatches.length; bi++)
+            for(int bj = 0; bj < modelBatches[0].length; bj++) {
+                modelBuilders[bi][bj] = new ModelBuilder();
+                modelBuilders[bi][bj].begin();
+                meshPartBuilders[bi][bj] = modelBuilders[bi][bj].part("terrain", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, textureMaterial);
+                //shadows
+                shadowBatches[bi][bj] = new ModelBatch(new DepthShaderProvider());
+                for (float i = bi * BATCH_SIZE; i < (bi + 1) * BATCH_SIZE; i += MESH_RESOLUTION)
+                    for (float j = bj * BATCH_SIZE; j < (bj + 1) * BATCH_SIZE; j += MESH_RESOLUTION) {
+                        float x0 = i;
+                        float z0 = j;
+                        float x1 = i + MESH_RESOLUTION;
+                        float z1 = j + MESH_RESOLUTION;
 
-                float y00 = (float) expr.setVariable("x", x0).setVariable("y", z0).evaluate();
-                float y01 = (float) expr.setVariable("x", x0).setVariable("y", z1).evaluate();
-                float y10 = (float) expr.setVariable("x", x1).setVariable("y", z0).evaluate();
-                float y11 = (float) expr.setVariable("x", x1).setVariable("y", z1).evaluate();
+                        float y00 = (float) expr.setVariable("x", x0).setVariable("y", z0).evaluate();
+                        float y01 = (float) expr.setVariable("x", x0).setVariable("y", z1).evaluate();
+                        float y10 = (float) expr.setVariable("x", x1).setVariable("y", z0).evaluate();
+                        float y11 = (float) expr.setVariable("x", x1).setVariable("y", z1).evaluate();
 
-                Vector3 p1 = new Vector3(x0, y00, z0);
-                Vector3 p2 = new Vector3(x0, y01, z1);
-                Vector3 p3 = new Vector3(x1, y10, z0);
-                Vector3 p4 = new Vector3(x1, y11, z1);
+                        Vector3 p1 = new Vector3(x0, y00, z0);
+                        Vector3 p2 = new Vector3(x0, y01, z1);
+                        Vector3 p3 = new Vector3(x1, y10, z0);
+                        Vector3 p4 = new Vector3(x1, y11, z1);
 
-                meshPartBuilder.triangle(p1, p2, p3);
-                meshPartBuilder.triangle(p3, p2, p4);
+                        meshPartBuilders[bi][bj].triangle(p1, p2, p3);
+                        meshPartBuilders[bi][bj].triangle(p3, p2, p4);
+                    }
+                terrainModel = modelBuilders[bi][bj].end();
+                terrainInstances[bi][bj] = new ModelInstance(terrainModel);
             }
-
-        cubeModel = modelBuilder.end();
-        cubeInstance = new ModelInstance(cubeModel);
 
         // Initialize the camera
         camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(0f, 0f, 10f);
-        camera.lookAt(0f, 0f, 0f);
+        camera.position.set((float)course.ballX(), 0f, (float)course.ballY());
+        camera.lookAt(1f, 0f, 1f);
         camera.near = 1f;
         camera.far = 300f;
         camera.update();
@@ -109,21 +137,31 @@ public class GolfScreen extends ScreenAdapter {
         controller.update();
         camera.update();
 
-        // Render the shadow
-        shadowBatch.begin(camera);
-        shadowBatch.render(cubeInstance);
-        shadowBatch.end();
+        // Render shadows
+        for(int i = 0; i < shadowBatches.length; i++)
+            for(int j = 0; j < shadowBatches[0].length; j++) {
+                shadowBatches[i][j].begin(camera);
+                shadowBatches[i][j].render(terrainInstances[i][j]);
+                shadowBatches[i][j].end();
+            }
 
-        // Render the cube
-        modelBatch.begin(camera);
-        modelBatch.render(cubeInstance, environment);
-        modelBatch.end();
+        // Render terrain
+        for(int i = 0; i < modelBatches.length; i++)
+            for(int j = 0; j < modelBatches[0].length; j++) {
+                modelBatches[i][j].begin(camera);
+                modelBatches[i][j].render(terrainInstances[i][j], environment);
+                modelBatches[i][j].end();
+            }
     }
 
     @Override
     public void dispose() {
         cubeModel.dispose();
-        modelBatch.dispose();
-        shadowBatch.dispose();
+        for (int i = 0; i < modelBatches.length; i++)
+            for(int j = 0; j < modelBatches[0].length; j++)
+                modelBatches[i][j].dispose();
+        for (ModelBatch[] shadowBatch : shadowBatches)
+            for (ModelBatch aShadowBatch : shadowBatch)
+                aShadowBatch.dispose();
     }
 }
