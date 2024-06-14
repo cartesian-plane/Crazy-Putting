@@ -19,6 +19,7 @@ import org.ken22.utils.GolfExpression;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class GolfScreen extends ScreenAdapter {
 
@@ -32,8 +33,14 @@ public class GolfScreen extends ScreenAdapter {
     private ModelInstance[][] terrainInstances;
     private ModelBatch[][] modelBatches;
 
+    private ModelBuilder waterBuilder;
+    private MeshPartBuilder waterMeshPartBuilder;
+    private ModelInstance waterInstance;
+    private ModelBatch waterBatch;
+
     private Environment environment;
     private ModelBatch[][] shadowBatches;
+    private ModelBatch waterShadowBatch;
 
     private GolfCourse course;
     private Expression expr;
@@ -81,6 +88,9 @@ public class GolfScreen extends ScreenAdapter {
         shadowBatches = new ModelBatch[modelBatches.length][modelBatches[0].length];
 
         Material textureMaterial = new Material(ColorAttribute.createDiffuse(Color.GREEN));
+        Material waterMaterial = new Material(ColorAttribute.createDiffuse(Color.BLUE));
+        Material sandMaterial = new Material(ColorAttribute.createDiffuse(Color.YELLOW));
+        Material treeMaterial = new Material(ColorAttribute.createDiffuse(Color.BROWN));
 
         for(int bi = 0; bi < modelBatches.length; bi++)
             for(int bj = 0; bj < modelBatches[0].length; bj++) {
@@ -89,8 +99,8 @@ public class GolfScreen extends ScreenAdapter {
                 meshPartBuilders[bi][bj] = modelBuilders[bi][bj].part("terrain", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, textureMaterial);
                 //shadows
                 shadowBatches[bi][bj] = new ModelBatch(new DepthShaderProvider());
-                for (float i = bi * BATCH_SIZE; i < (bi + 1) * BATCH_SIZE; i += MESH_RESOLUTION)
-                    for (float j = bj * BATCH_SIZE; j < (bj + 1) * BATCH_SIZE; j += MESH_RESOLUTION) {
+                for (float i = xMin + bi * BATCH_SIZE; i < xMin + (bi + 1) * BATCH_SIZE; i += MESH_RESOLUTION)
+                    for (float j = yMin + bj * BATCH_SIZE; j < yMin + (bj + 1) * BATCH_SIZE; j += MESH_RESOLUTION) {
                         float x0 = i;
                         float z0 = j;
                         float x1 = i + MESH_RESOLUTION;
@@ -112,6 +122,21 @@ public class GolfScreen extends ScreenAdapter {
                 terrainModel = modelBuilders[bi][bj].end();
                 terrainInstances[bi][bj] = new ModelInstance(terrainModel);
             }
+
+        // Create water model
+        waterBuilder = new ModelBuilder();
+        waterBuilder.begin();
+        waterMeshPartBuilder = waterBuilder.part("water", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, waterMaterial);
+        //TODO: figure out what's wrong with the coordinates.
+        Vector3 p1 = new Vector3(xMin, 0, yMin);
+        Vector3 p2 = new Vector3(xMin, 0, yMax + 10f);
+        Vector3 p3 = new Vector3(xMax + 10f, 0, yMin);
+        Vector3 p4 = new Vector3(xMax+ 10f, 0, yMax + 10f);
+        waterMeshPartBuilder.triangle(p1, p2, p3);
+        waterMeshPartBuilder.triangle(p3, p2, p4);
+        waterInstance = new ModelInstance(waterBuilder.end());
+        waterBatch = new ModelBatch();
+
 
         // Initialize the camera
         camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -152,6 +177,11 @@ public class GolfScreen extends ScreenAdapter {
                 modelBatches[i][j].render(terrainInstances[i][j], environment);
                 modelBatches[i][j].end();
             }
+
+        // Render water
+        waterBatch.begin(camera);
+        waterBatch.render(waterInstance, environment);
+        waterBatch.end();
     }
 
     @Override

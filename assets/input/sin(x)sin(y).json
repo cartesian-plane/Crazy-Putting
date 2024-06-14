@@ -1,6 +1,6 @@
 {
   "name": "Example Golf Course",
-  "courseProfile": "1+sin(x)*sin(y)",
+  "courseProfile": "sin(x)*sin(y)",
   "range": 10.0,
   "mass": 0.0459,
   "gravitationalConstant": 9.80665,
