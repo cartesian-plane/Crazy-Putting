@@ -92,7 +92,7 @@ public class MainStage extends Stage {
         buttonTable.add(exitButton).padTop(30).center();
 
         // info table about level
-        GolfCourse selectedCourse = Settings.getInstance().getSelectedCourse();
+        GolfCourse selectedCourse = manager.selectedCourse;
         if (selectedCourse != null) {
             infoTable.add(new Label("Selected Course: " + selectedCourse.name(), skin)).row();
             infoTable.add(new Label("Height Profile: " + selectedCourse.courseProfile(), skin)).row();
