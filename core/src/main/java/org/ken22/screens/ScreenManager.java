@@ -9,11 +9,11 @@ import org.ken22.Application;
 import org.ken22.controller.ApplicationController;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.input.courseinput.Settings;
 import org.ken22.stages.*;
 
 import java.io.File;
 import java.util.List;
-import java.util.ArrayList;
 
 
 /**
@@ -25,6 +25,8 @@ import java.util.ArrayList;
  */
 public class ScreenManager extends ScreenAdapter {
     private Application app;
+
+    private Settings settings;
 
     // very much temporary
     private CourseParser parser = new CourseParser(new File("input/sin(x)sin(y).json"));
@@ -119,6 +121,9 @@ public class ScreenManager extends ScreenAdapter {
         ApplicationController.main(new String[0]);
     }
 
+    public void setCourse(GolfCourse course) {
+        this.selectedCourse = course;
+    }
 
     public void exit() {
         Gdx.app.exit();

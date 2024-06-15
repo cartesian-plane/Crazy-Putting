@@ -19,7 +19,7 @@ import org.ken22.players.SimplePlanarApproximationBot;
 import org.ken22.utils.GolfExpression;
 
 public class GolfScreen extends ScreenAdapter {
-    private static float PADDING_SIZE = 10f;
+    private static float PADDING_SIZE = 2.5f;
     private float xMin, xMax, yMin, yMax;
 
     private PerspectiveCamera camera;
@@ -68,7 +68,10 @@ public class GolfScreen extends ScreenAdapter {
 
         // Initialize the environment
         environment = new Environment();
-        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+        environment.add(new DirectionalLight().set(0.4f, 0.4f, 0.4f, -1f, -1f, -1f));
+        environment.add(new DirectionalLight().set(0.4f, 0.4f, 0.4f, -1f, -1f, 1f));
+        environment.add(new DirectionalLight().set(0.4f, 0.4f, 0.4f, 1f, -1f, -1f));
+        environment.add(new DirectionalLight().set(0.4f, 0.4f, 0.4f, 1f, -1f, 1f));
 
         // create terrain model
         TerrainModel terrainModel= new TerrainModel(expr, xMin, xMax, yMin, yMax);

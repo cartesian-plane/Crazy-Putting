@@ -18,6 +18,7 @@ public class Lwjgl3Launcher {
 
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
+        configuration.setForegroundFPS(30);
         configuration.setTitle("golf-game");
         configuration.useVsync(true);
         //// Limits FPS to the refresh rate of the currently active monitor.
