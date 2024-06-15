@@ -9,16 +9,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import org.ken22.screens.ScreenManager;
 
 public class ODEStage extends Stage {
+
     private ScreenManager manager;
+
+    private static Viewport viewport = new ScreenViewport();
     private Table table;
     private ScrollPane scrollPane;
+
     private TextButton backButton;
 
     public ODEStage(ScreenManager manager) {
-        super(new ScreenViewport());
+        super(viewport);
         this.manager = manager;
 
         this.table = new Table();
@@ -51,5 +56,9 @@ public class ODEStage extends Stage {
     public void dispose() {
         super.dispose();
         backButton.getSkin().dispose();
+    }
+
+    public Viewport getViewport() {
+        return viewport;
     }
 }

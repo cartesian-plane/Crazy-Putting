@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.input.courseinput.GolfCourseLoader;
 import org.ken22.screens.ScreenManager;
@@ -14,16 +15,18 @@ import java.util.List;
 
 
 public class CourseSelectorStage extends Stage {
+
     private ScreenManager manager;
-    private GolfCourseLoader courseLoader;
-    private List<GolfCourse> courses;
+
+    private static Viewport viewport = new ScreenViewport();
     private Table table;
     private ScrollPane scrollPane;
 
-
+    private GolfCourseLoader courseLoader;
+    private List<GolfCourse> courses;
 
     public CourseSelectorStage(ScreenManager manager) {
-        super(new ScreenViewport());
+        super(viewport);
         this.manager = manager;
         this.courseLoader = GolfCourseLoader.getInstance();
         this.courses = courseLoader.getCourses();
@@ -157,5 +160,9 @@ public class CourseSelectorStage extends Stage {
     public void dispose() {
         super.dispose();
         scrollPane.remove();
+    }
+
+    public Viewport getViewport() {
+        return viewport;
     }
 }

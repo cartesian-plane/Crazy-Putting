@@ -8,12 +8,16 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.screens.KeyboardNavigator;
 import org.ken22.screens.ScreenManager;
 
+import javax.swing.text.View;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -26,7 +30,7 @@ import static org.ken22.utils.userinput.TextFieldUtils.parseCoordinates;
 public class CourseEditorStage extends Stage {
     private ScreenManager manager;
 
-
+    private static Viewport viewport = new ScreenViewport();
     private Table table;
 
     private TextButton mainButton;
@@ -34,7 +38,7 @@ public class CourseEditorStage extends Stage {
 
     public CourseEditorStage(ScreenManager manager) {
         // if you don't do this viewport thing, the buttons won't look nice on high dpi displays
-        super();
+        super(viewport);
         this.manager = manager;
 
         this.table = new Table();
@@ -238,5 +242,9 @@ public class CourseEditorStage extends Stage {
     public void dispose() {
         super.dispose();
         mainButton.getSkin().dispose();
+    }
+
+    public Viewport getViewport() {
+        return viewport;
     }
 }

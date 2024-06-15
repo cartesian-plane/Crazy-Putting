@@ -6,22 +6,29 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import org.ken22.input.courseinput.Settings;
 import org.ken22.screens.ScreenManager;
 
 public class SettingsStage extends Stage {
+
     private ScreenManager manager;
+
+    private static Viewport viewport = new ScreenViewport();
     private Table table;
+    private ScrollPane scrollPane;
     private SelectBox<String> odeSolverBox;
+
+    private Skin skin;
+
     private TextField stepSizeField;
     private TextField differentiationField;
     private CheckBox simplifiedPhysicsCheckBox;
     private CheckBox allowPlayingCheckBox;
-    private Skin skin;
-    private ScrollPane scrollPane;
+
 
     public SettingsStage(ScreenManager manager) {
-        super(new ScreenViewport());
+        super(viewport);
         this.manager = manager;
         this.table = new Table();
         this.table.setFillParent(true);
@@ -108,5 +115,9 @@ public class SettingsStage extends Stage {
     public void dispose() {
         super.dispose();
         skin.dispose();
+    }
+
+    public Viewport getViewport() {
+        return viewport;
     }
 }
