@@ -5,12 +5,12 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import org.ken22.input.courseinput.Settings;
 import org.ken22.screens.ScreenManager;
 
 public class SettingsStage extends Stage {
     private ScreenManager manager;
-
     private Table table;
     private SelectBox<String> odeSolverBox;
     private TextField stepSizeField;
@@ -18,17 +18,22 @@ public class SettingsStage extends Stage {
     private CheckBox simplifiedPhysicsCheckBox;
     private CheckBox allowPlayingCheckBox;
     private Skin skin;
+    private ScrollPane scrollPane;
 
     public SettingsStage(ScreenManager manager) {
-        super();
-
+        super(new ScreenViewport());
         this.manager = manager;
-
         this.table = new Table();
         this.table.setFillParent(true);
-        this.addActor(table);
 
         skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
+
+        scrollPane = new ScrollPane(table, skin);
+        scrollPane.setFillParent(true);
+        scrollPane.setScrollingDisabled(true, false);
+
+        this.addActor(scrollPane);
+
 
 
 
@@ -38,7 +43,7 @@ public class SettingsStage extends Stage {
         odeSolverBox.setItems("Euler", "Runge Kutta 2", "Runge Kutta 4");
         table.add(odeSolverBox).pad(10).row();
 
-        // Step size
+        // step size
         table.add(new Label("Step Size", skin)).pad(10);
         stepSizeField = new TextField("", skin);
         table.add(stepSizeField).pad(10).row();
@@ -55,10 +60,6 @@ public class SettingsStage extends Stage {
         // playing
         allowPlayingCheckBox = new CheckBox(" Allow Playing", skin);
         table.add(allowPlayingCheckBox).pad(10).colspan(2).left().row();
-
-
-
-
 
         // save button
         TextButton saveButton = new TextButton("Save", skin);
@@ -83,7 +84,6 @@ public class SettingsStage extends Stage {
     }
 
 
-
     //save settings
     private void saveSettings() {
         Settings settings = Settings.getInstance();
@@ -93,7 +93,6 @@ public class SettingsStage extends Stage {
         settings.setSimplifiedPhysics(simplifiedPhysicsCheckBox.isChecked());
         settings.setAllowPlaying(allowPlayingCheckBox.isChecked());
     }
-
 
     //load settings
     private void loadSettings() {

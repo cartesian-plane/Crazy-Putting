@@ -7,26 +7,37 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import org.ken22.screens.ScreenManager;
-
 
 public class TerrainStage extends Stage {
     private ScreenManager manager;
 
     private Table table;
-
+    private ScrollPane scrollPane;
     private TextButton backButton;
 
     public TerrainStage(ScreenManager manager) {
+        super(new ScreenViewport());
         this.manager = manager;
 
         this.table = new Table();
         this.table.setFillParent(true);
-        this.addActor(table);
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
-        this.backButton = new TextButton("Back", skin);
 
+
+        scrollPane = new ScrollPane(table, skin);
+        scrollPane.setFillParent(true);
+        scrollPane.setScrollingDisabled(true, false);
+
+        this.addActor(scrollPane);
+
+
+
+
+        this.backButton = new TextButton("Back", skin);
         this.backButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 manager.toMainStage();
