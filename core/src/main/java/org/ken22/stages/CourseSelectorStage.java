@@ -7,25 +7,26 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.input.courseinput.Settings;
+import org.ken22.input.courseinput.GolfCourseLoader;
 import org.ken22.screens.ScreenManager;
 
-import java.util.ArrayList;
-
+import java.util.List;
 
 
 public class CourseSelectorStage extends Stage {
     private ScreenManager manager;
-    private ArrayList<GolfCourse> courses;
+    private GolfCourseLoader courseLoader;
+    private List<GolfCourse> courses;
     private Table table;
     private ScrollPane scrollPane;
 
 
 
-    public CourseSelectorStage(ScreenManager manager, ArrayList<GolfCourse> courses) {
+    public CourseSelectorStage(ScreenManager manager) {
         super(new ScreenViewport());
         this.manager = manager;
-        this.courses = courses;
+        this.courseLoader = GolfCourseLoader.getInstance();
+        this.courses = courseLoader.getCourses();
 
         this.table = new Table();
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
@@ -38,6 +39,7 @@ public class CourseSelectorStage extends Stage {
         this.addActor(scrollPane);
 
         for (GolfCourse course : courses) {
+            System.out.println("course = " + course.name());
             Table coursePanel = createCoursePanel(course, skin);
             table.add(coursePanel).pad(10).row();
         }

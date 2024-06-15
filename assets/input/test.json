@@ -1,5 +1,5 @@
 {
-  "name": "Example Golf Course",
+  "name": "Sunset Valley",
   "courseProfile": "0.5*sin((x+Y)/10) + 1",
   "range": 5.0,
   "mass": 0.0459,

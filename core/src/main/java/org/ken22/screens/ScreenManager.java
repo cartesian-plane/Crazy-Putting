@@ -88,7 +88,7 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toCourseSelectorScreen(List<GolfCourse> courses) {
         this.currentStage.dispose();
-        this.currentStage = new CourseSelectorStage(this, new ArrayList<>(courses));
+        this.currentStage = new CourseSelectorStage(this);
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
