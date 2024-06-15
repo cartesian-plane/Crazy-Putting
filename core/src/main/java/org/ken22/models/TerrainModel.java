@@ -14,7 +14,7 @@ import net.objecthunter.exp4j.Expression;
 
 public class TerrainModel {
     private static float MESH_RESOLUTION = 0.2f;
-    private static float BATCH_SIZE = 10;
+    private static float BATCH_SIZE = 8;
     private float xMin, xMax, yMin, yMax;
 
     private Model terrainModel;
@@ -80,11 +80,11 @@ public class TerrainModel {
                         Vector3 p3 = new Vector3(x1, y10, z0);
                         Vector3 p4 = new Vector3(x1, y11, z1);
 
-                        MeshPartBuilder mpb = modelBuilders[bi][bj].part("terrain", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, Materials.grassTextureMaterial);
+                        MeshPartBuilder mpb = modelBuilders[bi][bj].part("terrain", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, Materials.grassMaterial);
                         mpb.triangle(p1, p2, p3);
 
-                        //MeshPartBuilder mpb2 = modelBuilders[bi][bj].part("terrain_b", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, Materials.altGrassMaterial);
-                        mpb.triangle(p3, p2, p4);
+                        MeshPartBuilder mpb2 = modelBuilders[bi][bj].part("terrain_b", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, Materials.altGrassMaterial);
+                        mpb2.triangle(p3, p2, p4);
                     }
                 terrainModel = modelBuilders[bi][bj].end();
                 terrainInstances[bi][bj] = new ModelInstance(terrainModel);

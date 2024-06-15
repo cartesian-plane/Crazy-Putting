@@ -26,15 +26,19 @@ public class Minimap {
         this.xMax = (float) expr.setVariable("x", WIDTH).setVariable("y", 0).evaluate();
         this.yMin = (float) expr.setVariable("x", 0).setVariable("y", HEIGHT).evaluate();
         this.yMax = (float) expr.setVariable("x", WIDTH).setVariable("y", HEIGHT).evaluate();
+
+        // height for pixel (i, j) //includint projection into pixels
+        // expr.setVariable("x", xMin + (xMax - xMin) * i  / WIDTH)
+        //     .setVariable("y", yMin + (yMax - yMin) * j / HEIGHT).evaluate();
     }
 
-    private double[][] generate(Expression heightFunction, int size) {
-        double[][] heightMap = new double[size][size];
-        double[] xCoords = MathUtils.linspace(xMin, xMax, size);
-        double[] yCoords = MathUtils.linspace(yMin, yMax, size);
+    private double[][] generate(Expression heightFunction) {
+        double[][] heightMap = new double[WIDTH][HEIGHT];
+        double[] xCoords = MathUtils.linspace(xMin, xMax, WIDTH);
+        double[] yCoords = MathUtils.linspace(yMin, yMax, HEIGHT);
 
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
                 // Set the values before evaluating the function
                 heightFunction
                     .setVariable("x", xCoords[i])
@@ -48,8 +52,8 @@ public class Minimap {
         double max = MathUtils.max(heightMap);
 
         // Normalize the heightmap
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
                 heightMap[i][j] = (heightMap[i][j] - min) / (max - min);
             }
         }
@@ -61,12 +65,12 @@ public class Minimap {
 
         Pixmap pixmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGB888);
 
-        double[][] heightMap = generate(expr, 100);
+        double[][] heightMap = generate(expr);
 
         for (int i = 0; i < 100; i++) {
             for (int j = 0; j < 100; j++) {
-                int gray = (int) (heightMap[i][j] * 255);
-                Color color = new Color(gray, gray, gray, 1);
+                double gray = heightMap[i][j] * 255;
+                Color color = new Color((float) gray, (float) gray, (float) gray, 1);
 
                 System.out.println(color);
 
@@ -84,4 +88,11 @@ public class Minimap {
         batch.draw(texture, x, y);
     }
 
+    public int project(float x) {
+        return (int) ((x - xMin) / (xMax - xMin) * WIDTH);
+    }
+
+    public float unproject(int i) {
+        return xMin + ((float) i)  / WIDTH * (xMax - xMin);
+    }
 }

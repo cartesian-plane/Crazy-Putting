@@ -62,6 +62,11 @@ public class TerrainStage extends Stage {
         // Add actors to the table
         this.table.defaults().pad(10);
         this.table.add(image).colspan(2).row();
+        image.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("Clicked on minimap: " + x + ", " + y);
+            }
+        });
         this.table.add(backButton);
     }
 

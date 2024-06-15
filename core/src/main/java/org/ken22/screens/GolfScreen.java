@@ -10,6 +10,9 @@ import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.models.*;
@@ -22,6 +25,7 @@ public class GolfScreen extends ScreenAdapter {
     private static float PADDING_SIZE = 2.5f;
     private float xMin, xMax, yMin, yMax;
 
+    private Viewport viewport;
     private PerspectiveCamera camera;
     private FirstPersonCameraController controller;
 
@@ -38,7 +42,8 @@ public class GolfScreen extends ScreenAdapter {
     private ModelBatch golfBallBatch;
     private ModelBatch golfBallShadowBatch;
 
-    private ModelInstance targetInstance;
+    private ModelInstance cylinderInstance;
+    private ModelInstance poleInstance;
     private ModelBatch targetBatch;
 
     private Environment environment;
@@ -93,17 +98,23 @@ public class GolfScreen extends ScreenAdapter {
 
         // Create target model
         TargetModel targetModel = new TargetModel((float) course.targetRadius());
-        targetInstance = targetModel.getModelInstance();
+        cylinderInstance = targetModel.getCylinderInstance();
+        poleInstance = targetModel.getPoleInstance();
         targetBatch = new ModelBatch();
-        targetInstance.transform.setTranslation((float) course.targetXcoord(), 0f, (float) course.targetYcoord());
+
+        var targetHeight = expr.setVariable("x", course.targetXcoord()).setVariable("y", course.targetYcoord()).evaluate();
+        cylinderInstance.transform.setTranslation((float) course.targetXcoord(), (float) targetHeight, (float) course.targetYcoord());
+        poleInstance.transform.setTranslation((float) course.targetXcoord(), (float) targetHeight,  (float) course.targetYcoord());
 
         // Initialize the camera
         camera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.position.set((float)course.ballX(), 0f, (float)course.ballY());
         camera.lookAt(1f, 0f, 1f);
-        camera.near = 1f;
+        camera.near = 0.1f;
         camera.far = 300f;
         camera.update();
+        // Create a viewport
+        viewport = new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
 
         // Initialize the FirstPersonCameraController
         controller = new FirstPersonCameraController(camera);
@@ -139,7 +150,8 @@ public class GolfScreen extends ScreenAdapter {
 
         // Render target
         targetBatch.begin(camera);
-        targetBatch.render(targetInstance, environment);
+        targetBatch.render(cylinderInstance, environment);
+        targetBatch.render(poleInstance, environment);
         targetBatch.end();
 
         // Render shadows
@@ -182,5 +194,9 @@ public class GolfScreen extends ScreenAdapter {
         for (ModelInstance[] terrainInstance : terrainInstances)
             for (ModelInstance aTerrainInstance : terrainInstance)
                 aTerrainInstance.model.dispose();
+    }
+
+    public Viewport getViewport() {
+        return viewport;
     }
 }
