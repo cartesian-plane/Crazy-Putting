@@ -192,6 +192,8 @@ public class CourseEditorStage extends Stage {
                     parseCoordinates(ballCoordField.getText())[1]
                 );
 
+                manager.selectedCourse = selectedCourse;
+
                 var mapper = new ObjectMapper();
                 String jsonString;
                 try {
