@@ -14,7 +14,6 @@ public class WaterModel {
     private ModelInstance waterInstance;
     private ModelBatch waterBatch;
 
-    //TODO: figure out what's wrong with the coordinates.
     public WaterModel(float xMin, float xMax, float yMin, float yMax) {
         this(0, xMin, xMax, yMin, yMax);
     }

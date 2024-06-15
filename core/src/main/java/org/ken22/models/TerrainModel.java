@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
+import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
@@ -57,12 +58,13 @@ public class TerrainModel {
             for(int bj = 0; bj < modelBatches[0].length; bj++) {
                 modelBuilders[bi][bj] = new ModelBuilder();
                 modelBuilders[bi][bj].begin();
-                meshPartBuilders[bi][bj] = modelBuilders[bi][bj].part("terrain", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, Materials.grassMaterial);
-                altMeshPartBuilders[bi][bj] = modelBuilders[bi][bj].part("terrain", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, Materials.altGrassMaterial);
+
                 //shadows
                 shadowBatches[bi][bj] = new ModelBatch(new DepthShaderProvider());
                 for (float i = xMin + bi * BATCH_SIZE; i < xMin + (bi + 1) * BATCH_SIZE; i += MESH_RESOLUTION)
                     for (float j = yMin + bj * BATCH_SIZE; j < yMin + (bj + 1) * BATCH_SIZE; j += MESH_RESOLUTION) {
+                        if(i + MESH_RESOLUTION > xMax || j + MESH_RESOLUTION > yMax) //don't go past the bounds
+                            continue;
                         float x0 = i;
                         float z0 = j;
                         float x1 = i + MESH_RESOLUTION;
@@ -78,8 +80,11 @@ public class TerrainModel {
                         Vector3 p3 = new Vector3(x1, y10, z0);
                         Vector3 p4 = new Vector3(x1, y11, z1);
 
-                        meshPartBuilders[bi][bj].triangle(p1, p2, p3);
-                        altMeshPartBuilders[bi][bj].triangle(p3, p2, p4);
+                        MeshPartBuilder mpb = modelBuilders[bi][bj].part("terrain", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, Materials.grassTextureMaterial);
+                        mpb.triangle(p1, p2, p3);
+
+                        //MeshPartBuilder mpb2 = modelBuilders[bi][bj].part("terrain_b", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, Materials.altGrassMaterial);
+                        mpb.triangle(p3, p2, p4);
                     }
                 terrainModel = modelBuilders[bi][bj].end();
                 terrainInstances[bi][bj] = new ModelInstance(terrainModel);

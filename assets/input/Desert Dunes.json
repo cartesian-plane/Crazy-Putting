@@ -1,0 +1,1 @@
+{"name":"Desert Dunes","courseProfile":"0*x + 0*y","range":10.0,"mass":0.0459,"gravitationalConstant":9.81,"kineticFrictionGrass":0.1,"staticFrictionGrass":0.1,"kineticFrictionSand":0.1,"staticFrictionSand":0.1,"maximumSpeed":100.0,"targetRadius":0.001,"targetXcoord":1.0,"targetYcoord":1.0,"ballXcoord":0.0,"ballYcoord":0.0}
