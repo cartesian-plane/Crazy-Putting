@@ -28,6 +28,10 @@ public class TerrainModel {
 
     private Expression expr;
 
+    /**
+     * Due to a vertex limit in the ModelBuilder class, the terrain is divided into multiple batches.
+     *
+     */
     public TerrainModel(Expression expr, float xMin, float xMax, float yMin, float yMax) {
 
         this.expr =  expr;
