@@ -33,6 +33,7 @@ public class CourseEditorStage extends Stage {
 
     private static Viewport viewport = new ScreenViewport();
     private Table table;
+    private ScrollPane scrollPane;
 
     private TextButton mainButton;
     private GolfCourse selectedCourse;
@@ -49,6 +50,10 @@ public class CourseEditorStage extends Stage {
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
+        scrollPane = new ScrollPane(table, skin);
+        scrollPane.setFillParent(true);
+        scrollPane.setScrollingDisabled(true, false);
+        this.addActor(scrollPane);
 
         selectedCourse = manager.selectedCourse;
         this.mainButton = new TextButton("Main Menu", skin);
