@@ -5,6 +5,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -34,6 +35,7 @@ public class GolfScreen extends ScreenAdapter {
 
     private ModelInstance golfBallInstance;
     private ModelBatch golfBallBatch;
+    private ModelBatch golfBallShadowBatch;
 
     private ModelInstance targetInstance;
     private ModelBatch targetBatch;
@@ -80,6 +82,7 @@ public class GolfScreen extends ScreenAdapter {
         golfBallInstance = golfBallModel.getModelInstance();
         golfBallBatch = new ModelBatch();
         golfBallInstance.transform.setTranslation((float) course.ballX(), 0f, (float) course.ballY());
+        golfBallShadowBatch = new ModelBatch(new DepthShaderProvider());
 
         // Create target model
         TargetModel targetModel = new TargetModel((float) course.targetRadius());
@@ -121,9 +124,15 @@ public class GolfScreen extends ScreenAdapter {
         StateVector4 state = iterator.next();
         var height = 0.05 + expr.setVariable("x", state.x()).setVariable("y", state.y()).evaluate();
         golfBallInstance.transform.setTranslation((float) state.x(), (float) height, (float) state.y());
+
+        golfBallShadowBatch.begin(camera);
+        golfBallShadowBatch.render(golfBallInstance);
+        golfBallShadowBatch.end();
+
         golfBallBatch.begin(camera);
         golfBallBatch.render(golfBallInstance, environment);
         golfBallBatch.end();
+
 
         // Render target
         targetBatch.begin(camera);
