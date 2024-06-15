@@ -28,7 +28,7 @@ public class ScreenManager extends ScreenAdapter {
 
     // very much temporary
     private CourseParser parser = new CourseParser(new File("input/sin(x)sin(y).json"));
-    private GolfCourse selectedCourse = parser.getCourse();
+    public GolfCourse selectedCourse = parser.getCourse();
 
     private Stage currentStage;
     private Screen currentScreen;
@@ -102,7 +102,7 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toCourseEditorScreen() {
         this.currentStage.dispose();
-        this.currentStage = new CourseEditorStage(this, selectedCourse);
+        this.currentStage = new CourseEditorStage(this);
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
@@ -119,9 +119,6 @@ public class ScreenManager extends ScreenAdapter {
         ApplicationController.main(new String[0]);
     }
 
-    public void setCourse(GolfCourse course) {
-        this.selectedCourse = course;
-    }
 
     public void exit() {
         Gdx.app.exit();
