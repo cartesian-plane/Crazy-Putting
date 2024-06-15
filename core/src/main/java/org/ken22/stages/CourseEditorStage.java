@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.input.courseinput.GolfCourseLoader;
 import org.ken22.screens.KeyboardNavigator;
 import org.ken22.screens.ScreenManager;
 
@@ -15,6 +17,8 @@ import static org.ken22.stages.UIElementFactory.createNumericalTextField;
 public class CourseEditorStage extends Stage {
     private ScreenManager manager;
 
+    private GolfCourse course;
+
     private Table table;
 
     private TextButton mainButton;
@@ -23,10 +27,11 @@ public class CourseEditorStage extends Stage {
     private TextButton courseEditor;
     private TextButton generalSettings;
 
-    public CourseEditorStage(ScreenManager manager) {
+    public CourseEditorStage(ScreenManager manager, GolfCourse course) {
         // if you don't do this viewport thing, the buttons won't look nice on high dpi displays
         super();
         this.manager = manager;
+        this.course = course;
 
         this.table = new Table();
         this.table.setFillParent(true);
