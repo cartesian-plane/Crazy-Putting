@@ -214,6 +214,8 @@ public class CourseEditorStage extends Stage {
                     e.printStackTrace();
                 }
 
+                manager.toMainStage();
+
             }
         });
 
