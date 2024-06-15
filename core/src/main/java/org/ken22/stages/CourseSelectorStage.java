@@ -39,7 +39,6 @@ public class CourseSelectorStage extends Stage {
         this.addActor(scrollPane);
 
         for (GolfCourse course : courses) {
-            System.out.println("course = " + course.name());
             Table coursePanel = createCoursePanel(course, skin);
             table.add(coursePanel).pad(10).row();
         }

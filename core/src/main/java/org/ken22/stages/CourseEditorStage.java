@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.input.courseinput.GolfCourseLoader;
 import org.ken22.screens.KeyboardNavigator;
 import org.ken22.screens.ScreenManager;
 
@@ -192,6 +193,11 @@ public class CourseEditorStage extends Stage {
                     parseCoordinates(ballCoordField.getText())[1]
                 );
 
+                var loader = GolfCourseLoader.getInstance();
+                // get the obj before it's changed
+                var courses = loader.getCourses();
+                int index = courses.indexOf(manager.selectedCourse);
+                courses.set(index, selectedCourse);
                 manager.selectedCourse = selectedCourse;
 
                 var mapper = new ObjectMapper();
