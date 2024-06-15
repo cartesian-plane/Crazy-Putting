@@ -1,41 +1,33 @@
 package org.ken22.stages;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.screens.KeyboardNavigator;
 import org.ken22.screens.ScreenManager;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import static org.ken22.stages.UIElementFactory.createNumericalTextField;
-import static org.ken22.utils.userinput.TextFieldUtils.parseCoordinates;
 
 public class CourseEditorStage extends Stage {
     private ScreenManager manager;
 
+    private GolfCourse course;
 
     private Table table;
 
     private TextButton mainButton;
-    private GolfCourse selectedCourse;
+    private TextButton saveButton;
 
-    public CourseEditorStage(ScreenManager manager) {
-        // if you don't do this viewport thing, the buttons won't look nice on high dpi displays
+    public CourseEditorStage(ScreenManager manager, GolfCourse course) {
         super();
         this.manager = manager;
+        this.course = course;
 
         this.table = new Table();
         this.table.setFillParent(true);
@@ -44,179 +36,114 @@ public class CourseEditorStage extends Stage {
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
+        TextField textField = new TextField("yellooow", skin);
+        textField.setMaxLength(30);
+        this.addActor(textField);
 
-        selectedCourse = manager.selectedCourse;
-        this.mainButton = new TextButton("Main Menu", skin);
-        var submit = new TextButton("Submit", skin);
-        submit.setColor(Color.GREEN);
+        this.mainButton = new TextButton("Back", skin);
+        this.saveButton = new TextButton("Save", skin);
 
-        table.defaults().pad(10).width(300).height(50);
-        table.add(mainButton);
-        table.add(submit);
-        // button set up and layout
-        // course parameter text fields & accompanying labels
-        var nameField = new TextField(selectedCourse.name(), skin);
+        // course parameter text fields
+        var nameField = new TextField("Example Golf Course", skin);
         var nameLabel = new Label("Name:", skin);
 
-        var functionField = new TextField(selectedCourse.courseProfile(), skin);
+        var functionField = new TextField("sin(x + y)", skin);
         functionField.setMaxLength(30);
         var functionLabel = new Label("Terrain function", skin);
 
-        //var rangeField = new TextField("0.5", skin);
-        var rangeField = createNumericalTextField(String.valueOf(selectedCourse.range()), skin);
+        var rangeField = createNumericalTextField("0.5", skin);
         var rangeLabel = new Label("Range:", skin);
 
         var massField = createNumericalTextField("0.0459", skin);
         var massLabel = new Label("Mass:", skin);
 
-        var gravitationalConstantField = createNumericalTextField(String.valueOf(selectedCourse.gravitationalConstant()), skin);
+        var gravitationalConstantField = createNumericalTextField("9.80665", skin);
         var gravitationalConstantLabel = new Label("Gravitational Constant:", skin);
 
-        var kineticFrictionGrassField = createNumericalTextField(String.valueOf(selectedCourse.kineticFrictionGrass()), skin);
+        var kineticFrictionGrassField = createNumericalTextField("0.15", skin);
         var kineticFrictionGrassLabel = new Label("Kinetic Friction Grass:", skin);
 
-        var staticFrictionGrassField = createNumericalTextField(String.valueOf(selectedCourse.staticFrictionGrass()), skin);
+        var staticFrictionGrassField = createNumericalTextField("0.3", skin);
         var staticFrictionGrassLabel = new Label("Static Friction Grass:", skin);
 
-        var kineticFrictionSandField = createNumericalTextField(String.valueOf(selectedCourse.kineticFrictionSand()), skin);
+        var kineticFrictionSandField = createNumericalTextField("0.8", skin);
         var kineticFrictionSandLabel = new Label("Kinetic Friction Sand:", skin);
 
-        var staticFrictionSandField = createNumericalTextField(String.valueOf(selectedCourse.staticFrictionSand()), skin);
+        var staticFrictionSandField = createNumericalTextField("0.9", skin);
         var staticFrictionSandLabel = new Label("Static Friction Sand:", skin);
 
-        var maximumVelocityField = createNumericalTextField(String.valueOf(selectedCourse.maximumSpeed()), skin);
+        var maximumVelocityField = createNumericalTextField("5", skin);
         var maximumVelocityLabel = new Label("Maximum Velocity:", skin);
 
-        var targetRadiusField = createNumericalTextField(String.valueOf(selectedCourse.targetRadius()), skin);
+        var targetRadiusField = createNumericalTextField("0.10", skin);
         var targetRadiusLabel = new Label("Target Radius:", skin);
 
-        String ballCoords = "(" + selectedCourse.ballX() + ", " + selectedCourse.ballY() + ")";
-        var ballCoordField = createNumericalTextField(ballCoords, skin);
+        var ballCoordField = createNumericalTextField("(2.0, 2.0)", skin);
         var ballCoordLabel = new Label("Ball Coordinates:", skin);
 
-        String holeCoords = "(" + selectedCourse.targetXcoord() + ", " + selectedCourse.targetYcoord() + ")";
-        var targetCoordField = createNumericalTextField(holeCoords, skin);
-        var targetCoordLabel = new Label("Hole Coordinates:", skin);
+        var holeCoordField = createNumericalTextField("(2.0, 0.5)", skin);
+        var holeCoordLabel = new Label("Hole Coordinates:", skin);
 
-        table.row();
-
-        this.table.add(nameLabel);
-        this.table.add(nameField);
-
-        table.row();
-
-        this.table.add(functionLabel);
-        this.table.add(functionField);
-
-        table.row();
-
-        this.table.add(rangeLabel);
-        this.table.add(rangeField);
-
-        table.row();
-
-        this.table.add(massLabel);
-        this.table.add(massField);
-
-        table.row();
-
-        this.table.add(gravitationalConstantLabel);
-        this.table.add(gravitationalConstantField);
-
-        table.row();
-
-        this.table.add(kineticFrictionGrassLabel);
-        this.table.add(kineticFrictionGrassField);
-
-        table.row();
-
-        this.table.add(staticFrictionGrassLabel);
-        this.table.add(staticFrictionGrassField);
-
-        table.row();
-
-        this.table.add(kineticFrictionSandLabel);
-        this.table.add(kineticFrictionSandField);
-
-        table.row();
-
-        this.table.add(staticFrictionSandLabel);
-        this.table.add(staticFrictionSandField);
-
-        table.row();
-
-        this.table.add(maximumVelocityLabel);
-        this.table.add(maximumVelocityField);
-
-        table.row();
-
-        this.table.add(targetRadiusLabel);
-        this.table.add(targetRadiusField);
-
-        table.row();
-
-        this.table.add(ballCoordLabel);
-        this.table.add(ballCoordField);
-
-        table.row();
-
-        this.table.add(targetCoordLabel);
-        this.table.add(targetCoordField);
-
-        table.row();
-
-
-        // button listeners
         this.mainButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 manager.toMainStage();
             }
         });
-        submit.addListener(new ClickListener() {
+
+
+
+
+        this.saveButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                selectedCourse = new GolfCourse(
-                    nameField.getText(),
-                    functionField.getText(),
-                    Double.parseDouble(rangeField.getText()),
-                    Double.parseDouble(massField.getText()),
-                    Double.parseDouble(gravitationalConstantField.getText()),
-                    Double.parseDouble(kineticFrictionGrassField.getText()),
-                    Double.parseDouble(staticFrictionGrassField.getText()),
-                    Double.parseDouble(kineticFrictionSandField.getText()),
-                    Double.parseDouble(staticFrictionSandField.getText()),
-                    Double.parseDouble(maximumVelocityField.getText()),
-                    Double.parseDouble(targetRadiusField.getText()),
-                    parseCoordinates(targetCoordField.getText())[0],
-                    parseCoordinates(targetCoordField.getText())[1],
-                    parseCoordinates(ballCoordField.getText())[0],
-                    parseCoordinates(ballCoordField.getText())[1]
-                );
-
-                var mapper = new ObjectMapper();
-                String jsonString;
-                try {
-                    jsonString = mapper.writeValueAsString(selectedCourse);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-//
-//                FileHandle dirHandle = Gdx.files.internal("");
-//                for (FileHandle entry: dirHandle.list()) {
-//                    System.out.println(entry.name());
-//                }
-
-
-
-                String filePath = "input/" + selectedCourse.name().trim() + ".json";
-                try {
-                    Files.writeString(Paths.get(filePath), jsonString);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                // still needs to save this somehow
+                manager.setSelectedCourse(course);
+                manager.toMainStage();
             }
         });
 
+        table.defaults().pad(10).width(300).height(50);
+
+        table.add(nameLabel).left();
+        table.add(nameField).left();
+        table.row();
+        table.add(functionLabel).left();
+        table.add(functionField).left();
+        table.row();
+        table.add(rangeLabel).left();
+        table.add(rangeField).left();
+        table.row();
+        table.add(massLabel).left();
+        table.add(massField).left();
+        table.row();
+        table.add(gravitationalConstantLabel).left();
+        table.add(gravitationalConstantField).left();
+        table.row();
+        table.add(kineticFrictionGrassLabel).left();
+        table.add(kineticFrictionGrassField).left();
+        table.row();
+        table.add(staticFrictionGrassLabel).left();
+        table.add(staticFrictionGrassField).left();
+        table.row();
+        table.add(kineticFrictionSandLabel).left();
+        table.add(kineticFrictionSandField).left();
+        table.row();
+        table.add(staticFrictionSandLabel).left();
+        table.add(staticFrictionSandField).left();
+        table.row();
+        table.add(maximumVelocityLabel).left();
+        table.add(maximumVelocityField).left();
+        table.row();
+        table.add(targetRadiusLabel).left();
+        table.add(targetRadiusField).left();
+        table.row();
+        table.add(ballCoordLabel).left();
+        table.add(ballCoordField).left();
+        table.row();
+        table.add(holeCoordLabel).left();
+        table.add(holeCoordField).left();
+        table.row();
+        table.add(mainButton).padTop(20).left();
+        table.add(saveButton).padTop(20).left();
 
         var textFields = new ArrayList<TextField>();
         for (Actor actor : table.getChildren()) {
@@ -224,7 +151,6 @@ public class CourseEditorStage extends Stage {
                 textFields.add((TextField) actor);
             }
         }
-
 
         KeyboardNavigator keyboardNavigator = new KeyboardNavigator(this);
         Gdx.input.setInputProcessor(keyboardNavigator);

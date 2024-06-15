@@ -36,6 +36,9 @@ public class MainStage extends Stage {
     private TextButton odeSolverButton;
     private TextButton exitButton;
 
+
+
+
     public MainStage(ScreenManager manager) {
         super(viewport);
 
@@ -52,8 +55,7 @@ public class MainStage extends Stage {
 
         playButton = UIElementFactory.createStyledButton("Play", skin, Color.GREEN, () -> manager.toGolfScreen());
 
-
-        //premade levels
+        // premade levels
         courseSelectorButton = UIElementFactory.createStyledButton("Course Selector", skin, null, () -> {
             List<GolfCourse> courses = Arrays.asList(
                 new GolfCourse("Mountain Peak", "sin(x) * cos(y)", 100, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 50, 50, 10, 10),
@@ -91,8 +93,21 @@ public class MainStage extends Stage {
         buttonTable.row();
         buttonTable.add(exitButton).padTop(30).center();
 
-        // info table about level
-        GolfCourse selectedCourse = manager.selectedCourse;
+        updateInfoTable();
+
+        mainTable.add(buttonTable).expand().fill().left();
+        mainTable.add(infoTable).expand().fill().right();
+    }
+
+
+
+
+    //info table
+    public void updateInfoTable() {
+        infoTable.clear();
+        Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
+
+        GolfCourse selectedCourse = manager.getSelectedCourse();
         if (selectedCourse != null) {
             infoTable.add(new Label("Selected Course: " + selectedCourse.name(), skin)).row();
             infoTable.add(new Label("Height Profile: " + selectedCourse.courseProfile(), skin)).row();
@@ -105,10 +120,10 @@ public class MainStage extends Stage {
         infoTable.add(new Label("ODE Solver: " + Settings.getInstance().getOdeSolver(), skin)).row();
         infoTable.add(new Label("Step Size: " + Settings.getInstance().getStepSize(), skin)).row();
         infoTable.add(new Label("Differentiation: " + Settings.getInstance().getDifferentiation(), skin)).row();
-
-        mainTable.add(buttonTable).expand().fill().left();
-        mainTable.add(infoTable).expand().fill().right();
     }
+
+
+
 
     @Override
     public void draw() {

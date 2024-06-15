@@ -9,18 +9,18 @@ import org.ken22.Application;
 import org.ken22.controller.ApplicationController;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.input.courseinput.Settings;
 import org.ken22.stages.*;
 
 import java.io.File;
 import java.util.List;
 import java.util.ArrayList;
 
-
 /**
  * Screen adaptor class for managing active screens and stages.
- * Exists because the libGDX Game class does not support settign an active stage.
+ * Exists because the libGDX Game class does not support setting an active stage.
  * We work around this calling the render method of the active stage/screen in this class, and
- * setting this as the only active screen in Apllication extends Game.
+ * setting this as the only active screen in Application extends Game.
  * Ideally each stage would be "event"-rendered, instead of rerendered every frame, but this is the most practical solution.
  */
 public class ScreenManager extends ScreenAdapter {
@@ -28,11 +28,11 @@ public class ScreenManager extends ScreenAdapter {
 
     // very much temporary
     private CourseParser parser = new CourseParser(new File("input/sin(x)sin(y).json"));
-    public GolfCourse selectedCourse = parser.getCourse();
+    private GolfCourse selectedCourse = parser.getCourse();
 
     private Stage currentStage;
     private Screen currentScreen;
-    private boolean isStage = true; //whether current is a stage or a screen
+    private boolean isStage = true; // whether current is a stage or a screen
 
     private KeyboardNavigator keyboardNavigator;
 
@@ -49,7 +49,7 @@ public class ScreenManager extends ScreenAdapter {
     public void render(float deltaTime) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        if(this.isStage) {
+        if (this.isStage) {
             this.currentStage.act(deltaTime);
             this.currentStage.draw();
         } else {
@@ -59,14 +59,14 @@ public class ScreenManager extends ScreenAdapter {
 
     @Override
     public void resize(int width, int height) {
-        if(this.isStage) {
+        if (this.isStage) {
             this.currentStage.getViewport().update(width, height, true);
         }
     }
 
     /// transitions
     public void toGolfScreen() {
-        if(this.currentScreen != null) this.currentScreen.dispose();
+        if (this.currentScreen != null) this.currentScreen.dispose();
         this.currentScreen = new GolfScreen(selectedCourse);
         this.isStage = false;
         // Gdx.input.setInputProcessor(this.currentScreen);
@@ -74,9 +74,11 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toMainStage() {
         this.currentStage.dispose();
-        this.currentStage = new MainStage(this);
+        MainStage mainStage = new MainStage(this);
+        this.currentStage = mainStage;
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
+        mainStage.updateInfoTable();
     }
 
     public void toSettingsStage() {
@@ -102,7 +104,7 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toCourseEditorScreen() {
         this.currentStage.dispose();
-        this.currentStage = new CourseEditorStage(this);
+        this.currentStage = new CourseEditorStage(this, selectedCourse);
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
@@ -119,6 +121,25 @@ public class ScreenManager extends ScreenAdapter {
         ApplicationController.main(new String[0]);
     }
 
+
+    //for main menu info table
+    public GolfCourse getSelectedCourse() {
+        return selectedCourse;
+    }
+
+    public void setSelectedCourse(GolfCourse course) {
+        this.selectedCourse = course;
+        Settings.getInstance().setSelectedCourse(course);
+        refreshMainStage();
+    }
+
+    public void refreshMainStage() {
+        this.currentStage.dispose();
+        MainStage mainStage = new MainStage(this);
+        this.currentStage = mainStage;
+        Gdx.input.setInputProcessor(mainStage);
+        mainStage.updateInfoTable();
+    }
 
     public void exit() {
         Gdx.app.exit();

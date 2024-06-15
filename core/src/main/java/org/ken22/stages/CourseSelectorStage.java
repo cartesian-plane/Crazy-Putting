@@ -12,8 +12,6 @@ import org.ken22.screens.ScreenManager;
 
 import java.util.ArrayList;
 
-
-
 public class CourseSelectorStage extends Stage {
     private ScreenManager manager;
     private ArrayList<GolfCourse> courses;
@@ -30,7 +28,6 @@ public class CourseSelectorStage extends Stage {
         this.table = new Table();
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
-
         scrollPane = new ScrollPane(table, skin);
         scrollPane.setFillParent(true);
         scrollPane.setScrollingDisabled(true, false);
@@ -41,8 +38,6 @@ public class CourseSelectorStage extends Stage {
             Table coursePanel = createCoursePanel(course, skin);
             table.add(coursePanel).pad(10).row();
         }
-
-
 
         TextButton addButton = new TextButton("+", skin);
         addButton.addListener(new ClickListener() {
@@ -66,7 +61,7 @@ public class CourseSelectorStage extends Stage {
 
 
 
-    //creating course panel
+    // creating course panel
     private Table createCoursePanel(GolfCourse course, Skin skin) {
         Table coursePanel = new Table(skin);
         coursePanel.setBackground("default-round");
@@ -81,7 +76,7 @@ public class CourseSelectorStage extends Stage {
         selectButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                manager.selectedCourse = course;
+                manager.setSelectedCourse(course);
                 manager.toMainStage();
             }
         });
@@ -90,7 +85,7 @@ public class CourseSelectorStage extends Stage {
         return coursePanel;
     }
 
-    //adding the new level
+    // adding the new level
     private void showAddCourseDialog(Skin skin) {
         Dialog dialog = new Dialog("Add Course", skin);
         Table contentTable = dialog.getContentTable();
@@ -148,8 +143,6 @@ public class CourseSelectorStage extends Stage {
 
         dialog.show(this);
     }
-
-
 
     @Override
     public void dispose() {
