@@ -203,7 +203,7 @@ public class CourseEditorStage extends Stage {
                 var mapper = new ObjectMapper();
                 String jsonString;
                 try {
-                    jsonString = mapper.writeValueAsString(selectedCourse);
+                    jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(selectedCourse);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
