@@ -24,8 +24,13 @@ public class Minimap {
 
         this.xMin = (float) expr.setVariable("x", 0).setVariable("y", 0).evaluate();
         this.xMax = (float) expr.setVariable("x", WIDTH).setVariable("y", 0).evaluate();
-        this.yMin = (float) expr.setVariable("x", 0).setVariable("y", HEIGHT).evaluate();
-        this.yMax = (float) expr.setVariable("x", WIDTH).setVariable("y", HEIGHT).evaluate();
+        this.yMin = (float) expr.setVariable("x", 0).setVariable("y", 0).evaluate();
+        this.yMax = (float) expr.setVariable("x", 0).setVariable("y", HEIGHT).evaluate();
+
+        System.out.println("xMax = " + xMax);
+        System.out.println("xMin = " + xMin);
+        System.out.println("yMax = " + yMax);
+        System.out.println("yMin = " + yMin);
 
         // height for pixel (i, j) //includint projection into pixels
         // expr.setVariable("x", xMin + (xMax - xMin) * i  / WIDTH)
@@ -70,9 +75,10 @@ public class Minimap {
         for (int i = 0; i < 100; i++) {
             for (int j = 0; j < 100; j++) {
                 double gray = heightMap[i][j] * 255;
-                Color color = new Color((float) gray, (float) gray, (float) gray, 1);
-
-                System.out.println(color);
+                if (i==0 && j == 0) {
+                    System.out.println("Heightmap[0][0]: " + heightMap[i][j]);
+                }
+                Color color = new Color((float) gray / 255, (float) gray / 255, (float) gray / 255, 1);
 
                 pixmap.setColor(color);
                 pixmap.drawPixel(i, j);

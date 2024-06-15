@@ -150,7 +150,11 @@ public class HeightMapGenerator {
 
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
+
                 int gray = (int) (heightMap[i][j] * 255);
+                if (i==0 && j == 0) {
+                    System.out.println("Heightmap[0][0]: " + heightMap[i][j]);
+                }
                 int rgb = (gray << 16) | (gray << 8) | gray;
                 image.setRGB(i, j, rgb);
             }

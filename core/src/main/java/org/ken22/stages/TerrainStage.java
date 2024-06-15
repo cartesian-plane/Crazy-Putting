@@ -40,6 +40,7 @@ public class TerrainStage extends Stage {
         Minimap minimap = new Minimap(GolfExpression.expr(manager.selectedCourse));
         Pixmap p = minimap.createPixmapFromHaightMap();
         Image image = new Image(new Texture(p));
+        image.setScale(10f);
 
         // Create a back button
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
@@ -65,6 +66,12 @@ public class TerrainStage extends Stage {
         image.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Clicked on minimap: " + x + ", " + y);
+                System.out.println("World coord: ");
+                var unprojectedX = minimap.unproject((int)x);
+                var unprojectedY = minimap.unproject((int) y);
+                System.out.print(unprojectedX + ",");
+                System.out.print(unprojectedY);
+
             }
         });
         this.table.add(backButton);
