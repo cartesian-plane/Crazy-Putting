@@ -81,7 +81,7 @@ public class CourseSelectorStage extends Stage {
         selectButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Settings.getInstance().setSelectedCourse(course);
+                manager.setCourse(course);
                 manager.toMainStage();
             }
         });

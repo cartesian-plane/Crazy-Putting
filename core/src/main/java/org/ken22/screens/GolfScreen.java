@@ -1,6 +1,7 @@
 package org.ken22.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
@@ -42,7 +43,10 @@ public class GolfScreen extends ScreenAdapter {
 
     private Environment environment;
 
-    PhysicsEngine.FrameRateIterator iterator;
+    private SimplePlanarApproximationBot simpleBot = new SimplePlanarApproximationBot();
+
+    private PhysicsEngine engine;
+    private PhysicsEngine.FrameRateIterator iterator;
 
     private GolfCourse course;
     private Expression expr;
@@ -104,9 +108,8 @@ public class GolfScreen extends ScreenAdapter {
         controller.update();
 
         //test physics
-        PhysicsEngine engine = new PhysicsEngine(course);
-        var bot = new SimplePlanarApproximationBot();
-        engine.setState(bot.play(engine.getState(), course));
+        engine = new PhysicsEngine(course);
+        engine.setState(simpleBot.play(engine.getState(), course));
         iterator = engine.iterator();
     }
 
@@ -124,15 +127,12 @@ public class GolfScreen extends ScreenAdapter {
         StateVector4 state = iterator.next();
         var height = 0.05 + expr.setVariable("x", state.x()).setVariable("y", state.y()).evaluate();
         golfBallInstance.transform.setTranslation((float) state.x(), (float) height, (float) state.y());
-
         golfBallShadowBatch.begin(camera);
         golfBallShadowBatch.render(golfBallInstance);
         golfBallShadowBatch.end();
-
         golfBallBatch.begin(camera);
         golfBallBatch.render(golfBallInstance, environment);
         golfBallBatch.end();
-
 
         // Render target
         targetBatch.begin(camera);
@@ -159,6 +159,11 @@ public class GolfScreen extends ScreenAdapter {
         waterBatch.begin(camera);
         waterBatch.render(waterInstance, environment);
         waterBatch.end();
+
+        // test input
+        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            engine.setState(simpleBot.play(engine.getState(), course));
+        }
     }
 
     @Override

@@ -119,6 +119,10 @@ public class ScreenManager extends ScreenAdapter {
         ApplicationController.main(new String[0]);
     }
 
+    public void setCourse(GolfCourse course) {
+        this.selectedCourse = course;
+    }
+
     public void exit() {
         Gdx.app.exit();
     }
