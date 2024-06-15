@@ -15,13 +15,15 @@ import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.input.courseinput.GolfCourseLoader;
 import org.ken22.screens.KeyboardNavigator;
 import org.ken22.screens.ScreenManager;
+import org.ken22.utils.userinput.TextFieldType;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import static org.ken22.stages.UIElementFactory.createNumericalTextField;
+import static org.ken22.utils.userinput.UIElementFactory.createNumericalTextField;
+import static org.ken22.utils.userinput.UIElementFactory.createTextField;
 import static org.ken22.utils.userinput.TextFieldUtils.parseCoordinates;
 
 public class CourseEditorStage extends Stage {
@@ -64,6 +66,7 @@ public class CourseEditorStage extends Stage {
         var nameField = new TextField(selectedCourse.name(), skin);
         var nameLabel = new Label("Name:", skin);
 
+
         var functionField = new TextField(selectedCourse.courseProfile(), skin);
         functionField.setMaxLength(30);
         var functionLabel = new Label("Terrain function", skin);
@@ -75,7 +78,11 @@ public class CourseEditorStage extends Stage {
         var massField = createNumericalTextField("0.0459", skin);
         var massLabel = new Label("Mass:", skin);
 
-        var gravitationalConstantField = createNumericalTextField(String.valueOf(selectedCourse.gravitationalConstant()), skin);
+        // these all need to be replaced with the crateTextField() method, because there is a bug with the old approach
+        var gravitationalConstantField = createTextField(String.valueOf(selectedCourse.gravitationalConstant()),
+                TextFieldType.NUMERICAL);
+        // var gravitationalConstantField =
+            createNumericalTextField(String.valueOf(selectedCourse.gravitationalConstant()), skin);
         var gravitationalConstantLabel = new Label("Gravitational Constant:", skin);
 
         var kineticFrictionGrassField = createNumericalTextField(String.valueOf(selectedCourse.kineticFrictionGrass()), skin);

@@ -1,22 +1,24 @@
 package org.ken22.stages;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.ken22.models.Minimap;
+import org.ken22.obstacles.Tree;
+import org.ken22.obstacles.TreePlanter;
+import org.ken22.physics.utils.PhysicsUtils;
 import org.ken22.screens.ScreenManager;
 import org.ken22.utils.GolfExpression;
 
+import static org.ken22.utils.userinput.UIElementFactory.createTextField;
+import static org.ken22.utils.userinput.TextFieldType.*;
 
 public class TerrainStage extends Stage {
 
@@ -26,6 +28,8 @@ public class TerrainStage extends Stage {
     private Table table;
     private ScrollPane scrollPane;
     private TextButton backButton;
+
+    private TreePlanter treePlanter;
 
     public TerrainStage(ScreenManager manager) {
         super(viewport);
@@ -60,21 +64,30 @@ public class TerrainStage extends Stage {
             }
         });
 
+
+        var radiusField = createTextField(String.valueOf(0.01), NUMERICAL);
+        var radiusLabel = new Label("Tree Radius:", skin);
+
         // Add actors to the table
         this.table.defaults().pad(10);
         this.table.add(image).colspan(2).row();
-        image.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Clicked on minimap: " + x + ", " + y);
-                System.out.println("World coord: ");
-                var unprojectedX = minimap.unproject((int)x);
-                var unprojectedY = minimap.unproject((int) y);
-                System.out.print(unprojectedX + ",");
-                System.out.print(unprojectedY);
+        this.table.add(radiusLabel);
+        this.table.add(radiusField);
 
-            }
-        });
+        table.row();
         this.table.add(backButton);
+        treePlanter = new TreePlanter();
+        var trees = treePlanter.trees;
+
+
+        table.row();
+        var coordinatesLabel = new Label("placeholder", skin);
+        table.add(coordinatesLabel);
+
+        var minimapListener = new MinimapListener(minimap, trees, radiusField, coordinatesLabel);
+        image.addListener(minimapListener);
+
+
     }
 
     @Override

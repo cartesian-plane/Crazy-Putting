@@ -1,5 +1,6 @@
-package org.ken22.stages;
+package org.ken22.utils.userinput;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -35,6 +36,40 @@ public class UIElementFactory {
             }
         });
         return button;
+    }
+
+    public static TextField createTextField(String text, TextFieldType type) {
+        var skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
+        var textField = new TextField(text, skin);
+
+
+        switch (type) {
+            case NUMERICAL -> {
+                TextField.TextFieldFilter decimalFilter = new TextField.TextFieldFilter() {
+                    @Override
+                    public boolean acceptChar(TextField textField, char c) {
+                        // Allow only digits and a single decimal point
+                        if (Character.isDigit(c) || (c == '.' && !textField.getText().contains("."))) {
+                            return true;
+                        }
+                        return false;
+                    }
+                };
+
+                textField.setTextFieldFilter(decimalFilter);
+            }
+
+            case ALPHANUMERIC -> {}
+
+        }
+
+        return textField;
+    }
+
+    public static TextField createNumericalTextField(String text) {
+        var skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
+
+        return createNumericalTextField(text, skin);
     }
 
     public static TextField createNumericalTextField(String text, Skin skin) {
