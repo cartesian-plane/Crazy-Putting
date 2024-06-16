@@ -123,7 +123,6 @@ public class GolfScreen extends ScreenAdapter {
 
         //test physics
         engine = new PhysicsEngine(course);
-        engine.setState(simpleBot.play(engine.getState(), course));
         iterator = engine.iterator();
     }
 
@@ -139,6 +138,7 @@ public class GolfScreen extends ScreenAdapter {
 
         // Render golf ball
         StateVector4 state = iterator.next();
+        System.out.println(state.x() + " " + state.y());
         var height = 0.05 + expr.setVariable("x", state.x()).setVariable("y", state.y()).evaluate();
         golfBallInstance.transform.setTranslation((float) state.x(), (float) height, (float) state.y());
         golfBallShadowBatch.begin(camera);

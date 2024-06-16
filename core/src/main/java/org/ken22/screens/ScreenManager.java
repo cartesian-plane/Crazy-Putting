@@ -29,7 +29,7 @@ public class ScreenManager extends ScreenAdapter {
     private Settings settings;
 
     // very much temporary
-    private CourseParser parser = new CourseParser(new File("input/sin(x)sin(y).json"));
+    private CourseParser parser = new CourseParser(new File("input/sin(x)sin(y).json")); //default course
     public GolfCourse selectedCourse = parser.getCourse();
 
     private Stage currentStage;

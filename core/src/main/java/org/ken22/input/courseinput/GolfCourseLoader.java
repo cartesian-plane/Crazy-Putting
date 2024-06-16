@@ -35,6 +35,10 @@ public class GolfCourseLoader {
         if (instance == null) {
             instance = new GolfCourseLoader();
         }
+
+        for(GolfCourse course : instance.getCourses()) {
+            System.out.println(course.name());
+        }
         return instance;
     }
 

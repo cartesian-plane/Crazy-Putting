@@ -42,13 +42,12 @@ public class TerrainStage extends Stage {
 
         // Create minimap
         Minimap minimap = new Minimap(GolfExpression.expr(manager.selectedCourse));
-        Pixmap p = minimap.createPixmapFromHaightMap();
+        Pixmap p = minimap.pixmap();
         Image image = new Image(new Texture(p));
-        image.setScale(10f);
+        image.setScale(1f);
 
         // Create a back button
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
-
 
         scrollPane = new ScrollPane(table, skin);
         scrollPane.setFillParent(true);
@@ -57,13 +56,11 @@ public class TerrainStage extends Stage {
         this.addActor(scrollPane);
 
         this.backButton = new TextButton("Back", skin);
-
         this.backButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 manager.toMainStage();
             }
         });
-
 
         var radiusField = createTextField(String.valueOf(0.01), NUMERICAL);
         var radiusLabel = new Label("Tree Radius:", skin);
@@ -86,8 +83,6 @@ public class TerrainStage extends Stage {
 
         var minimapListener = new MinimapListener(minimap, trees, radiusField, coordinatesLabel);
         image.addListener(minimapListener);
-
-
     }
 
     @Override
