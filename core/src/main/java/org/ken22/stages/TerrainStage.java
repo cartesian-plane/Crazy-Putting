@@ -1,7 +1,6 @@
 package org.ken22.stages;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,9 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.ken22.models.Minimap;
-import org.ken22.obstacles.Tree;
-import org.ken22.obstacles.TreePlanter;
-import org.ken22.physics.utils.PhysicsUtils;
 import org.ken22.screens.ScreenManager;
 import org.ken22.utils.GolfExpression;
 
@@ -28,8 +24,6 @@ public class TerrainStage extends Stage {
     private Table table;
     private ScrollPane scrollPane;
     private TextButton backButton;
-
-    private TreePlanter treePlanter;
 
     public TerrainStage(ScreenManager manager) {
         super(viewport);
@@ -73,9 +67,9 @@ public class TerrainStage extends Stage {
 
         table.row();
         this.table.add(backButton);
-        treePlanter = new TreePlanter();
-        var trees = treePlanter.trees;
 
+        var golfCourse = manager.selectedCourse;
+        var trees = golfCourse.trees;
 
         table.row();
         var coordinatesLabel = new Label("placeholder", skin);
