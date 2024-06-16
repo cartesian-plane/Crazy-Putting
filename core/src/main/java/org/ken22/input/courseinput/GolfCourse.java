@@ -1,40 +1,46 @@
 package org.ken22.input.courseinput;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.ken22.obstacles.Tree;
 
+import java.util.List;
 import java.util.Objects;
 
-public final class GolfCourse {
+public  class GolfCourse {
     @JsonProperty("name")
-    public final String name;
+    public String name;
     @JsonProperty("courseProfile")
-    public final String courseProfile;
+    public String courseProfile;
     @JsonProperty("range")
-    public final double range;
+    public double range;
     @JsonProperty("mass")
-    public final double mass;
+    public double mass;
     @JsonProperty("gravitationalConstant")
-    public final double gravitationalConstant;
+    public double gravitationalConstant;
     @JsonProperty("kineticFrictionGrass")
-    public final double kineticFrictionGrass;
+    public double kineticFrictionGrass;
     @JsonProperty("staticFrictionGrass")
-    public final double staticFrictionGrass;
+    public double staticFrictionGrass;
     @JsonProperty("kineticFrictionSand")
-    public final double kineticFrictionSand;
+    public double kineticFrictionSand;
     @JsonProperty("staticFrictionSand")
-    public final double staticFrictionSand;
+    public double staticFrictionSand;
     @JsonProperty("maximumSpeed")
-    public final double maximumSpeed;
+    public double maximumSpeed;
     @JsonProperty("targetRadius")
-    public final double targetRadius;
+    public double targetRadius;
     @JsonProperty("targetXcoord")
-    public final double targetXcoord;
+    public double targetXcoord;
     @JsonProperty("targetYcoord")
-    public final double targetYcoord;
+    public double targetYcoord;
     @JsonProperty("ballXcoord")
-    public final double ballX;
+    public double ballX;
     @JsonProperty("ballYcoord")
-    public final double ballY;
+    public double ballY;
+    // obstacles
+
+    public List<Tree> trees;
+
 
     public GolfCourse(
         @JsonProperty("name") String name,
