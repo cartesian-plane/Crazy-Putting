@@ -21,9 +21,12 @@ public class TerrainStage extends Stage {
     private ScreenManager manager;
 
     private static Viewport viewport = new ScreenViewport();
+
     private Table table;
     private ScrollPane scrollPane;
     private TextButton backButton;
+
+    private Minimap minimap;
 
     public TerrainStage(ScreenManager manager) {
         super(viewport);
@@ -35,10 +38,8 @@ public class TerrainStage extends Stage {
         this.addActor(table);
 
         // Create minimap
-        Minimap minimap = new Minimap(GolfExpression.expr(manager.selectedCourse));
-        Pixmap p = minimap.pixmap();
-        Image image = new Image(new Texture(p));
-        image.setScale(1f);
+        minimap = new Minimap(manager.selectedCourse);
+        minimap.image.setScale(1f);
 
         // Create a back button
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
@@ -61,10 +62,10 @@ public class TerrainStage extends Stage {
 
         // Add actors to the table
         this.table.defaults().pad(10);
-        this.table.add(image).colspan(2).row();
+        this.table.add(minimap.image).colspan(2).row();
         this.table.add(radiusLabel);
         this.table.add(radiusField);
-
+        ;
         table.row();
         this.table.add(backButton);
 
@@ -75,8 +76,8 @@ public class TerrainStage extends Stage {
         var coordinatesLabel = new Label("placeholder", skin);
         table.add(coordinatesLabel);
 
-        var minimapListener = new MinimapListener(minimap, trees, radiusField, coordinatesLabel);
-        image.addListener(minimapListener);
+        var minimapListener = new MinimapListener(minimap, golfCourse, radiusField, coordinatesLabel);
+        minimap.image.addListener(minimapListener);
     }
 
     @Override
