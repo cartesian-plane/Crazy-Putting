@@ -56,6 +56,8 @@ public class GolfScreen extends ScreenAdapter {
     private GolfCourse course;
     private Expression expr;
 
+
+
     /**
      * Everything in GolfScreen is initialized here, rather than in the show() method.
      * This is because the show() method is only called when the screen is set as the current screen
@@ -137,10 +139,18 @@ public class GolfScreen extends ScreenAdapter {
         camera.update();
 
         // Render golf ball
-        StateVector4 state = iterator.next();
-        System.out.println(state.x() + " " + state.y());
-        var height = 0.05 + expr.setVariable("x", state.x()).setVariable("y", state.y()).evaluate();
-        golfBallInstance.transform.setTranslation((float) state.x(), (float) height, (float) state.y());
+        double height;
+        if (iterator.hasNext()){
+            StateVector4 state = iterator.next();
+            System.out.println(state.x() + " " + state.y());
+            height = 0.05 + expr.setVariable("x", state.x()).setVariable("y", state.y()).evaluate();
+            golfBallInstance.transform.setTranslation((float) state.x(), (float) height, (float) state.y());
+        } else {
+            StateVector4 state = iterator.last();
+            height = 0.05 + expr.setVariable("x", state.x()).setVariable("y", state.y()).evaluate();
+            golfBallInstance.transform.setTranslation((float) state.x(), 0.05f, (float) state.y());
+        }
+
         golfBallShadowBatch.begin(camera);
         golfBallShadowBatch.render(golfBallInstance);
         golfBallShadowBatch.end();

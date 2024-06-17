@@ -237,6 +237,10 @@ public class PhysicsEngine {
             }
             return trajectory.getLast();
         }
+
+        public StateVector4 last() {
+            return trajectory.get(trajectory.size() - 1);
+        }
     }
 
     public ArrayList<StateVector4> getTrajectory() {
@@ -269,6 +273,13 @@ public class PhysicsEngine {
     }
 
     public void setState(StateVector4 stateVector) {
+        if(stateVector == null) {
+            throw new IllegalArgumentException("State vector cannot be null");
+        }
+        if(stateVector.vx() == 0.0 && stateVector.vy() == 0.0) {
+            throw new IllegalArgumentException("State vector cannot have zero velocity");
+        }
+
         this.trajectory.clear();
         this.trajectory.add(stateVector);
     }
