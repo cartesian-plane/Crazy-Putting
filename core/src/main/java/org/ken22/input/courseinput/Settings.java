@@ -15,6 +15,7 @@ public class Settings {
         // default settings
         odeSolver = "Runge Kutta 4";
         stepSize = 0.01;
+        differentiator = "Five Point Centered Difference";
         differentiation = 0.01;
         simplifiedPhysics = true;
         allowPlaying = true;
@@ -41,6 +42,14 @@ public class Settings {
 
     public void setStepSize(double stepSize) {
         this.stepSize = stepSize;
+    }
+
+    public String getDifferentiator() {
+        return differentiator;
+    }
+
+    public void setDifferentiator(String differentiator) {
+        this.differentiator = differentiator;
     }
 
     public double getDifferentiation() {

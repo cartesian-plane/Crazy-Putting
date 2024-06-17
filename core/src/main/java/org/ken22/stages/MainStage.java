@@ -105,6 +105,7 @@ public class MainStage extends Stage {
 
         infoTable.add(new Label("ODE Solver: " + Settings.getInstance().getOdeSolver(), skin)).row();
         infoTable.add(new Label("Step Size: " + Settings.getInstance().getStepSize(), skin)).row();
+        infoTable.add(new Label("Differentiation: " + Settings.getInstance().getDifferentiator(), skin)).row();
         infoTable.add(new Label("Differentiation: " + Settings.getInstance().getDifferentiation(), skin)).row();
 
         mainTable.add(buttonTable).expand().fill().left();

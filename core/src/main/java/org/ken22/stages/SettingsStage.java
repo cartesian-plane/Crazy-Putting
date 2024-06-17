@@ -18,6 +18,7 @@ public class SettingsStage extends Stage {
     private Table table;
     private ScrollPane scrollPane;
     private SelectBox<String> odeSolverBox;
+    private SelectBox<String> differentiatorBox;
 
     private Skin skin;
 
@@ -25,7 +26,6 @@ public class SettingsStage extends Stage {
     private TextField differentiationField;
     private CheckBox simplifiedPhysicsCheckBox;
     private CheckBox allowPlayingCheckBox;
-
 
     public SettingsStage(ScreenManager manager) {
         super(viewport);
@@ -40,9 +40,6 @@ public class SettingsStage extends Stage {
         scrollPane.setScrollingDisabled(true, false);
 
         this.addActor(scrollPane);
-
-
-
 
         // ODE solver
         table.add(new Label("ODE Solver", skin)).pad(10);
@@ -59,6 +56,12 @@ public class SettingsStage extends Stage {
         table.add(new Label("Differentiation", skin)).pad(10);
         differentiationField = new TextField("", skin);
         table.add(differentiationField).pad(10).row();
+
+        // differentiator type
+        table.add(new Label("Differentiator", skin)).pad(10);
+        differentiatorBox = new SelectBox<>(skin);
+        differentiatorBox.setItems("Three Point Centered Difference", "Five Point Centered Difference");
+        table.add(differentiatorBox).pad(10).row();
 
         // physics
         simplifiedPhysicsCheckBox = new CheckBox(" Simplified Physics", skin);
@@ -90,23 +93,24 @@ public class SettingsStage extends Stage {
         loadSettings();
     }
 
-
-    //save settings
+    // save settings
     private void saveSettings() {
         Settings settings = Settings.getInstance();
         settings.setOdeSolver(odeSolverBox.getSelected());
         settings.setStepSize(Double.parseDouble(stepSizeField.getText()));
         settings.setDifferentiation(Double.parseDouble(differentiationField.getText()));
+        settings.setDifferentiator(differentiatorBox.getSelected());
         settings.setSimplifiedPhysics(simplifiedPhysicsCheckBox.isChecked());
         settings.setAllowPlaying(allowPlayingCheckBox.isChecked());
     }
 
-    //load settings
+    // load settings
     private void loadSettings() {
         Settings settings = Settings.getInstance();
         odeSolverBox.setSelected(settings.getOdeSolver());
         stepSizeField.setText(Double.toString(settings.getStepSize()));
         differentiationField.setText(Double.toString(settings.getDifferentiation()));
+        differentiatorBox.setSelected(settings.getDifferentiator());
         simplifiedPhysicsCheckBox.setChecked(settings.isSimplifiedPhysics());
         allowPlayingCheckBox.setChecked(settings.isAllowPlaying());
     }
