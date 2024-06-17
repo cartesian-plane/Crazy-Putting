@@ -10,6 +10,16 @@ public class PhysicsUtils {
         return Math.sqrt(x * x + y * y);
     }
 
+    /**
+     * Returns the magnitude (L2 norm) of a given 2-d vector represented as an array of doubles.
+     *
+     * @param vector array of doubles
+     * @return the magnitude (L2 norm) of the given vector
+     */
+    public static double magnitude(double[] vector) {
+        return magnitude(vector[0], vector[1]);
+    }
+
     public static double xSlope(double xCoord, double yCoord, double h,
                                 Expression expr, Differentiator differentiator) {
         // Define the univariate functions at the x coordinate
