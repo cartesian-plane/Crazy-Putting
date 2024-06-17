@@ -21,7 +21,26 @@ import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.SimplePlanarApproximationBot;
 import org.ken22.utils.GolfExpression;
 
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class GolfScreen extends ScreenAdapter {
+
+    private static final Logger LOGGER = Logger.getLogger(GolfScreen.class.getName());
+    static {
+
+        // the default level is INFO
+        // if you want to change logging, just change the enum type at (1) and (2)
+        // https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html
+        LOGGER.setLevel(Level.FINER); // (1)
+
+
+        Handler consoleHandler = new ConsoleHandler();
+        consoleHandler.setLevel(Level.FINE); // (2)
+        LOGGER.addHandler(consoleHandler);
+    }
     private static float PADDING_SIZE = 2.5f;
     private float xMin, xMax, yMin, yMax;
 
@@ -142,7 +161,8 @@ public class GolfScreen extends ScreenAdapter {
         double height;
         if (iterator.hasNext()){
             StateVector4 state = iterator.next();
-            System.out.println(state.x() + " " + state.y());
+            LOGGER.log(Level.FINE, state.x() + " " + state.y());
+            //System.out.println(state.x() + " " + state.y());
             height = 0.05 + expr.setVariable("x", state.x()).setVariable("y", state.y()).evaluate();
             golfBallInstance.transform.setTranslation((float) state.x(), (float) height, (float) state.y());
         } else {
