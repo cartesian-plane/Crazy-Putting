@@ -1,8 +1,8 @@
 package org.ken22.ai.hillclimbing;
 
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.physicsx.engine.PhysicsEngine;
-import org.ken22.physicsx.vectors.StateVector4;
+import org.ken22.physics.engine.PhysicsEngine;
+import org.ken22.physics.vectors.StateVector4;
 
 import java.util.*;
 import java.util.function.Function;
@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static org.ken22.physicsx.utils.PhysicsUtils.magnitude;
+import static org.ken22.physics.utils.PhysicsUtils.magnitude;
 
 /**
  * <p>This class contains a simple steepest-descent hill-climbing, for achieving a hole-in one</p>
