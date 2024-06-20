@@ -1,6 +1,8 @@
 package org.ken22.input.courseinput;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.obstacles.Tree;
 
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ public  class GolfCourse {
     public double ballX;
     @JsonProperty("ballYcoord")
     public double ballY;
+
+    public Expression expression;
     // obstacles
 
     public List<Tree> trees = new ArrayList<>();
@@ -74,6 +78,10 @@ public  class GolfCourse {
         this.targetYcoord = targetYcoord;
         this.ballX = ballX;
         this.ballY = ballY;
+
+        this.expression = new ExpressionBuilder(this.courseProfile)
+            .variables("x", "y")
+            .build();
     }
 
     @JsonProperty("name")

@@ -1,0 +1,18 @@
+{
+  "name" : "sin sin",
+  "courseProfile" : "sin(x)*sin(y)/(x*y)",
+  "range" : 10.0,
+  "mass" : 0.0459,
+  "gravitationalConstant" : 9.80665,
+  "kineticFrictionGrass" : 0.05,
+  "staticFrictionGrass" : 0.1,
+  "kineticFrictionSand" : 0.8,
+  "staticFrictionSand" : 0.9,
+  "maximumSpeed" : 5.0,
+  "targetRadius" : 0.15,
+  "targetXcoord" : 3.0,
+  "targetYcoord" : 3.0,
+  "ballXcoord" : 5.0,
+  "ballYcoord" : 5.0,
+  "trees" : [ ]
+}

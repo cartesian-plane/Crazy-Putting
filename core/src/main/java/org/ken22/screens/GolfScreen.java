@@ -11,14 +11,13 @@ import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.models.*;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
-import org.ken22.players.SimplePlanarApproximationBot;
+import org.ken22.players.bots.SimplePlanarApproximationBot;
 import org.ken22.utils.GolfExpression;
 
 import java.util.logging.ConsoleHandler;
@@ -41,7 +40,7 @@ public class GolfScreen extends ScreenAdapter {
         consoleHandler.setLevel(Level.FINE); // (2)
         LOGGER.addHandler(consoleHandler);
     }
-    private static float PADDING_SIZE = 2.5f;
+    public static final float PADDING_SIZE = 2.5f;
     private float xMin, xMax, yMin, yMax;
 
     private Viewport viewport;

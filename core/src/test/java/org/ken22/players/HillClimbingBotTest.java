@@ -8,6 +8,7 @@ import org.ken22.TestUtils;
 import org.ken22.physics.differentiators.ThreePointCenteredDifference;
 import org.ken22.physics.odesolvers.RK4;
 import org.ken22.physics.vectors.StateVector4;
+import org.ken22.players.bots.HillClimbingBot;
 
 class HillClimbingBotTest {
 

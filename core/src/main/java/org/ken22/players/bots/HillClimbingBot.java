@@ -1,4 +1,4 @@
-package org.ken22.players;
+package org.ken22.players.bots;
 
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
@@ -7,6 +7,8 @@ import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.utils.PhysicsUtils;
 import org.ken22.physics.vectors.StateVector4;
+import org.ken22.players.Input2;
+import org.ken22.players.Player;
 
 import java.util.function.Function;
 
@@ -81,7 +83,7 @@ public class HillClimbingBot implements Player {
 
     private void  init(StateVector4 state, GolfCourse course) {
         if(initialGuess != null) {
-            this.currentState = initialGuess.play(currentState, course);
+            this.currentState = initialGuess.play(state, course);
             this.currentBest = new Input2(currentState.vx(), currentState.vy());
         } else {
             this.currentState = state;
