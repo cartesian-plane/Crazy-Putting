@@ -1,5 +1,5 @@
 {
-  "name": "Example Golf Course",
+  "name": "Mountain Peak",
   "courseProfile": "0.4*(0.9 - e^(-(x^2 + y^2) / 8))",
   "range": 5.0,
   "mass": 0.0459,
