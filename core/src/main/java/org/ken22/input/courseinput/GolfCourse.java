@@ -95,72 +95,58 @@ public class GolfCourse {
     public String name() {
         return name;
     }
-
     @JsonProperty("courseProfile")
     public String courseProfile() {
         return courseProfile;
     }
-
     @JsonProperty("range")
     public double range() {
         return range;
     }
-
     @JsonProperty("mass")
     public double mass() {
         return mass;
     }
-
     @JsonProperty("gravitationalConstant")
     public double gravitationalConstant() {
         return gravitationalConstant;
     }
-
     @JsonProperty("kineticFrictionGrass")
     public double kineticFrictionGrass() {
         return kineticFrictionGrass;
     }
-
     @JsonProperty("staticFrictionGrass")
     public double staticFrictionGrass() {
         return staticFrictionGrass;
     }
-
     @JsonProperty("kineticFrictionSand")
     public double kineticFrictionSand() {
         return kineticFrictionSand;
     }
-
     @JsonProperty("staticFrictionSand")
     public double staticFrictionSand() {
         return staticFrictionSand;
     }
-
     @JsonProperty("maximumSpeed")
     public double maximumSpeed() {
         return maximumSpeed;
     }
-
     @JsonProperty("targetRadius")
     public double targetRadius() {
         return targetRadius;
     }
-
     @JsonProperty("targetXcoord")
     public double targetXcoord() {
         return targetXcoord;
     }
-
     @JsonProperty("targetYcoord")
     public double targetYcoord() {
         return targetYcoord;
     }
-
     @JsonProperty("ballXcoord")
     public double ballX() {
         return ballX;
     }
-
     @JsonProperty("ballYcoord")
     public double ballY() {
         return ballY;
@@ -169,11 +155,9 @@ public class GolfCourse {
     public List<Tree> getTrees() {
         return trees;
     }
-
     public List<SandPit> getSandPits() {
         return sandPits;
     }
-
 
     @Override
     public boolean equals(Object obj) {

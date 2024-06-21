@@ -39,19 +39,19 @@ public class BFS {
         Queue<Node> queue = new LinkedList<>();
         queue.add(start);
 
-        while (!queue.isEmpty()) {
-            Node current = queue.poll();
-            if (current.equals(finish)) {
-                return
-            }
-
-            for (Node neighbor : current.neighbors) {
-                if (neighbor.g == Double.MAX_VALUE) {
-                    neighbor.g = current.g + weighting.weight(current, neighbor);
-                    queue.add(neighbor);
-                }
-            }
-        }
+//        while (!queue.isEmpty()) {
+//            Node current = queue.poll();
+//            if (current.equals(finish)) {
+//                return
+//            }
+//
+//            for (Node neighbor : current.neighbors) {
+//                if (neighbor.g == Double.MAX_VALUE) {
+//                    neighbor.g = current.g + weighting.weight(current, neighbor);
+//                    queue.add(neighbor);
+//                }
+//            }
+//        }
 
         return 0;
     }
