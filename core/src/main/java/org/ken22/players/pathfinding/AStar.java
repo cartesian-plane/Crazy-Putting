@@ -5,6 +5,7 @@ import org.ken22.players.weighting.Weighting;
 import org.ken22.screens.GolfScreen;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AStar implements GridPathfinding {
 
@@ -37,7 +38,7 @@ public class AStar implements GridPathfinding {
             .setVariable("x", ballX)
             .setVariable("y", ballY);
 
-        double z =  expression.evaluate();
+        double z = expression.evaluate();
 
         this.terrainGrid = new double[(int) ((xMax - xMin) / GridPathfinding.GRID_RESOLUTION)][(int) ((yMax - yMin) / GridPathfinding.GRID_RESOLUTION)];
 
@@ -73,26 +74,43 @@ public class AStar implements GridPathfinding {
             if (current == targetNode) {
                 // implement this later
             }
-            
 
-            processed.add(current);
+            var unprocessedNeighbours = getNeighbours(current).stream()
+                .filter(neighbour -> !processed.contains(neighbour))
+                .collect(Collectors.toList());
 
-            for (Node neighbor : getNeighbors(current)) {
-                if (processed.contains(neighbor)) continue;
+            for (Node neighbour : unprocessedNeighbours) {
+                var inSearch = toSearch.contains(neighbour);
 
-                double tentativeG = current.g + 1; // Assuming uniform cost for moving to a neighbor
+                double costToNeighbour = current.getG() + current.getDistance(neighbour);
 
-                if (!toSearch.contains(neighbor) || tentativeG < neighbor.g) {
-                    neighbor.parent = current;
-                    neighbor.g = tentativeG;
-                    neighbor.h = heuristic(neighbor, targetNode);
-                    neighbor.f = neighbor.g + neighbor.h;
+                if (!inSearch || costToNeighbour < neighbour.getG()) {
+                    neighbour.setG(costToNeighbour);
+                    neighbour.setConnection(current);
 
-                    if (!toSearch.contains(neighbor)) {
-                        toSearch.add(neighbor);
+                    if (!inSearch) {
+                        neighbour.setH(neighbour.getDistance(targetNode));
+                        toSearch.add(neighbour);
                     }
                 }
             }
+
+                for (Node neighbor : getNeighbours(current)) {
+                    if (processed.contains(neighbor)) continue;
+
+                    double tentativeG = current.g + 1; // Assuming uniform cost for moving to a neighbor
+
+                    if (!toSearch.contains(neighbor) || tentativeG < neighbor.g) {
+                        neighbor.parent = current;
+                        neighbor.g = tentativeG;
+                        neighbor.h = heuristic(neighbor, targetNode);
+                        neighbor.f = neighbor.g + neighbor.h;
+
+                        if (!toSearch.contains(neighbor)) {
+                            toSearch.add(neighbor);
+                        }
+                    }
+                }
         }
 
         return Collections.emptyList(); // No path found
@@ -108,8 +126,35 @@ public class AStar implements GridPathfinding {
         return path;
     }
 
-    private List<Node> getNeighbors(Node node) {
+    private List<Node> getNeighbours(Node node) {
+        var x = node.x;
+        var y = node.y;
+        ArrayList<Node> neighbours = new ArrayList<>();
 
+        Node neighbour1, neighbour2, neighbour3, neighbour4;
+
+        if (x + 1 < terrainGrid.length) {
+            var newZ = terrainGrid[x + 1][y];
+            neighbour1 = new Node(x + 1, y, newZ);
+            neighbours.add(neighbour1);
+        }
+        if (x - 1 >= 0) {
+            var newZ = terrainGrid[x - 1][y];
+            neighbour2 = new Node(x - 1, y, newZ);
+            neighbours.add(neighbour2);
+        }
+        if (y + 1 < terrainGrid[0].length) {
+            var newZ = terrainGrid[x][y + 1];
+            neighbour3 = new Node(x, y + 1, newZ);
+            neighbours.add(neighbour3);
+        }
+        if (y - 1 >= 0) {
+            var newZ = terrainGrid[x][y - 1];
+            neighbour4 = new Node(x, y - 1, newZ);
+            neighbours.add(neighbour4);
+        }
+
+        return neighbours;
     }
 
     private Node project(double x, double y, double z) {
