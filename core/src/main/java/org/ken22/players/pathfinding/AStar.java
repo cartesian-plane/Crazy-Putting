@@ -68,12 +68,12 @@ public class AStar implements GridPathfinding {
             toSearch.remove(current);
 
             if (current == targetNode) {
-                reconstructPath(startNode, targetNode);
+                return reconstructPath(startNode, targetNode);
             }
 
             var unprocessedNeighbours = getNeighbours(current).stream()
                 .filter(neighbour -> !processed.contains(neighbour))
-                .collect(Collectors.toList());
+                .toList();
 
             for (Node neighbour : unprocessedNeighbours) {
                 var inSearch = toSearch.contains(neighbour);
