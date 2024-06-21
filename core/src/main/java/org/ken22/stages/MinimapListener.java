@@ -64,7 +64,8 @@ public class MinimapListener extends InputListener {
 
                 var radius = Double.parseDouble(radiusField.getText());
                 if (addingTree) {
-                    Tree tree = new Tree(new double[]{unprojectedX, unprojectedY}, radius);
+                    //TODO: negating unprojectedY might be a mistake
+                    Tree tree = new Tree(new double[]{unprojectedX, -unprojectedY}, radius);
                     course.trees.add(tree);
                     System.out.println("Added tree");
                 } else if (addingSandPit) {
