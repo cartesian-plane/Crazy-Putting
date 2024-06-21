@@ -82,7 +82,7 @@ public class AStar implements GridPathfinding {
             for (Node neighbour : unprocessedNeighbours) {
                 var inSearch = toSearch.contains(neighbour);
 
-                double costToNeighbour = current.getG() + current.getDistance(neighbour);
+                double costToNeighbour = current.getG() + Double.POSITIVE_INFINITY;
 
                 if (!inSearch || costToNeighbour < neighbour.getG()) {
                     neighbour.setG(costToNeighbour);
@@ -95,22 +95,6 @@ public class AStar implements GridPathfinding {
                 }
             }
 
-                for (Node neighbor : getNeighbours(current)) {
-                    if (processed.contains(neighbor)) continue;
-
-                    double tentativeG = current.g + 1; // Assuming uniform cost for moving to a neighbor
-
-                    if (!toSearch.contains(neighbor) || tentativeG < neighbor.g) {
-                        neighbor.parent = current;
-                        neighbor.g = tentativeG;
-                        neighbor.h = heuristic(neighbor, targetNode);
-                        neighbor.f = neighbor.g + neighbor.h;
-
-                        if (!toSearch.contains(neighbor)) {
-                            toSearch.add(neighbor);
-                        }
-                    }
-                }
         }
 
         return Collections.emptyList(); // No path found
