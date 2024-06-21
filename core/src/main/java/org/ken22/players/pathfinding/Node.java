@@ -1,5 +1,6 @@
 package org.ken22.players.pathfinding;
 
+import java.util.Comparator;
 import java.util.Objects;
 
 public class Node {
@@ -9,11 +10,18 @@ public class Node {
     public final double z;
     private double g;
     private double h;
+    public final boolean walkable;
 
     public Node(int x, int y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
+
+        if (z == Double.POSITIVE_INFINITY)
+            this.walkable = false;
+        else
+            this.walkable = true;
+
     }
 
     public double getG() {
@@ -45,6 +53,15 @@ public class Node {
     }
 
     @Override
+    public String toString() {
+        return "Node{" +
+            "x=" + x +
+            ", y=" + y +
+            ", z=" + z +
+            '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -56,4 +73,20 @@ public class Node {
     public int hashCode() {
         return Objects.hash(x, y);
     }
+
+    public static Comparator<Node> getComparator() {
+        return new Comparator<Node>() {
+            @Override
+            public int compare(Node node1, Node node2) {
+                if (node1.getF() < node2.getF() || (node1.getF() == node2.getF() && node1.getH() < node2.getH())) {
+                    return -1;
+                } else if (node1.getF() > node2.getF() || (node1.getF() == node2.getF() && node1.getH() > node2.getH())) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        };
+    }
+
 }

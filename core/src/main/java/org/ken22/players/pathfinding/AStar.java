@@ -5,7 +5,6 @@ import org.ken22.players.weighting.Weighting;
 import org.ken22.screens.GolfScreen;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class AStar implements GridPathfinding {
 
@@ -49,24 +48,28 @@ public class AStar implements GridPathfinding {
     }
 
     public List<Node> findPath(Node startNode, Node targetNode) {
-        PriorityQueue<Node> toSearch = new PriorityQueue<>();
+        PriorityQueue<Node> toSearch = new PriorityQueue<>(Node.getComparator());
         toSearch.add(startNode);
 
         HashSet<Node> processed = new HashSet<>();
 
         while (!toSearch.isEmpty()) {
+            // get the best node (by the comparator)
             var current = toSearch.poll();
-
-            for (var node : toSearch) {
-                if (node.getF() < current.getF() || node.getF() == current.getF() && node.getH() < current.getH())
-                    current = node;
-            }
 
             processed.add(current);
             toSearch.remove(current);
 
-            if (current == targetNode) {
-                return reconstructPath(startNode, targetNode);
+            if (current.equals(targetNode)) {
+                System.out.println("hi");
+                var currentPathTile = current;
+                var path = new ArrayList<Node>();
+                while (!currentPathTile.equals(startNode)) {
+                    path.add(currentPathTile);
+                    currentPathTile = currentPathTile.getConnection();
+                }
+//                return reconstructPath(startNode, targetNode);
+                return path;
             }
 
             var unprocessedNeighbours = getNeighbours(current).stream()
@@ -126,22 +129,26 @@ public class AStar implements GridPathfinding {
         if (x + 1 < terrainGrid.length) {
             var newZ = terrainGrid[x + 1][y];
             neighbour1 = new Node(x + 1, y, newZ);
-            neighbours.add(neighbour1);
+            if (neighbour1.walkable)
+                neighbours.add(neighbour1);
         }
         if (x - 1 >= 0) {
             var newZ = terrainGrid[x - 1][y];
             neighbour2 = new Node(x - 1, y, newZ);
-            neighbours.add(neighbour2);
+            if (neighbour2.walkable)
+                neighbours.add(neighbour2);
         }
         if (y + 1 < terrainGrid[0].length) {
             var newZ = terrainGrid[x][y + 1];
             neighbour3 = new Node(x, y + 1, newZ);
-            neighbours.add(neighbour3);
+            if (neighbour3.walkable)
+                neighbours.add(neighbour3);
         }
         if (y - 1 >= 0) {
             var newZ = terrainGrid[x][y - 1];
             neighbour4 = new Node(x, y - 1, newZ);
-            neighbours.add(neighbour4);
+            if (neighbour4.walkable)
+                neighbours.add(neighbour4);
         }
 
         return neighbours;
