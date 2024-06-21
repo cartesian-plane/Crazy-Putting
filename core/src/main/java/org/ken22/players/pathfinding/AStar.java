@@ -68,16 +68,7 @@ public class AStar implements GridPathfinding {
             toSearch.remove(current);
 
             if (current == targetNode) {
-                // TODO refactor this into separate method
-                var currentPathTile = targetNode;
-                var path = new ArrayList<Node>();
-
-                while (currentPathTile != startNode) {
-                    path.add(currentPathTile);
-                    currentPathTile = currentPathTile.getConnection();
-                }
-
-                return path;
+                reconstructPath(startNode, targetNode);
             }
 
             var unprocessedNeighbours = getNeighbours(current).stream()
@@ -105,13 +96,15 @@ public class AStar implements GridPathfinding {
         return Collections.emptyList(); // No path found
     }
 
-    private List<Node> reconstructPath(Node current) {
-        List<Node> path = new ArrayList<>();
-        while (current != null) {
-            path.add(current);
-            current = current.parent;
+    private List<Node> reconstructPath(Node startNode, Node targetNode) {
+        var currentPathTile = targetNode;
+        var path = new ArrayList<Node>();
+
+        while (currentPathTile != startNode) {
+            path.add(currentPathTile);
+            currentPathTile = currentPathTile.getConnection();
         }
-        Collections.reverse(path);
+
         return path;
     }
 
