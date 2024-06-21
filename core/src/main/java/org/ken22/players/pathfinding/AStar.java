@@ -50,15 +50,11 @@ public class AStar implements GridPathfinding {
         return 0;
     }
 
-    private List<Node> findPath(Node start, Node targetNode) {
+    private List<Node> findPath(Node startNode, Node targetNode) {
         PriorityQueue<Node> toSearch = new PriorityQueue<>();
-        toSearch.add(start);
+        toSearch.add(startNode);
 
         HashSet<Node> processed = new HashSet<>();
-
-        start.h = heuristic(start, targetNode);
-        start.f = start.h;
-
 
         while (!toSearch.isEmpty()) {
             var current = toSearch.poll();
@@ -72,7 +68,16 @@ public class AStar implements GridPathfinding {
             toSearch.remove(current);
 
             if (current == targetNode) {
-                // implement this later
+                // TODO refactor this into separate method
+                var currentPathTile = targetNode;
+                var path = new ArrayList<Node>();
+
+                while (currentPathTile != startNode) {
+                    path.add(currentPathTile);
+                    currentPathTile = currentPathTile.getConnection();
+                }
+
+                return path;
             }
 
             var unprocessedNeighbours = getNeighbours(current).stream()
@@ -82,14 +87,14 @@ public class AStar implements GridPathfinding {
             for (Node neighbour : unprocessedNeighbours) {
                 var inSearch = toSearch.contains(neighbour);
 
-                double costToNeighbour = current.getG() + Double.POSITIVE_INFINITY;
+                double costToNeighbour = current.getG() + weighting.calcWeight(current, neighbour);
 
                 if (!inSearch || costToNeighbour < neighbour.getG()) {
                     neighbour.setG(costToNeighbour);
                     neighbour.setConnection(current);
 
                     if (!inSearch) {
-                        neighbour.setH(neighbour.getDistance(targetNode));
+                        neighbour.setH(weighting.calcWeight(neighbour, targetNode));
                         toSearch.add(neighbour);
                     }
                 }

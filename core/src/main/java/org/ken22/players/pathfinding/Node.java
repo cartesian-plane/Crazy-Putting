@@ -28,6 +28,10 @@ public class Node {
         return g + h;
     }
 
+    public Node getConnection() {
+        return connection;
+    }
+
     public void setG(double g) {
         this.g = g;
     }
