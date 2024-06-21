@@ -49,36 +49,47 @@ public class AStar implements GridPathfinding {
         return 0;
     }
 
-    private List<Node> findPath(Node start, Node goal) {
-        PriorityQueue<Node> openList = new PriorityQueue<>();
-        HashSet<Node> closedList = new HashSet<>();
+    private List<Node> findPath(Node start, Node targetNode) {
+        PriorityQueue<Node> toSearch = new PriorityQueue<>();
+        toSearch.add(start);
 
-        start.h = heuristic(start, goal);
+        HashSet<Node> processed = new HashSet<>();
+
+        start.h = heuristic(start, targetNode);
         start.f = start.h;
-        openList.add(start);
 
-        while (!openList.isEmpty()) {
-            Node current = openList.poll();
 
-            if (current.x == goal.x && current.y == goal.y) {
-                return reconstructPath(current);
+        while (!toSearch.isEmpty()) {
+            var current = toSearch.poll();
+
+            for (var node : toSearch) {
+                if (node.getF() < current.getF() || node.getF() == current.getF() && node.getH() < current.getH())
+                    current = node;
             }
 
-            closedList.add(current);
+            processed.add(current);
+            toSearch.remove(current);
+
+            if (current == targetNode) {
+                // implement this later
+            }
+            
+
+            processed.add(current);
 
             for (Node neighbor : getNeighbors(current)) {
-                if (closedList.contains(neighbor)) continue;
+                if (processed.contains(neighbor)) continue;
 
                 double tentativeG = current.g + 1; // Assuming uniform cost for moving to a neighbor
 
-                if (!openList.contains(neighbor) || tentativeG < neighbor.g) {
+                if (!toSearch.contains(neighbor) || tentativeG < neighbor.g) {
                     neighbor.parent = current;
                     neighbor.g = tentativeG;
-                    neighbor.h = heuristic(neighbor, goal);
+                    neighbor.h = heuristic(neighbor, targetNode);
                     neighbor.f = neighbor.g + neighbor.h;
 
-                    if (!openList.contains(neighbor)) {
-                        openList.add(neighbor);
+                    if (!toSearch.contains(neighbor)) {
+                        toSearch.add(neighbor);
                     }
                 }
             }
