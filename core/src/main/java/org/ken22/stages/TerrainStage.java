@@ -1,6 +1,7 @@
 package org.ken22.stages;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -11,10 +12,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.ken22.models.Minimap;
 import org.ken22.screens.ScreenManager;
-import org.ken22.utils.GolfExpression;
-
-import static org.ken22.utils.userinput.UIElementFactory.createTextField;
-import static org.ken22.utils.userinput.TextFieldType.*;
+import org.ken22.utils.userinput.UIElementFactory;
 
 public class TerrainStage extends Stage {
 
@@ -22,34 +20,33 @@ public class TerrainStage extends Stage {
 
     private static Viewport viewport = new ScreenViewport();
 
-    private Table table;
-    private ScrollPane scrollPane;
+    private Table mainTable;
+    private Table controlTable;
     private TextButton backButton;
+    private TextButton resetButton;
+    private MinimapListener minimapListener;
 
     private Minimap minimap;
+
+
 
     public TerrainStage(ScreenManager manager) {
         super(viewport);
         this.manager = manager;
 
-        // Create a table that fills the screen
-        this.table = new Table();
-        this.table.setFillParent(true);
-        this.addActor(table);
+        // main table
+        this.mainTable = new Table();
+        this.mainTable.setFillParent(true);
+        this.addActor(mainTable);
 
-        // Create minimap
+        //minimap
         minimap = new Minimap(manager.selectedCourse);
         minimap.image.setScale(1f);
 
-        // Create a back button
+
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
-        scrollPane = new ScrollPane(table, skin);
-        scrollPane.setFillParent(true);
-        scrollPane.setScrollingDisabled(true, false);
-
-        this.addActor(scrollPane);
-
+        //back
         this.backButton = new TextButton("Back", skin);
         this.backButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
@@ -57,27 +54,69 @@ public class TerrainStage extends Stage {
             }
         });
 
-        var radiusField = createTextField(String.valueOf(0.01), NUMERICAL);
-        var radiusLabel = new Label("Tree Radius:", skin);
+        //reset
+        this.resetButton = new TextButton("Reset", skin);
+        this.resetButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                manager.selectedCourse.trees.clear();
+                manager.selectedCourse.sandPits.clear();
+                minimap.update();
+                System.out.println("All obstacles removed");
+            }
+        });
 
-        // Add actors to the table
-        this.table.defaults().pad(10);
-        this.table.add(minimap.image).colspan(2).row();
-        this.table.add(radiusLabel);
-        this.table.add(radiusField);
-        ;
-        table.row();
-        this.table.add(backButton);
+        //current radius
+        var radiusField = UIElementFactory.createTextField(String.valueOf(3), UIElementFactory.TextFieldType.NUMERICAL);
+        var radiusLabel = new Label("Obstacle Radius:", skin);
+
+
+        //tree
+        var treeButton = new TextButton("Add Trees", skin);
+        treeButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                minimapListener.setAddingTree(true);
+                minimapListener.setAddingSandPit(false);
+            }
+        });
+
+        //sand
+        var sandPitButton = new TextButton("Add Sand Pits", skin);
+        sandPitButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                minimapListener.setAddingTree(false);
+                minimapListener.setAddingSandPit(true);
+            }
+        });
+
+        var coordinatesLabel = new Label("X: 0, Y: 0", skin);
+
+        //controle tabble
+        controlTable = new Table();
+        controlTable.add(coordinatesLabel).colspan(2).center().pad(10);
+        controlTable.row();
+        controlTable.add(radiusLabel).pad(5);
+        controlTable.add(radiusField).width(100).pad(5);
+        controlTable.row();
+        controlTable.add(treeButton).colspan(2).pad(5).width(200).height(50);
+        controlTable.row();
+        controlTable.add(sandPitButton).colspan(2).pad(5).width(200).height(50);
+        controlTable.row();
+        controlTable.add(backButton).colspan(2).pad(5).width(200).height(50);
+        controlTable.row();
+        controlTable.add(resetButton).colspan(2).pad(5).width(200).height(50);
+
+
+        mainTable.add(minimap.image).expand().center().colspan(2).row();
+        mainTable.add(controlTable).center().expandY().fillY().pad(10).colspan(2);
 
         var golfCourse = manager.selectedCourse;
         var trees = golfCourse.trees;
 
-        table.row();
-        var coordinatesLabel = new Label("placeholder", skin);
-        table.add(coordinatesLabel);
-
-        var minimapListener = new MinimapListener(minimap, golfCourse, radiusField, coordinatesLabel);
+        minimapListener = new MinimapListener(minimap, golfCourse, radiusField, coordinatesLabel);
         minimap.image.addListener(minimapListener);
+
+        //update what changed to the minimappe
+        minimap.update();
     }
 
     @Override

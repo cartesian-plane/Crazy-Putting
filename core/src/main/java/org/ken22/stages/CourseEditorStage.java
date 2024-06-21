@@ -15,13 +15,13 @@ import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.input.courseinput.GolfCourseLoader;
 import org.ken22.screens.KeyboardNavigator;
 import org.ken22.screens.ScreenManager;
-import org.ken22.utils.userinput.TextFieldType;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import static org.ken22.utils.userinput.UIElementFactory.TextFieldType.NUMERICAL;
 import static org.ken22.utils.userinput.UIElementFactory.createNumericalTextField;
 import static org.ken22.utils.userinput.UIElementFactory.createTextField;
 import static org.ken22.utils.userinput.TextFieldUtils.parseCoordinates;
@@ -72,35 +72,32 @@ public class CourseEditorStage extends Stage {
         var functionLabel = new Label("Terrain function", skin);
 
         //var rangeField = new TextField("0.5", skin);
-        var rangeField = createNumericalTextField(String.valueOf(selectedCourse.range()), skin);
+        var rangeField = createTextField(String.valueOf(selectedCourse.range()), NUMERICAL);
         var rangeLabel = new Label("Range:", skin);
 
         var massField = createNumericalTextField("0.0459", skin);
         var massLabel = new Label("Mass:", skin);
 
-        // these all need to be replaced with the crateTextField() method, because there is a bug with the old approach
-        var gravitationalConstantField = createTextField(String.valueOf(selectedCourse.gravitationalConstant()),
-                TextFieldType.NUMERICAL);
-        // var gravitationalConstantField =
-            createNumericalTextField(String.valueOf(selectedCourse.gravitationalConstant()), skin);
+        // these all need to be replaced with the createTextField() method, because there is a bug with the old approach
+        var gravitationalConstantField = createTextField(String.valueOf(selectedCourse.gravitationalConstant()), NUMERICAL);
         var gravitationalConstantLabel = new Label("Gravitational Constant:", skin);
 
-        var kineticFrictionGrassField = createNumericalTextField(String.valueOf(selectedCourse.kineticFrictionGrass()), skin);
+        var kineticFrictionGrassField = createTextField(String.valueOf(selectedCourse.kineticFrictionGrass()), NUMERICAL);
         var kineticFrictionGrassLabel = new Label("Kinetic Friction Grass:", skin);
 
-        var staticFrictionGrassField = createNumericalTextField(String.valueOf(selectedCourse.staticFrictionGrass()), skin);
+        var staticFrictionGrassField = createTextField(String.valueOf(selectedCourse.staticFrictionGrass()), NUMERICAL);
         var staticFrictionGrassLabel = new Label("Static Friction Grass:", skin);
 
-        var kineticFrictionSandField = createNumericalTextField(String.valueOf(selectedCourse.kineticFrictionSand()), skin);
+        var kineticFrictionSandField = createTextField(String.valueOf(selectedCourse.kineticFrictionSand()), NUMERICAL);
         var kineticFrictionSandLabel = new Label("Kinetic Friction Sand:", skin);
 
-        var staticFrictionSandField = createNumericalTextField(String.valueOf(selectedCourse.staticFrictionSand()), skin);
+        var staticFrictionSandField = createTextField(String.valueOf(selectedCourse.staticFrictionSand()), NUMERICAL);
         var staticFrictionSandLabel = new Label("Static Friction Sand:", skin);
 
-        var maximumVelocityField = createNumericalTextField(String.valueOf(selectedCourse.maximumSpeed()), skin);
+        var maximumVelocityField = createTextField(String.valueOf(selectedCourse.maximumSpeed()), NUMERICAL);
         var maximumVelocityLabel = new Label("Maximum Velocity:", skin);
 
-        var targetRadiusField = createNumericalTextField(String.valueOf(selectedCourse.targetRadius()), skin);
+        var targetRadiusField = createTextField(String.valueOf(selectedCourse.targetRadius()), NUMERICAL);
         var targetRadiusLabel = new Label("Target Radius:", skin);
 
         String ballCoords = "(" + selectedCourse.ballX() + ", " + selectedCourse.ballY() + ")";
@@ -219,13 +216,6 @@ public class CourseEditorStage extends Stage {
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
-//
-//                FileHandle dirHandle = Gdx.files.internal("");
-//                for (FileHandle entry: dirHandle.list()) {
-//                    System.out.println(entry.name());
-//                }
-
-
 
                 String filePath = "input/" + selectedCourse.name().trim() + ".json";
                 try {
@@ -235,10 +225,8 @@ public class CourseEditorStage extends Stage {
                 }
 
                 manager.toMainStage();
-
             }
         });
-
 
         var textFields = new ArrayList<TextField>();
         for (Actor actor : table.getChildren()) {
@@ -246,7 +234,6 @@ public class CourseEditorStage extends Stage {
                 textFields.add((TextField) actor);
             }
         }
-
 
         KeyboardNavigator keyboardNavigator = new KeyboardNavigator(this);
         Gdx.input.setInputProcessor(keyboardNavigator);

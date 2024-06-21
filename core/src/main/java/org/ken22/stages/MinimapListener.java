@@ -13,18 +13,23 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.models.Minimap;
 import org.ken22.obstacles.Tree;
+import org.ken22.obstacles.SandPit;
 import org.ken22.physics.utils.PhysicsUtils;
-
 import java.util.List;
 
-public class  MinimapListener extends InputListener {
+
+
+public class MinimapListener extends InputListener {
     private Minimap minimap;
     private GolfCourse course;
+    private boolean addingTree = true;
+    private boolean addingSandPit = false;
 
     private TextField radiusField;
     private Label coordinatesLabel; // label that shows the coordinates when hovering over the map
 
     private boolean inMinimap = false;
+
 
     public MinimapListener(Minimap minimap, GolfCourse course, TextField radiusField, Label coordinatesLabel) {
         this.minimap = minimap;
@@ -32,64 +37,70 @@ public class  MinimapListener extends InputListener {
 
         this.coordinatesLabel = coordinatesLabel;
         this.radiusField = radiusField;
-        System.out.println("radiusField = " + radiusField);
     }
 
+    //adding
+    public void setAddingTree(boolean addingTree) {
+        this.addingTree = addingTree;
+    }
+
+    public void setAddingSandPit(boolean addingSandPit) {
+        this.addingSandPit = addingSandPit;
+    }
+
+    //click button it do stuff
     @Override
     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+        double unprojectedX = minimap.unprojectX((int) x);
+        double unprojectedY = minimap.unprojectY((int) y);
 
         switch (button) {
-            // left click adds tree
-            case Input.Buttons.LEFT -> {
-                System.out.println("Clicked on minimap: " + x + ", " + y + "Color: " + minimap.minimap.getPixel((int) x, (int) y));
 
-                System.out.print("World coord: ");
-                var unprojectedX = minimap.unproject((int) x);
-                var unprojectedY = minimap.unproject((int) y);
-                System.out.print(unprojectedX + ",");
-                System.out.print(unprojectedY);
-                System.out.println();
+
+            // left click adds tree or sand pit
+            case Input.Buttons.LEFT -> {
+                System.out.println("Clicked on minimap: " + x + ", " + y);
+                System.out.println("World coord: " + unprojectedX + ", " + unprojectedY);
 
                 var radius = Double.parseDouble(radiusField.getText());
-                Tree tree = new Tree(new double[]{unprojectedX, unprojectedY}, radius);
-
-                course.trees.add(tree);
+                if (addingTree) {
+                    Tree tree = new Tree(new double[]{unprojectedX, unprojectedY}, radius);
+                    course.trees.add(tree);
+                    System.out.println("Added tree");
+                } else if (addingSandPit) {
+                    SandPit sandPit = new SandPit(new double[]{unprojectedX, unprojectedY}, radius);
+                    course.sandPits.add(sandPit);
+                    System.out.println("Added sand pit");
+                }
                 minimap.update();
             }
-            // right click removes tree
+
+
+            // right click removes the last added obstacle
             case Input.Buttons.RIGHT -> {
-                var unprojectedX = minimap.unproject((int) x);
-                var unprojectedY = minimap.unproject((int) y);
-                Tree treeToRemove = null;
-
-                for (Tree tree : course.trees) {
-                    double[] treePosition = tree.coordinates();
-
-                    double distance = PhysicsUtils.magnitude(treePosition[0] - unprojectedX, treePosition[1] - unprojectedY);
-                    if (distance < tree.radius()) {
-                        treeToRemove = tree;
-                        break;
-                    }
-                }
-                if (treeToRemove != null) {
-                    System.out.println("Removed tree");
+                if (addingTree && !course.trees.isEmpty()) {
+                    Tree treeToRemove = course.trees.get(course.trees.size() - 1);
                     course.trees.remove(treeToRemove);
+                    System.out.println("Removed tree: " + treeToRemove);
+                } else if (addingSandPit && !course.sandPits.isEmpty()) {
+                    SandPit sandPitToRemove = course.sandPits.get(course.sandPits.size() - 1);
+                    course.sandPits.remove(sandPitToRemove);
+                    System.out.println("Removed sand pit: " + sandPitToRemove);
                 }
-            }
-            case Input.Buttons.MIDDLE -> {
-                System.out.println("trees = " + course.trees);
+                minimap.update();
             }
         }
-
 
         return super.touchDown(event, x, y, pointer, button);
     }
 
+
+
     @Override
     public boolean mouseMoved(InputEvent event, float x, float y) {
         if (inMinimap) {
-            var unprojectedX = minimap.unproject((int)x);
-            var unprojectedY = minimap.unproject((int)y);
+            var unprojectedX = minimap.unprojectX((int) x);
+            var unprojectedY = minimap.unprojectY((int) y);
             coordinatesLabel.setText("X: " + unprojectedX + " Y: " + unprojectedY);
         }
         return super.mouseMoved(event, x, y);

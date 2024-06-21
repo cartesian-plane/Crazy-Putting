@@ -7,13 +7,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import net.objecthunter.exp4j.Expression;
-import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.obstacles.SandPit;
 import org.ken22.obstacles.Tree;
 import org.ken22.utils.GolfExpression;
 import org.ken22.utils.MathUtils;
-
-import java.io.File;
 
 public class Minimap {
     private static final int WIDTH = 512;
@@ -43,6 +41,7 @@ public class Minimap {
         init();
     }
 
+    //initializing
     public void init() {
         terrainmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGB888);
         double[][] heightMap = heightMap(expr);
@@ -61,41 +60,38 @@ public class Minimap {
         image = new Image(new TextureRegionDrawable(texture));
     }
 
+    //updating state of minimap
     public  void update() {
         if (treemap != null) treemap.dispose();
-        treemap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGB888);
+        treemap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGBA8888);
         for (Tree tree : course.trees) {
-            int i = project((float) tree.coordinates()[0]);
-            int j = project((float) tree.coordinates()[1]);
+            int i = projectX((float) tree.coordinates()[0]);
+            int j = projectY((float) tree.coordinates()[1]);
             treemap.setColor(Color.BROWN);
             treemap.fillCircle(i, j, (int) tree.radius());
         }
 
-        if(sandmap != null) sandmap.dispose();
-        sandmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGB888);
-
-        if(minimap != null) minimap.dispose();
-        minimap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGB888);
-        for(int i = 0; i < WIDTH; i++) {
-            for(int j = 0; j < HEIGHT; j++) {
-                Color color;
-                if (new Color(terrainmap.getPixel(i, j)).equals(Color.BROWN)) {
-                    minimap.drawPixel(i, j, Color.BROWN.toIntBits());
-                    color = Color.BROWN;
-                } else {
-                    minimap.drawPixel(i, j, terrainmap.getPixel(i, j));
-                    color = new Color(terrainmap.getPixel(i, j));
-                }
-
-                minimap.setColor(color);
-                minimap.drawPixel(i, j);
-            }
+        if (sandmap != null) sandmap.dispose();
+        sandmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGBA8888);
+        for (SandPit sandPit : course.sandPits) {
+            int i = projectX((float) sandPit.coordinates()[0]);
+            int j = projectY((float) sandPit.coordinates()[1]);
+            sandmap.setColor(Color.WHITE);
+            sandmap.fillCircle(i, j, (int) sandPit.radius());
         }
+
+        if (minimap != null) minimap.dispose();
+        minimap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGBA8888);
+        minimap.drawPixmap(terrainmap, 0, 0);
+        minimap.drawPixmap(treemap, 0, 0);
+        minimap.drawPixmap(sandmap, 0, 0);
 
         texture = new Texture(minimap);
         image.setDrawable(new TextureRegionDrawable(texture));
     }
 
+
+    //creating base map height
     private double[][] heightMap(Expression heightFunction) {
         double[][] heightMap = new double[WIDTH][HEIGHT];
         double[] xCoords = MathUtils.linspace(xMin, xMax, WIDTH);
@@ -125,11 +121,21 @@ public class Minimap {
         return heightMap;
     }
 
-    public int project(float x) {
+
+    //projecting stuff onto minimap
+    public int projectX(float x) {
         return (int) ((x - xMin) / (xMax - xMin) * WIDTH);
     }
 
-    public float unproject(int i) {
+    public int projectY(float y) {
+        return (int) ((y - yMin) / (yMax - yMin) * HEIGHT);
+    }
+
+    public float unprojectX(int i) {
         return xMin + ((float) i)  / WIDTH * (xMax - xMin);
+    }
+
+    public float unprojectY(int j) {
+        return yMin + ((float) j)  / HEIGHT * (yMax - yMin);
     }
 }

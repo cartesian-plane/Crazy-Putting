@@ -1,15 +1,14 @@
 package org.ken22.input.courseinput;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.obstacles.Tree;
+import org.ken22.obstacles.SandPit;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public  class GolfCourse {
+public class GolfCourse {
     @JsonProperty("name")
     public String name;
     @JsonProperty("courseProfile")
@@ -41,10 +40,14 @@ public  class GolfCourse {
     @JsonProperty("ballYcoord")
     public double ballY;
 
-    public Expression expression;
-    // obstacles
-
+    //obstacles
+    @JsonProperty("trees")
     public List<Tree> trees = new ArrayList<>();
+
+    @JsonProperty("sandPits")
+    public List<SandPit> sandPits = new ArrayList<>();
+
+
 
     public GolfCourse(
         @JsonProperty("name") String name,
@@ -78,10 +81,6 @@ public  class GolfCourse {
         this.targetYcoord = targetYcoord;
         this.ballX = ballX;
         this.ballY = ballY;
-
-        this.expression = new ExpressionBuilder(this.courseProfile)
-            .variables("x", "y")
-            .build();
     }
 
     @JsonProperty("name")
@@ -158,6 +157,15 @@ public  class GolfCourse {
     public double ballY() {
         return ballY;
     }
+
+    public List<Tree> getTrees() {
+        return trees;
+    }
+
+    public List<SandPit> getSandPits() {
+        return sandPits;
+    }
+
 
     @Override
     public boolean equals(Object obj) {
