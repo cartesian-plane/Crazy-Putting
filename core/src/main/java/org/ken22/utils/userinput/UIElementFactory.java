@@ -12,6 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
  * Utility class that contains methods to help maintain a consistent style across the app.
  */
 public class UIElementFactory {
+
+    public enum TextFieldType {
+        NUMERICAL, ALPHANUMERIC
+    }
+
     public static TextButton createStyledButton(String text, Skin skin, Color color, Runnable action) {
         TextButton button = new TextButton(text, skin);
         if (color != null) {
@@ -42,7 +47,6 @@ public class UIElementFactory {
         var skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
         var textField = new TextField(text, skin);
 
-
         switch (type) {
             case NUMERICAL -> {
                 TextField.TextFieldFilter decimalFilter = new TextField.TextFieldFilter() {
@@ -55,12 +59,19 @@ public class UIElementFactory {
                         return false;
                     }
                 };
-
                 textField.setTextFieldFilter(decimalFilter);
             }
 
-            case ALPHANUMERIC -> {}
 
+            case ALPHANUMERIC -> {
+                TextField.TextFieldFilter alphanumericFilter = new TextField.TextFieldFilter() {
+                    @Override
+                    public boolean acceptChar(TextField textField, char c) {
+                        return Character.isLetterOrDigit(c);
+                    }
+                };
+                textField.setTextFieldFilter(alphanumericFilter);
+            }
         }
 
         return textField;
@@ -68,15 +79,12 @@ public class UIElementFactory {
 
     public static TextField createNumericalTextField(String text) {
         var skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
-
         return createNumericalTextField(text, skin);
     }
 
     public static TextField createNumericalTextField(String text, Skin skin) {
         var numericalField = new TextField(text, skin);
         numericalField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
-
         return numericalField;
     }
-
 }

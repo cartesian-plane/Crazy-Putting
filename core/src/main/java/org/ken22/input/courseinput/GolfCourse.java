@@ -2,12 +2,13 @@ package org.ken22.input.courseinput;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.ken22.obstacles.Tree;
+import org.ken22.obstacles.SandPit;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public  class GolfCourse {
+public class GolfCourse {
     @JsonProperty("name")
     public String name;
     @JsonProperty("courseProfile")
@@ -38,9 +39,15 @@ public  class GolfCourse {
     public double ballX;
     @JsonProperty("ballYcoord")
     public double ballY;
-    // obstacles
 
+    //obstacles
+    @JsonProperty("trees")
     public List<Tree> trees = new ArrayList<>();
+
+    @JsonProperty("sandPits")
+    public List<SandPit> sandPits = new ArrayList<>();
+
+
 
     public GolfCourse(
         @JsonProperty("name") String name,
@@ -150,6 +157,15 @@ public  class GolfCourse {
     public double ballY() {
         return ballY;
     }
+
+    public List<Tree> getTrees() {
+        return trees;
+    }
+
+    public List<SandPit> getSandPits() {
+        return sandPits;
+    }
+
 
     @Override
     public boolean equals(Object obj) {
