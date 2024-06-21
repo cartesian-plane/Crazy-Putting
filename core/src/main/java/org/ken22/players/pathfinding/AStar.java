@@ -45,12 +45,10 @@ public class AStar implements GridPathfinding {
         Node ballNode = project(ballX, ballY, z);
 
         //a star pathfinding
-        Queue<Node> path = new Queue<Node>();
-
-        return 0;
+        return weightSum(findPath(ballNode, finish));
     }
 
-    private List<Node> findPath(Node startNode, Node targetNode) {
+    public List<Node> findPath(Node startNode, Node targetNode) {
         PriorityQueue<Node> toSearch = new PriorityQueue<>();
         toSearch.add(startNode);
 
@@ -106,6 +104,16 @@ public class AStar implements GridPathfinding {
         }
 
         return path;
+    }
+
+    private double weightSum(List<Node> path) {
+        double sum = 0.0;
+        for (int i = 0; i < path.size() - 1; i++) {
+            var node1 = path.get(i);
+            var node2 = path.get(i + 1);
+            sum += weighting.calcWeight(node1, node2);
+        }
+        return sum;
     }
 
     private List<Node> getNeighbours(Node node) {
