@@ -1,0 +1,6 @@
+{
+  "botType" : "HOLE_IN_ONE",
+  "localSearchType" : "HILLCLIMB",
+  "graphAlgorithmType" : "NONE",
+  "randomRestarts" : 10
+}
