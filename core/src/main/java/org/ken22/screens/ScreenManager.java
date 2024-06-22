@@ -121,7 +121,7 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toBotSettingsScreen() {
         this.currentStage.dispose();
-        this.currentStage = new BotSettingsStage(this, botSettings);
+        this.currentStage = new BotSettingsStage(this);
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
