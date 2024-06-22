@@ -31,6 +31,7 @@ public class BotSettingsStage extends Stage {
     private SelectBox<LocalSearchType> localSearchSelector;
     private SelectBox<GridPathfindingType> graphAlgorithmSelector;
     private TextField randomRestarts;  // random restart count for the hill-climber
+    private TextField sidewaysMoves;
 
     private SelectBox<ODESolverType> odeSolverBox;
     private SelectBox<DifferentiatorType> differentiatorBox;
@@ -83,21 +84,29 @@ public class BotSettingsStage extends Stage {
         randomRestarts = createTextField("10", UIElementFactory.TextFieldType.NUMERICAL);
         table.add(randomRestarts);
 
+        table.add(new Label("Sideways moves", skin));
+        randomRestarts = createTextField("10", UIElementFactory.TextFieldType.NUMERICAL);
+        table.add(randomRestarts);
+
         table.add(new Label("ODE Solver", skin));
         odeSolverBox = new SelectBox<>(skin);
         odeSolverBox.setItems(ODESolverType.values());
+        table.add(odeSolverBox);
 
 
         table.add(new Label("Step Size", skin));
         stepSizeField = new TextField("", skin);
+        table.add(stepSizeField);
 
         table.add(new Label("Differentiator", skin));
         differentiatorBox = new SelectBox<>(skin);
         differentiatorBox.setItems(DifferentiatorType.values());
+        table.add(differentiatorBox);
 
         table.add(new Label("Error Function", skin));
         errorFunctionBox = new SelectBox<>(skin);
         errorFunctionBox.setItems(ErrorFunctionType.values());
+        table.add(errorFunctionBox);
 
         this.table.defaults().pad(10);
         table.row();

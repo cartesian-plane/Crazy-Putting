@@ -6,5 +6,6 @@
   "weightingType" : "EQUIVALENT",
   "gridPathfindingType" : "A_STAR",
   "localSearchType" : null,
-  "randomRestarts" : 10
+  "randomRestarts" : 10,
+  "sidewaysMoves" : 10
 }

@@ -27,6 +27,8 @@ public class BotSettings {
     public LocalSearchType localSearchType;
     @JsonProperty
     public int randomRestarts; // no. of random restarts for the hill climbing algorithm
+    @JsonProperty
+    public int sidewaysMoves; // no. of sideways moves for the hill climbing algorithm
 
     public static void main(String[] args) {
         var settings = new BotSettings();
@@ -37,6 +39,7 @@ public class BotSettings {
         settings.errorFunctionType = ErrorFunctionType.EUCLIDEAN;
         settings.gridPathfindingType = GridPathfindingType.A_STAR;
         settings.randomRestarts = 10;
+        settings.sidewaysMoves = 10;
 
         // serialize this object to JSON with pretty printer
         var objectMapper = new ObjectMapper();
