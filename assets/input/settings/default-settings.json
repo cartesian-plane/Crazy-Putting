@@ -1,7 +1,7 @@
 {
-  "solver" : "RK4",
+  "solver" : "Runge Kutta 4",
   "stepSize" : 0.001,
-  "Differentiator" : "FivePointCenteredDifference",
+  "Differentiator" : "Three Point Centered Difference",
   "differentiationStepSize" : 0.0,
   "simplifiedPhysics" : true,
   "allowPlaying" : true
