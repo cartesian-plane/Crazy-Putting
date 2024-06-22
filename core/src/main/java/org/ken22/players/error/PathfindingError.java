@@ -3,10 +3,13 @@ package org.ken22.players.error;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.Tree;
+import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.pathfinding.GridPathfinding;
 import org.ken22.players.pathfinding.Node;
 import org.ken22.players.weighting.Weighting;
 import org.ken22.screens.GolfScreen;
+
+import javax.swing.plaf.nimbus.State;
 
 public class PathfindingError implements ErrorFunction {
 
@@ -60,8 +63,8 @@ public class PathfindingError implements ErrorFunction {
     }
 
     @Override
-    public double calculateError(double ballX, double ballY) {
-        return pathfinding.calcPathDist(ballX, ballY);
+    public double calculateError(StateVector4 state) {
+        return pathfinding.calcPathDist(state.x(), state.y());
     }
 
     public Node project(double x, double y, double z) {

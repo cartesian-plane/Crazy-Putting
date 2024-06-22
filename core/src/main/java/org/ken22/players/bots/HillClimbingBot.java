@@ -50,11 +50,11 @@ public class HillClimbingBot implements Player {
             var curSol =  new StateVector4(currentState.x(), currentState.y(), currentBest.vx(), currentBest.vy());
             System.out.println("Current solution: " + curSol);
             var end = predict(currentState, currentBest.vx(), currentBest.vy(), course);
-            System.out.println("End state: " + end + "; Error: " + errorFunction.calculateError(end.x(), end.y()));
+            System.out.println("End state: " + end + "; Error: " + errorFunction.calculateError(end));
         } while (!converged);
 
         StateVector4 fin =  predict(currentState, currentBest.vx(), currentBest.vy(), course);
-        System.out.println(errorFunction.calculateError(fin.x(), fin.y()));
+        System.out.println(errorFunction.calculateError(fin));
         System.out.println("Final sstate: " + fin);
 
         return new StateVector4(currentState.x(), currentState.y(), currentBest.vx(), currentBest.vy());
@@ -95,7 +95,7 @@ public class HillClimbingBot implements Player {
 
             //System.out.println("Final state: " + finalState);
 
-            return errorFunction.calculateError(finalState.x(), finalState.y());
+            return errorFunction.calculateError(finalState);
         };
 
         this.vyError = (vy) -> {
@@ -107,7 +107,7 @@ public class HillClimbingBot implements Player {
 
             //System.out.println("Final state: " + finalState);
 
-            return errorFunction.calculateError(finalState.x(), finalState.y());
+            return errorFunction.calculateError(finalState);
         };
     }
 }
