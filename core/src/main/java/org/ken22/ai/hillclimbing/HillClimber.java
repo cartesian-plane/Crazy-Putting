@@ -2,7 +2,6 @@ package org.ken22.ai.hillclimbing;
 
 import org.ken22.ai.Heuristic;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
 
 import java.util.*;
