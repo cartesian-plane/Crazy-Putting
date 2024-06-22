@@ -1,16 +1,16 @@
 package org.ken22.ai.hillclimbing;
 
-import org.ken22.ai.Heuristic;
+import org.ken22.ai.Evaluator;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.vectors.StateVector4;
+import org.ken22.players.error.ErrorFunction;
+import org.ken22.players.error.EuclideanError;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * <p>This class contains a simple steepest-descent hill-climbing, for achieving a hole-in one.</p>
@@ -54,7 +54,8 @@ public class HillClimber {
     private final int MAX_RESTARTS;
     private final GolfCourse course;
     private final StateVector4 initialState;
-    private final Heuristic heuristicFunction;
+    private final ErrorFunction heuristicFunction;
+    private final Evaluator evaluator;
 
     public HillClimber(GolfCourse course) {
         this.course = course;
@@ -62,7 +63,10 @@ public class HillClimber {
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = 10;
         this.MAX_RESTARTS = 10;
-        this.heuristicFunction = Heuristic.EUCLIDIAN2D;
+        var errorFunction = new EuclideanError();
+        errorFunction.init(this.course);
+        this.heuristicFunction = errorFunction;
+        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
         var initialX = course.ballX();
         var initialY = course.ballY();
 
@@ -77,7 +81,9 @@ public class HillClimber {
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = maxSidewaysMoves;
         this.MAX_RESTARTS = maxRestarts;
-        this.heuristicFunction = Heuristic.EUCLIDIAN2D;
+        this.heuristicFunction = new EuclideanError();
+        this.heuristicFunction.init(this.course);
+        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
         var initialX = course.ballX();
         var initialY = course.ballY();
 
@@ -94,10 +100,12 @@ public class HillClimber {
         this.MAX_RESTARTS = 10;
         this.initialState = initialState;
         // default heuristic function
-        this.heuristicFunction = Heuristic.EUCLIDIAN2D;
+        this.heuristicFunction = new EuclideanError();
+        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
+        this.heuristicFunction.init(this.course);
     }
 
-    public HillClimber(GolfCourse course, StateVector4 initialState, Heuristic heuristicFunction) {
+    public HillClimber(GolfCourse course, StateVector4 initialState, ErrorFunction heuristicFunction) {
         this.course = course;
         this.DELTA = 0.05;
         this.THRESHOLD = course.targetRadius();
@@ -106,6 +114,8 @@ public class HillClimber {
         this.initialState = initialState;
         // default heuristic function
         this.heuristicFunction = heuristicFunction;
+        this.heuristicFunction.init(this.course);
+        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
     }
 
     /**
@@ -140,14 +150,14 @@ public class HillClimber {
             while (sidewaysMoves < MAX_SIDEWAYS_MOVES) {
                 System.out.println("Sideways move: " + sidewaysMoves);
 
-                double currentStateValue = evaluateState(currentState);
+                double currentStateValue = evaluator.evaluateState(currentState);
                 System.out.println("Current state value: " + currentStateValue);
 
                 var neighbours = generateNeighbours(currentState);
 //                for(StateVector4 neighbour : neighbours) {
 //                    System.out.println(neighbour);
 //                }
-                var neighbourEvaluations = evaluateNeighbours(neighbours);
+                var neighbourEvaluations = evaluator.evaluateNeighbours(neighbours);
                 var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
 
                 double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
@@ -227,36 +237,6 @@ public class HillClimber {
         return neighbours;
     }
 
-
-    /**
-     * <p>Evaluates each neighbour by the cost function h.</p>
-     *
-     * The cost function is the Euclidean distance from the target at the moment the ball stops,
-     * (lower is better)
-     *
-     * @param neighbours list of neighbours
-     * @return Map of {@code (neighbour, h-value)} pairs
-     */
-    private Map<StateVector4, Double> evaluateNeighbours(List<StateVector4> neighbours) {
-        return neighbours.parallelStream()
-            .collect(Collectors.toMap(
-                Function.identity(),
-                this::evaluateState
-            ));
-    }
-
-    /**
-     * <p>Evaluates a state by the cost function h.</p>
-     * <p>
-     * The cost function is defined as the Euclidean distance from the target at the moment the ball stops,
-     * (lower is better).
-     *
-     * @param state the state to evaluate
-     * @return h (cost function value)
-     */
-    private double evaluateState(StateVector4 state) {
-        return heuristicFunction.apply(state, course);
-    }
 
     /**
      * <p>Generate a random speed vector.</p>
