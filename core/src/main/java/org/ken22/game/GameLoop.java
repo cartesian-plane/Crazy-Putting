@@ -11,18 +11,14 @@ public class GameLoop {
     private PhysicsEngine physicsEngine;
     private HumanPlayer humanPlayer;
     private GolfCourse course;
-    private Camera camera;
     private int shotCount;
     private boolean ballInMotion;
     private StateVector4 lastValidState;
 
-
-
     //recieve stuff
-    public GameLoop(PhysicsEngine physicsEngine, GolfCourse course, Camera camera) {
+    public GameLoop(PhysicsEngine physicsEngine, GolfCourse course) {
         this.physicsEngine = physicsEngine;
         this.course = course;
-        this.camera = camera;
         this.humanPlayer = new HumanPlayer();
         this.shotCount = 0;
         this.ballInMotion = false;
@@ -65,7 +61,7 @@ public class GameLoop {
     //get the player input for a shot with Y and X velocities
     private void promptHumanPlayer() {
         StateVector4 currentState = physicsEngine.getTrajectory().get(physicsEngine.getTrajectory().size() - 1);
-        StateVector4 velocities = humanPlayer.play(currentState, course);
+        StateVector4 velocities = humanPlayer.play(currentState);
 
         // setting the new velocities
         StateVector4 newState = new StateVector4(

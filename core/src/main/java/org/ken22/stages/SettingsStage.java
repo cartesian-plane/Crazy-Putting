@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.settings.GeneralSettings;
-import org.ken22.input.settings.ODESolverType;
 import org.ken22.screens.ScreenManager;
 
 import java.io.File;
@@ -33,7 +32,7 @@ public class SettingsStage extends Stage {
     private CheckBox allowPlayingCheckBox;
 
     // data holder for the settings
-    public GeneralSettings settings;
+    private GeneralSettings settings;
 
     public SettingsStage(ScreenManager manager) {
         super(viewport);
@@ -105,24 +104,12 @@ public class SettingsStage extends Stage {
     private void saveSettings() {
 
         // copy the settings into the settings object
-        switch (odeSolverBox.getSelected()) {
-            case "Euler":
-                settings.solverType = ODESolverType.EULER;
-                break;
-            case "Runge-Kutta 2":
-                settings.solverType = ODESolverType.RUNGE_KUTTA_2;
-                break;
-            case "Runge-Kutta 4":
-                settings.solverType = ODESolverType.RUNGE_KUTTA_4;
-                break;
-        }
+        settings.solver = odeSolverBox.getSelected();
         settings.stepSize = Double.parseDouble(stepSizeField.getText());
         settings.differentiator = differentiatorBox.getSelected();
         settings.differentiationStepSize = Double.parseDouble(differentiationField.getText());
         settings.useSimplifiedPhysics = simplifiedPhysicsCheckBox.isChecked();
         settings.allowPlaying = allowPlayingCheckBox.isChecked();
-
-        this.manager.generalSettings = this.settings;
 
         // save the new settings in the .json
 
@@ -147,7 +134,6 @@ public class SettingsStage extends Stage {
             settings = mapper.readValue(new File("input/settings/default-settings.json"),
                 GeneralSettings.class);
 
-            this.manager.generalSettings = this.settings;
             // make the UI reflect the loaded settings
             odeSolverBox.setSelected(settings.solver);
             stepSizeField.setText(String.valueOf(settings.stepSize));

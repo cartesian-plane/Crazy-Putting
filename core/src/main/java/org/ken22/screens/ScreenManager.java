@@ -11,6 +11,8 @@ import org.ken22.input.settings.BotSettings;
 import org.ken22.input.settings.GeneralSettings;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physics.PhysicsFactory;
+import org.ken22.players.BotFactory;
 import org.ken22.stages.*;
 
 import java.io.File;
@@ -76,7 +78,7 @@ public class ScreenManager extends ScreenAdapter {
         if(this.currentScreen != null) this.currentScreen.dispose();
 
         // TODO implement settings
-        this.currentScreen = new GolfScreen(selectedCourse);
+        this.currentScreen = new GolfScreen(selectedCourse, new BotFactory(botSettings), new PhysicsFactory(generalSettings));
         this.isStage = false;
         // Gdx.input.setInputProcessor(this.currentScreen);
     }
