@@ -26,7 +26,7 @@ public class BotSettingsStage extends Stage {
     private ScrollPane scrollPane;
     private TextButton backButton;
 
-    private SelectBox<BotType> botSelector;
+
     private SelectBox<LocalSearchType> localSearchSelector;
     private SelectBox<GridPathfindingType> graphAlgorithmSelector;
     private TextField randomRestarts;  // random restart count for the hill-climber
@@ -58,10 +58,6 @@ public class BotSettingsStage extends Stage {
 
         this.addActor(scrollPane);
 
-        table.add(new Label("Bot", skin));
-        botSelector = new SelectBox<>(skin);
-        botSelector.setItems(BotType.values());
-        table.add(botSelector);
 
         table.add(new Label("Local search", skin));
         localSearchSelector = new SelectBox<>(skin);
@@ -117,27 +113,9 @@ public class BotSettingsStage extends Stage {
 
         loadSettings();
 
-
-        // listeners
-        botSelector.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (botSelector.getSelected().equals(BotType.PLANAR)) {
-                    localSearchSelector.setSelected(LocalSearchType.NONE);
-                    localSearchSelector.setDisabled(true);
-
-                    graphAlgorithmSelector.setSelected(GridPathfindingType.NONE);
-                    graphAlgorithmSelector.setDisabled(true);
-                } else {
-                    graphAlgorithmSelector.setDisabled(false);
-                    localSearchSelector.setDisabled(false);
-                }
-            }
-        });
     }
 
     private void saveSettings() {
-        settings.botType = botSelector.getSelected();
         settings.localSearchType = localSearchSelector.getSelected();
         settings.gridPathfindingType = graphAlgorithmSelector.getSelected();
         settings.differentiatorType = differentiatorBox.getSelected();
@@ -172,7 +150,6 @@ public class BotSettingsStage extends Stage {
                 BotSettings.class);
             this.manager.botSettings = this.settings;
             // make the UI reflect the loaded settings
-            botSelector.setSelected(settings.botType);
             localSearchSelector.setSelected(settings.localSearchType);
             graphAlgorithmSelector.setSelected(settings.gridPathfindingType);
             randomRestarts.setText(String.valueOf(settings.randomRestarts));

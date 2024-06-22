@@ -1,5 +1,4 @@
 {
-  "botType" : "MAZE_EXPLORER",
   "odesolverType" : "RK4",
   "differentiatorType" : "THREE_POINT_CENTERED",
   "stepSize" : 0.001,

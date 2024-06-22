@@ -12,8 +12,6 @@ import java.nio.file.Paths;
 
 public class BotSettings {
     @JsonProperty
-    public BotType botType;
-    @JsonProperty
     public ODESolverType odesolverType;
     @JsonProperty
     public DifferentiatorType differentiatorType;
@@ -32,7 +30,6 @@ public class BotSettings {
 
     public static void main(String[] args) {
         var settings = new BotSettings();
-        settings.botType = BotType.MAZE_EXPLORER;
         settings.odesolverType = ODESolverType.RK4;
         settings.stepSize = 0.001;
         settings.differentiatorType = DifferentiatorType.THREE_POINT_CENTERED;
