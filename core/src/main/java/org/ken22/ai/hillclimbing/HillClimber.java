@@ -1,5 +1,6 @@
 package org.ken22.ai.hillclimbing;
 
+import org.ken22.ai.Heuristic;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
@@ -12,14 +13,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static org.ken22.physics.utils.PhysicsUtils.magnitude;
-
 /**
- * <p>This class contains a simple steepest-descent hill-climbing, for achieving a hole-in one</p>
+ * <p>This class contains a simple steepest-descent hill-climbing, for achieving a hole-in one.</p>
  *
  * <p>The state space is discretized, and the best neighbours are followed.</p>
  * <p>To avoid getting stuck in a plateau, a certain amount of sideways moves are allowed.</p>
- * <p>If the maximum amount of sideways moves is reached, the search is stopped and the best solution returned.</p>
+ * <p>A maximum number of random restarts can be specified, meaning the search will eventually reach a solution,
+ * given enough random restarts.</p>
+ * <p>If the number of random restarts is set to 0, no random restarts will be performed.</p>
+ * <p>If the maximum amount of sideways moves is reached, the search restarts and, if the max number of restarts
+ * has been reached, the best solution is returned.</p>
  *
  *
  * <p><b>Note: </b></p>
@@ -49,14 +52,33 @@ public class HillClimber {
     private final double DELTA;
     private final double THRESHOLD;
     private final int MAX_SIDEWAYS_MOVES;
+    private final int MAX_RESTARTS;
     private final GolfCourse course;
     private final StateVector4 initialState;
+    private final Heuristic heuristicFunction;
 
     public HillClimber(GolfCourse course) {
         this.course = course;
         this.DELTA = 0.01;
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = 10;
+        this.MAX_RESTARTS = 10;
+        this.heuristicFunction = Heuristic.EUCLIDIAN2D;
+        var initialX = course.ballX();
+        var initialY = course.ballY();
+
+        // choose random speed vector to start with
+        var speedVector = getRandomSpeedVector();
+        initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
+    }
+
+    public HillClimber(GolfCourse course, int maxRestarts, int maxSidewaysMoves) {
+        this.course = course;
+        this.DELTA = 0.01;
+        this.THRESHOLD = course.targetRadius();
+        this.MAX_SIDEWAYS_MOVES = maxSidewaysMoves;
+        this.MAX_RESTARTS = maxRestarts;
+        this.heuristicFunction = Heuristic.EUCLIDIAN2D;
         var initialX = course.ballX();
         var initialY = course.ballY();
 
@@ -70,7 +92,21 @@ public class HillClimber {
         this.DELTA = 0.01;
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = 10;
+        this.MAX_RESTARTS = 10;
         this.initialState = initialState;
+        // default heuristic function
+        this.heuristicFunction = Heuristic.EUCLIDIAN2D;
+    }
+
+    public HillClimber(GolfCourse course, StateVector4 initialState, Heuristic heuristicFunction) {
+        this.course = course;
+        this.DELTA = 0.05;
+        this.THRESHOLD = course.targetRadius();
+        this.MAX_SIDEWAYS_MOVES = 10;
+        this.MAX_RESTARTS = 10;
+        this.initialState = initialState;
+        // default heuristic function
+        this.heuristicFunction = heuristicFunction;
     }
 
     /**
@@ -95,39 +131,58 @@ public class HillClimber {
 
         var currentState = initialState;
 
-        int sidewaysMoves = 0;
+        int restartCount = 0;
 
-        while (sidewaysMoves < MAX_SIDEWAYS_MOVES) {
-            var neighbours = generateNeighbours(currentState);
-            var neighbourEvaluations = evaluateNeighbours(neighbours);
-            var bestNeighbour = Collections.max(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
+        while (restartCount <= MAX_RESTARTS) {
 
-            double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
+            int sidewaysMoves = 0;
+            System.out.println("Restart count: " + restartCount);
+
+            while (sidewaysMoves < MAX_SIDEWAYS_MOVES) {
+                System.out.println("Sideways move: " + sidewaysMoves);
+
+                double currentStateValue = evaluateState(currentState);
+                System.out.println("Current state value: " + currentStateValue);
+
+                var neighbours = generateNeighbours(currentState);
+//                for(StateVector4 neighbour : neighbours) {
+//                    System.out.println(neighbour);
+//                }
+                var neighbourEvaluations = evaluateNeighbours(neighbours);
+                var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
+
+                double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
+                System.out.println("Best neighbour value: " + bestNeighbourValue);
+
+                if (bestNeighbourValue <= currentStateValue) {
+                    sidewaysMoves = 0;
+                    System.out.println("Improvement? true");
+                } else {
+                    sidewaysMoves += 1;
+                    System.out.println("Improvement? false");
+                }
+                currentState = bestNeighbour;
 
 
-            double currentStateValue = evaluateState(currentState);
-
-            if (bestNeighbourValue <= currentStateValue) {
-                sidewaysMoves = 0;
-            } else {
-                sidewaysMoves += 1;
+                // check if a solution is reached
+                if (bestNeighbourValue < THRESHOLD) {
+                    foundSolution = true;
+                    break;
+                }
             }
-            currentState = bestNeighbour;
 
-
-            // check if a solution is reached
-            if (bestNeighbourValue < THRESHOLD) {
-                foundSolution = true;
+            if (foundSolution) {
+                var message = "Found solution! " + "vx: " + currentState.vx() + ", vy: " + currentState.vy();
+                LOGGER.log(Level.INFO, message);
                 break;
-            }
-        }
+            } else {
+                restartCount += 1;
+                double[] randomSpeedVector = getRandomSpeedVector();
 
-        if (foundSolution) {
-            var message = "Found solution! " + "vx: " + currentState.vx() + ", vy: " + currentState.vy();
-            LOGGER.log(Level.INFO, message);
-        } else {
-            var message = "Stopped early! " + "vx: " + currentState.vx() + ", vy: " + currentState.vy();
-            LOGGER.log(Level.WARNING, message);
+                // choose a new random starting point
+                currentState = new StateVector4(initialState.x(), initialState.y(), randomSpeedVector[0],
+                    randomSpeedVector[1]);
+            }
         }
 
         return currentState;
@@ -136,7 +191,7 @@ public class HillClimber {
     /**
      * <p>Generates a given state's neighbours by discretizing its neighborhood.</p>
      *
-     * <p>The state space is discretized by changing either one, or both of the vector components
+     * <p>The state space is discretised by changing either one, or both of the vector components
      * by a fixed amount &plusmn;δ.</p>
      * <p>In the case of the 2-d search space for this problem, 4 neighbours will be generated.</p>
      *
@@ -201,22 +256,7 @@ public class HillClimber {
      * @return h (cost function value)
      */
     private double evaluateState(StateVector4 state) {
-        double targetX = this.course.targetXcoord();
-        double targetY = this.course.targetYcoord();
-        var engine = new PhysicsEngine(this.course, state);
-        while (!engine.isAtRest()) {
-            engine.nextStep();
-        }
-        if (engine.reachedTarget()) {
-            System.out.println("neighbour = " + state);
-            throw new RuntimeException("Engine reached the target!");
-        }
-        StateVector4 lastVector = engine.getTrajectory().getLast();
-        // get the position where the ball stopped
-        double finalX = lastVector.x();
-        double finalY = lastVector.y();
-        // compute the cost function h
-        return magnitude(finalX - targetX, finalY - targetY);
+        return heuristicFunction.apply(state, course);
     }
 
     /**
@@ -228,10 +268,9 @@ public class HillClimber {
     private double[] getRandomSpeedVector() {
         double[] vector = new double[2];
         Random random = new Random();
-        do {
-            vector[0] = random.nextDouble() * 5 * 2 - 5; // random number between -5 and 5
-            vector[1] = random.nextDouble() * 5 * 2 - 5; // random number between -5 and 5
-        } while (magnitude(vector) > 5);
+        vector[0] = random.nextDouble() * 5 * 2 - 5; // random number between -5 and 5
+        double x = Math.sqrt(25-vector[0]*vector[0]);
+        vector[1] = random.nextDouble()*2*x-x; // random number between -5 and 5
         return vector;
 
     }
