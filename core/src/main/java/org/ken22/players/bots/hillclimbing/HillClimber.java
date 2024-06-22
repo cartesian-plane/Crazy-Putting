@@ -1,8 +1,8 @@
-package org.ken22.ai.hillclimbing;
+package org.ken22.players.bots.hillclimbing;
 
-import org.ken22.ai.Evaluator;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.vectors.StateVector4;
+import org.ken22.players.Player;
 import org.ken22.players.error.ErrorFunction;
 import org.ken22.players.error.EuclideanError;
 
@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  * </ul>
  */
 @SuppressWarnings({"unused", "DuplicatedCode"})
-public class HillClimber {
+public class HillClimber implements Player {
 
     private static final Logger LOGGER = Logger.getLogger(HillClimber.class.getName());
 
@@ -118,6 +118,12 @@ public class HillClimber {
         this.evaluator = new Evaluator(this.heuristicFunction, this.course);
     }
 
+    @Override
+    public StateVector4 play(StateVector4 state) {
+        return search(state);
+    }
+
+
     /**
      * <p>Performs steepest-descent hill-climbing with sideways moves, to find a hole-in-one solution.</p>
      *
@@ -132,7 +138,86 @@ public class HillClimber {
      *
      * @return the best solution found so far (at the moment of stopping)
      */
-    public StateVector4 search() {
+    private StateVector4 search(StateVector4 state) {
+
+        // flag that stores whether a solution was found
+        // if the search stops before a solution is found, a logging message is displayed
+        boolean foundSolution = false;
+
+        var currentState = initialState;
+
+        int restartCount = 0;
+
+        while (restartCount <= MAX_RESTARTS) {
+
+            int sidewaysMoves = 0;
+            System.out.println("Restart count: " + restartCount);
+
+            while (sidewaysMoves < MAX_SIDEWAYS_MOVES) {
+                System.out.println("Sideways move: " + sidewaysMoves);
+
+                double currentStateValue = evaluator.evaluateState(currentState);
+                System.out.println("Current state value: " + currentStateValue);
+
+                var neighbours = generateNeighbours(currentState);
+//                for(StateVector4 neighbour : neighbours) {
+//                    System.out.println(neighbour);
+//                }
+                var neighbourEvaluations = evaluator.evaluateNeighbours(neighbours);
+                var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
+
+                double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
+                System.out.println("Best neighbour value: " + bestNeighbourValue);
+
+                if (bestNeighbourValue <= currentStateValue) {
+                    sidewaysMoves = 0;
+                    System.out.println("Improvement? true");
+                } else {
+                    sidewaysMoves += 1;
+                    System.out.println("Improvement? false");
+                }
+                currentState = bestNeighbour;
+
+
+                // check if a solution is reached
+                if (bestNeighbourValue < THRESHOLD) {
+                    foundSolution = true;
+                    break;
+                }
+            }
+
+            if (foundSolution) {
+                var message = "Found solution! " + "vx: " + currentState.vx() + ", vy: " + currentState.vy();
+                LOGGER.log(Level.INFO, message);
+                break;
+            } else {
+                restartCount += 1;
+                double[] randomSpeedVector = getRandomSpeedVector();
+
+                // choose a new random starting point
+                currentState = new StateVector4(initialState.x(), initialState.y(), randomSpeedVector[0],
+                    randomSpeedVector[1]);
+            }
+        }
+
+        return currentState;
+    }
+
+    /**
+     * <p>Performs steepest-descent hill-climbing with sideways moves, to find a hole-in-one solution.</p>
+     *
+     * <p>If too many sideways moves are made, the search will stop.</p>
+     *
+     *
+     * <p><b>Note: </b></p>
+     * <ul>
+     *     Hill-climbing is an anytime algorithm and the solution returned may not always achieve a hole-in-one
+     *     for all cases.
+     * </ul>
+     *
+     * @return the best solution found so far (at the moment of stopping)
+     */
+    private StateVector4 search() {
 
         // flag that stores whether a solution was found
         // if the search stops before a solution is found, a logging message is displayed

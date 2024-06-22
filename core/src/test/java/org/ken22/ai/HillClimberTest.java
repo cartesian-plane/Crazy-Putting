@@ -1,23 +1,5 @@
 package org.ken22.ai;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import org.ken22.ai.hillclimbing.HillClimber;
-import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.physics.engine.PhysicsEngine;
-import org.ken22.physics.vectors.StateVector4;
-import org.ken22.utils.MathUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 public class HillClimberTest {
 //
 //    private double tolerance = 0.02;

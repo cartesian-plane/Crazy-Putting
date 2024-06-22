@@ -1,4 +1,4 @@
-package org.ken22.ai.hillclimbing;
+package org.ken22.players.bots.hillclimbing;
 
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
