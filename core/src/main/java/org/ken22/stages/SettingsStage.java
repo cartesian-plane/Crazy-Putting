@@ -7,8 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import org.ken22.input.courseinput.Settings;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.ken22.input.GeneralSettings;
 import org.ken22.screens.ScreenManager;
+
+import java.io.File;
+import java.io.IOException;
 
 public class SettingsStage extends Stage {
 
@@ -26,6 +30,9 @@ public class SettingsStage extends Stage {
     private TextField differentiationField;
     private CheckBox simplifiedPhysicsCheckBox;
     private CheckBox allowPlayingCheckBox;
+
+    // data holder for the settings
+    private GeneralSettings settings;
 
     public SettingsStage(ScreenManager manager) {
         super(viewport);
@@ -95,24 +102,48 @@ public class SettingsStage extends Stage {
 
     // save settings
     private void saveSettings() {
-        Settings settings = Settings.getInstance();
-        settings.setOdeSolver(odeSolverBox.getSelected());
-        settings.setStepSize(Double.parseDouble(stepSizeField.getText()));
-        settings.setDifferentiation(Double.parseDouble(differentiationField.getText()));
-        settings.setDifferentiator(differentiatorBox.getSelected());
-        settings.setSimplifiedPhysics(simplifiedPhysicsCheckBox.isChecked());
-        settings.setAllowPlaying(allowPlayingCheckBox.isChecked());
+
+        // copy the settings into the settings object
+        settings.solver = odeSolverBox.getSelected();
+        settings.stepSize = Double.parseDouble(stepSizeField.getText());
+        settings.differentiator = differentiatorBox.getSelected();
+        settings.differentiationStepSize = Double.parseDouble(differentiationField.getText());
+        settings.useSimplifiedPhysics = simplifiedPhysicsCheckBox.isChecked();
+        settings.allowPlaying = allowPlayingCheckBox.isChecked();
+
+        // save the new settings in the .json
+
+        // Note: everything is written into the default settings, meaning there currently aren't multiple settings
+        // presets to choose from (unlike the courses, for instance).
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            mapper
+                .writerWithDefaultPrettyPrinter()
+                .writeValue(new File("input/settings/default-settings.json"), settings);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    // load settings
+    /**
+     * Loads the settings values from the default file.
+     */
     private void loadSettings() {
-        Settings settings = Settings.getInstance();
-        odeSolverBox.setSelected(settings.getOdeSolver());
-        stepSizeField.setText(Double.toString(settings.getStepSize()));
-        differentiationField.setText(Double.toString(settings.getDifferentiation()));
-        differentiatorBox.setSelected(settings.getDifferentiator());
-        simplifiedPhysicsCheckBox.setChecked(settings.isSimplifiedPhysics());
-        allowPlayingCheckBox.setChecked(settings.isAllowPlaying());
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            settings = mapper.readValue(new File("input/settings/default-settings.json"),
+                GeneralSettings.class);
+
+            // make the UI reflect the loaded settings
+            odeSolverBox.setSelected(settings.solver);
+            stepSizeField.setText(String.valueOf(settings.stepSize));
+            differentiatorBox.setSelected(settings.differentiator);
+            differentiationField.setText(String.valueOf(settings.differentiationStepSize));
+            simplifiedPhysicsCheckBox.setChecked(settings.useSimplifiedPhysics);
+            allowPlayingCheckBox.setChecked(settings.allowPlaying);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
