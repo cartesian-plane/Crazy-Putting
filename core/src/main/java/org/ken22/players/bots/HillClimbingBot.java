@@ -42,7 +42,7 @@ public class HillClimbingBot implements Player {
     }
 
     @Override
-    public StateVector4 play(StateVector4 state, GolfCourse course) {
+    public StateVector4 play(StateVector4 state) {
         init(state, course);
 
         do {

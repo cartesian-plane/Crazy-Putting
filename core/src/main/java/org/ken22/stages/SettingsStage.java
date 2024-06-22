@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.ken22.input.GeneralSettings;
+import org.ken22.input.settings.GeneralSettings;
 import org.ken22.screens.ScreenManager;
 
 import java.io.File;

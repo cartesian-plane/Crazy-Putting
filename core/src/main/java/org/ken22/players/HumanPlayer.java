@@ -167,7 +167,7 @@ public class HumanPlayer implements Player {
     ////////////////////  METHODS //////////////////////////////////////////////
 
     //THE method that will take the state and give player option to shoot using vel in y and x
-    public StateVector4 play(StateVector4 state, GolfCourse course) {
+    public StateVector4 play(StateVector4 state) {
         this.xPosition = state.x();
         this.yPosition = state.y();
         updateLabels();

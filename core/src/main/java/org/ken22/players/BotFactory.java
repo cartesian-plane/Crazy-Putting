@@ -1,6 +1,7 @@
 package org.ken22.players;
 
-import org.ken22.input.BotSettings;
+import org.ken22.input.settings.BotSettings;
+import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.players.bots.HillClimbingBot;
 import org.ken22.players.bots.SimplePlanarApproximationBot;
 
@@ -11,8 +12,8 @@ public class BotFactory {
         this.settings = settings;
     }
 
-    public HillClimbingBot hillClimbingBot() {
-        return new HillClimbingBot(settings.errorFunction, settings.differentiator, settings.odesolver, settings.stepSize);
+    public HillClimbingBot hillClimbingBot(GolfCourse course) {
+        return new HillClimbingBot(course, settings.errorFunction, settings.differentiator, settings.odesolver, settings.stepSize);
     }
 
     public SimplePlanarApproximationBot planarApproximationBot() {

@@ -1,4 +1,4 @@
-package org.ken22.input;
+package org.ken22.input.settings;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,8 +15,6 @@ public class GeneralSettings {
     public double stepSize;
     @JsonProperty("Differentiator")
     public String differentiator;
-    @JsonProperty("differentiationStepSize")
-    public double differentiationStepSize;
     @JsonProperty("simplifiedPhysics")
     public boolean useSimplifiedPhysics;
     @JsonProperty("allowPlaying")

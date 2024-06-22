@@ -13,10 +13,7 @@ public class EuclideanError implements ErrorFunction {
         this.course = course;
     }
 
-    @Override
-    public double calculateError(StateVector4 stateVector4) {
-        var ballX = stateVector4.x();
-        var ballY = stateVector4.y();
-        return magnitude(ballX - course.targetXcoord, ballY - course.targetYcoord);
+    public double calculateError(StateVector4 state) {
+        return magnitude(state.x() - course.targetXcoord, state.y() - course.targetYcoord);
     }
 }

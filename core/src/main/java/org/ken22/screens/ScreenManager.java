@@ -7,12 +7,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import org.ken22.Application;
 import org.ken22.controller.ApplicationController;
-import org.ken22.input.BotSettings;
-import org.ken22.input.GeneralSettings;
+import org.ken22.input.settings.BotSettings;
+import org.ken22.input.settings.GeneralSettings;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.input.courseinput.Settings;
-import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.stages.*;
 
 import java.io.File;

@@ -1,4 +1,4 @@
-package org.ken22.input;
+package org.ken22.input.settings;
 
 public enum LocalSearchType {
     NONE("None"),
