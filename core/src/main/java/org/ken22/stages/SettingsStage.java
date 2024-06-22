@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.GeneralSettings;
-import org.ken22.input.courseinput.Settings;
 import org.ken22.screens.ScreenManager;
 
 import java.io.File;

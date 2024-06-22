@@ -1,11 +1,7 @@
 package org.ken22.input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.odeinput.GraphAlgorithmType;
-
-import java.io.File;
-import java.io.IOException;
 
 public class BotSettings {
     @JsonProperty

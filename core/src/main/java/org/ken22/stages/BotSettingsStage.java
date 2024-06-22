@@ -11,12 +11,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.BotSettings;
 import org.ken22.input.BotType;
-import org.ken22.input.GeneralSettings;
 import org.ken22.input.LocalSearchType;
 import org.ken22.input.odeinput.GraphAlgorithmType;
-import org.ken22.physics.odesolvers.ODESolver;
 import org.ken22.screens.ScreenManager;
-import org.ken22.utils.userinput.TextFieldType;
 import org.ken22.utils.userinput.UIElementFactory;
 
 import java.io.File;

@@ -1,10 +1,6 @@
 package org.ken22.input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * Simple class to store the settings chosen by the user.

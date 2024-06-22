@@ -6,9 +6,9 @@ public enum BotType {
     MAZE_EXPLORER("Maze explorer");
 
 
-    private String name;
+    private final String name;
 
-    private BotType(String name) {
+    BotType(String name) {
         this.name = name;
     }
     @Override
