@@ -43,6 +43,8 @@ public class BotSettingsStage extends Stage {
 
     public BotSettingsStage(ScreenManager manager, BotSettings settings) {
         super(viewport);
+
+        this.settings = settings;
         this.manager = manager;
 
         this.table = new Table();
