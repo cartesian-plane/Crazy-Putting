@@ -1,11 +1,9 @@
 package org.ken22.stages;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -111,7 +109,7 @@ public class BotSettingsStage extends Stage {
         table.add(saveButton).pad(10).colspan(2).center().row();
         table.add(backButton).pad(10).colspan(2).center().row();
 
-        loadSettings();
+        loadButtons();
 
     }
 
@@ -143,19 +141,11 @@ public class BotSettingsStage extends Stage {
 
     }
 
-    private void loadSettings() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            settings = mapper.readValue(new File("input/settings/default-bot-settings.json"),
-                BotSettings.class);
-            this.manager.botSettings = this.settings;
+    private void loadButtons() {
             // make the UI reflect the loaded settings
             localSearchSelector.setSelected(settings.localSearchType);
             graphAlgorithmSelector.setSelected(settings.gridPathfindingType);
             randomRestarts.setText(String.valueOf(settings.randomRestarts));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
