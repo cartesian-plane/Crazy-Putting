@@ -6,12 +6,14 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.settings.*;
 import org.ken22.input.odeinput.GridPathfindingType;
 import org.ken22.screens.ScreenManager;
 import org.ken22.utils.userinput.UIElementFactory;
 
+import javax.swing.text.View;
 import java.io.File;
 import java.io.IOException;
 
@@ -20,10 +22,11 @@ import static org.ken22.utils.userinput.UIElementFactory.createTextField;
 public class BotSettingsStage extends Stage {
 
     private ScreenManager manager;
+
+    private static Viewport viewport = new ScreenViewport();
     private Table table;
     private ScrollPane scrollPane;
     private TextButton backButton;
-
 
     private SelectBox<LocalSearchType> localSearchSelector;
     private SelectBox<GridPathfindingType> graphAlgorithmSelector;
@@ -35,13 +38,11 @@ public class BotSettingsStage extends Stage {
     private SelectBox<WeightingType> weightingBox;
     private TextField stepSizeField;
 
-
-
     // data holder for the settings
     private BotSettings settings;
 
-    public BotSettingsStage(ScreenManager manager) {
-        super(new ScreenViewport());
+    public BotSettingsStage(ScreenManager manager, BotSettings settings) {
+        super(viewport);
         this.manager = manager;
 
         this.table = new Table();
@@ -152,5 +153,9 @@ public class BotSettingsStage extends Stage {
     public void dispose() {
         super.dispose();
         backButton.getSkin().dispose();
+    }
+
+    public Viewport getViewport() {
+        return viewport;
     }
 }
