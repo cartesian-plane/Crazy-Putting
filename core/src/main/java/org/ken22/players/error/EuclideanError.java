@@ -6,7 +6,7 @@ import static org.ken22.physics.utils.PhysicsUtils.magnitude;
 public class EuclideanError implements ErrorFunction {
     private GolfCourse course;
 
-    public EuclideanError(GolfCourse course) {
+    public void init(GolfCourse course) {
         this.course = course;
     }
 

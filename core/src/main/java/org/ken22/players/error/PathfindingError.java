@@ -18,11 +18,14 @@ public class PathfindingError implements ErrorFunction {
     private double xMin, xMax, yMin, yMax;
     private double[][] terrainGrid;
 
-    public PathfindingError(GolfCourse course, GridPathfinding pathfinding, Weighting weighting) {
-        this.course = course;
-        this.expr = course.expression;
+    public PathfindingError(GridPathfinding pathfinding, Weighting weighting) {
         this.pathfinding = pathfinding;
         this.weighting = weighting;
+    }
+
+    public void init(GolfCourse course) {
+        this.course = course;
+        this.expr = course.expression;
 
         // generate terrain grid // we use Double.MAX_VALUE to enconde where the ball can't go
         xMin = course.ballX() < course.targetXcoord() ? course.ballX() - GolfScreen.PADDING_SIZE : course.targetXcoord();
