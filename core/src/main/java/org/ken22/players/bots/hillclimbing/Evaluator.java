@@ -1,4 +1,4 @@
-package org.ken22.ai;
+package org.ken22.players.bots.hillclimbing;
 
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.engine.PhysicsEngine;

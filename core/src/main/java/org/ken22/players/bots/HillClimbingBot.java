@@ -16,6 +16,7 @@ import java.util.function.Function;
 /**
  * A bot that uses hill climbing on the input space of initial velocities to find the best shot.
  */
+@Deprecated
 public class HillClimbingBot implements Player {
     private static final double CONVERGENCE_THRESHOLD = 0.1;
     private boolean converged = false;
