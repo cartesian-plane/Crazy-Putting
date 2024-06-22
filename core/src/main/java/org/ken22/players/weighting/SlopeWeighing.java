@@ -7,6 +7,8 @@ public class SlopeWeighing implements Weighting {
     public double calcWeight(Node node1, Node node2) {
         if(node1.z == Double.MAX_VALUE || node2.z == Double.MAX_VALUE)
             return Double.MAX_VALUE;
-        return node1.z - node2.z; // since the distance between neighbors is the same, we can just return the difference in z values
+        // since the distance between neighbors is the same, we can just return the difference in z values
+        // always positive, so that it works with A*
+        return Math.max(node1.z - node2.z, 0);
     }
 }
