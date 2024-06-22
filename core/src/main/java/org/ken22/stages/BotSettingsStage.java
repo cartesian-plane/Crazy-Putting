@@ -9,10 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.ken22.input.settings.BotSettings;
-import org.ken22.input.settings.BotType;
-import org.ken22.input.settings.LocalSearchType;
-import org.ken22.input.odeinput.GraphAlgorithmType;
+import org.ken22.input.settings.*;
+import org.ken22.input.odeinput.GridPathfindingType;
 import org.ken22.screens.ScreenManager;
 import org.ken22.utils.userinput.UIElementFactory;
 
@@ -30,8 +28,15 @@ public class BotSettingsStage extends Stage {
 
     private SelectBox<BotType> botSelector;
     private SelectBox<LocalSearchType> localSearchSelector;
-    private SelectBox<GraphAlgorithmType> graphAlgorithmSelector;
+    private SelectBox<GridPathfindingType> graphAlgorithmSelector;
     private TextField randomRestarts;  // random restart count for the hill-climber
+
+    private SelectBox<ODESolverType> odeSolverBox;
+    private SelectBox<DifferentiatorType> differentiatorBox;
+    private SelectBox<ErrorFunctionType> errorFunctionBox;
+    private SelectBox<WeightingType> weightingBox;
+    private TextField stepSizeField;
+
 
 
     // data holder for the settings
@@ -65,7 +70,7 @@ public class BotSettingsStage extends Stage {
 
         table.add(new Label("Graph algorithm", skin));
         graphAlgorithmSelector = new SelectBox<>(skin);
-        graphAlgorithmSelector.setItems(GraphAlgorithmType.values());
+        graphAlgorithmSelector.setItems(GridPathfindingType.values());
         table.add(graphAlgorithmSelector);
 
         this.backButton = new TextButton("Back", skin);
@@ -81,6 +86,21 @@ public class BotSettingsStage extends Stage {
         randomRestarts = createTextField("10", UIElementFactory.TextFieldType.NUMERICAL);
         table.add(randomRestarts);
 
+        table.add(new Label("ODE Solver", skin));
+        odeSolverBox = new SelectBox<>(skin);
+        odeSolverBox.setItems(ODESolverType.values());
+
+
+        table.add(new Label("Step Size", skin));
+        stepSizeField = new TextField("", skin);
+
+        table.add(new Label("Differentiator", skin));
+        differentiatorBox = new SelectBox<>(skin);
+        differentiatorBox.setItems(DifferentiatorType.values());
+
+        table.add(new Label("Error Function", skin));
+        errorFunctionBox = new SelectBox<>(skin);
+        errorFunctionBox.setItems(ErrorFunctionType.values());
 
         this.table.defaults().pad(10);
         table.row();
@@ -106,7 +126,7 @@ public class BotSettingsStage extends Stage {
                     localSearchSelector.setSelected(LocalSearchType.NONE);
                     localSearchSelector.setDisabled(true);
 
-                    graphAlgorithmSelector.setSelected(GraphAlgorithmType.NONE);
+                    graphAlgorithmSelector.setSelected(GridPathfindingType.NONE);
                     graphAlgorithmSelector.setDisabled(true);
                 } else {
                     graphAlgorithmSelector.setDisabled(false);
@@ -119,7 +139,13 @@ public class BotSettingsStage extends Stage {
     private void saveSettings() {
         settings.botType = botSelector.getSelected();
         settings.localSearchType = localSearchSelector.getSelected();
-        settings.graphAlgorithmType = graphAlgorithmSelector.getSelected();
+        settings.gridPathfindingType = graphAlgorithmSelector.getSelected();
+        settings.differentiatorType = differentiatorBox.getSelected();
+        settings.errorFunctionType = errorFunctionBox.getSelected();
+        settings.weightingType = weightingBox.getSelected();
+        settings.odesolverType = odeSolverBox.getSelected();
+        settings.stepSize = Double.parseDouble(stepSizeField.getText());
+
         settings.randomRestarts = Integer.parseInt(randomRestarts.getText());
 
         this.manager.botSettings = this.settings;
@@ -148,7 +174,7 @@ public class BotSettingsStage extends Stage {
             // make the UI reflect the loaded settings
             botSelector.setSelected(settings.botType);
             localSearchSelector.setSelected(settings.localSearchType);
-            graphAlgorithmSelector.setSelected(settings.graphAlgorithmType);
+            graphAlgorithmSelector.setSelected(settings.gridPathfindingType);
             randomRestarts.setText(String.valueOf(settings.randomRestarts));
         } catch (IOException e) {
             e.printStackTrace();

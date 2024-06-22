@@ -1,13 +1,13 @@
 package org.ken22.input.odeinput;
 
-public enum GraphAlgorithmType {
+public enum GridPathfindingType {
     NONE("None"),
     A_STAR("A*"),
     BFS("BFS");
 
     private String name;
 
-    private GraphAlgorithmType(String name) {
+    private GridPathfindingType(String name) {
         this.name = name;
     }
 
