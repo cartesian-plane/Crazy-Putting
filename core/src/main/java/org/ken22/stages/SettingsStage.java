@@ -8,7 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.ken22.input.settings.DifferentiatorType;
 import org.ken22.input.settings.GeneralSettings;
+import org.ken22.input.settings.ODESolverType;
 import org.ken22.screens.ScreenManager;
 
 import java.io.File;
@@ -21,13 +23,12 @@ public class SettingsStage extends Stage {
     private static Viewport viewport = new ScreenViewport();
     private Table table;
     private ScrollPane scrollPane;
-    private SelectBox<String> odeSolverBox;
-    private SelectBox<String> differentiatorBox;
+    private SelectBox<ODESolverType> odeSolverBox;
+    private SelectBox<DifferentiatorType> differentiatorBox;
 
     private Skin skin;
 
     private TextField stepSizeField;
-    private TextField differentiationField;
     private CheckBox simplifiedPhysicsCheckBox;
     private CheckBox allowPlayingCheckBox;
 
@@ -51,7 +52,7 @@ public class SettingsStage extends Stage {
         // ODE solver
         table.add(new Label("ODE Solver", skin)).pad(10);
         odeSolverBox = new SelectBox<>(skin);
-        odeSolverBox.setItems("Euler", "Runge Kutta 2", "Runge Kutta 4");
+        odeSolverBox.setItems(ODESolverType.values());
         table.add(odeSolverBox).pad(10).row();
 
         // step size
@@ -59,15 +60,11 @@ public class SettingsStage extends Stage {
         stepSizeField = new TextField("", skin);
         table.add(stepSizeField).pad(10).row();
 
-        // differentiation
-        table.add(new Label("Differentiation", skin)).pad(10);
-        differentiationField = new TextField("", skin);
-        table.add(differentiationField).pad(10).row();
 
         // differentiator type
         table.add(new Label("Differentiator", skin)).pad(10);
         differentiatorBox = new SelectBox<>(skin);
-        differentiatorBox.setItems("Three Point Centered Difference", "Five Point Centered Difference");
+        differentiatorBox.setItems(DifferentiatorType.values());
         table.add(differentiatorBox).pad(10).row();
 
         // physics
@@ -104,10 +101,9 @@ public class SettingsStage extends Stage {
     private void saveSettings() {
 
         // copy the settings into the settings object
-        settings.solver = odeSolverBox.getSelected();
+        settings.solverType = odeSolverBox.getSelected();
         settings.stepSize = Double.parseDouble(stepSizeField.getText());
-        settings.differentiator = differentiatorBox.getSelected();
-        settings.differentiationStepSize = Double.parseDouble(differentiationField.getText());
+        settings.differentiatorType = differentiatorBox.getSelected();
         settings.useSimplifiedPhysics = simplifiedPhysicsCheckBox.isChecked();
         settings.allowPlaying = allowPlayingCheckBox.isChecked();
 
@@ -135,10 +131,9 @@ public class SettingsStage extends Stage {
                 GeneralSettings.class);
 
             // make the UI reflect the loaded settings
-            odeSolverBox.setSelected(settings.solver);
+            odeSolverBox.setSelected(settings.solverType);
             stepSizeField.setText(String.valueOf(settings.stepSize));
-            differentiatorBox.setSelected(settings.differentiator);
-            differentiationField.setText(String.valueOf(settings.differentiationStepSize));
+            differentiatorBox.setSelected(settings.differentiatorType);
             simplifiedPhysicsCheckBox.setChecked(settings.useSimplifiedPhysics);
             allowPlayingCheckBox.setChecked(settings.allowPlaying);
         } catch (IOException e) {
