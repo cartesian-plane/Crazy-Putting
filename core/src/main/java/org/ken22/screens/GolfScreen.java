@@ -71,7 +71,7 @@ public class GolfScreen extends ScreenAdapter {
 
     private Environment environment;
 
-    private BotFactory BotFactory;
+    private BotFactory botFactory;
     private SimplePlanarApproximationBot simpleBot;
     private HillClimbingBot hillClimbingBot;
     private HumanPlayer humanPlayer;
@@ -90,15 +90,15 @@ public class GolfScreen extends ScreenAdapter {
      * This is because the show() method is only called when the screen is set as the current screen
      * in the Game class, which is not the case here.
      */
-    public GolfScreen(GolfCourse course, BotFactory BotFactory, PhysicsFactory physicsFactory) {
+    public GolfScreen(GolfCourse course, BotFactory botFactory, PhysicsFactory physicsFactory) {
         this.course = course;
         this.expr = GolfExpression.expr(course);
 
-        this.BotFactory = BotFactory;
+        this.botFactory = botFactory;
         this.physicsFactory = physicsFactory;
 
-        simpleBot = BotFactory.planarApproximationBot(course);
-        hillClimbingBot = BotFactory.hillClimbingBot(course);
+        simpleBot = botFactory.planarApproximationBot(course);
+        hillClimbingBot = botFactory.hillClimbingBot(course);
         humanPlayer = new HumanPlayer();
 
         // Set map limits

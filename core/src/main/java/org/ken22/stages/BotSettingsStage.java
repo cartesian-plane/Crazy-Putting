@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.settings.BotSettings;
 import org.ken22.input.settings.BotType;
@@ -28,17 +29,18 @@ public class BotSettingsStage extends Stage {
     private ScrollPane scrollPane;
     private TextButton backButton;
 
+    private static Viewport viewport = new ScreenViewport();
     private SelectBox<BotType> botSelector;
     private SelectBox<LocalSearchType> localSearchSelector;
     private SelectBox<GraphAlgorithmType> graphAlgorithmSelector;
     private TextField randomRestarts;  // random restart count for the hill-climber
 
-
     // data holder for the settings
     private BotSettings settings;
 
-    public BotSettingsStage(ScreenManager manager) {
-        super(new ScreenViewport());
+    public BotSettingsStage(ScreenManager manager, BotSettings settings) {
+        super(viewport);
+        this.settings = settings;
         this.manager = manager;
 
         this.table = new Table();
@@ -95,7 +97,7 @@ public class BotSettingsStage extends Stage {
         table.add(saveButton).pad(10).colspan(2).center().row();
         table.add(backButton).pad(10).colspan(2).center().row();
 
-        loadSettings();
+        loadButtons();
 
 
         // listeners
@@ -139,20 +141,16 @@ public class BotSettingsStage extends Stage {
 
     }
 
-    private void loadSettings() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            settings = mapper.readValue(new File("input/settings/default-bot-settings.json"),
-                BotSettings.class);
-            this.manager.botSettings = this.settings;
-            // make the UI reflect the loaded settings
-            botSelector.setSelected(settings.botType);
-            localSearchSelector.setSelected(settings.localSearchType);
-            graphAlgorithmSelector.setSelected(settings.graphAlgorithmType);
-            randomRestarts.setText(String.valueOf(settings.randomRestarts));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void loadButtons() {
+        // make the UI reflect the loaded settings
+        botSelector.setSelected(settings.botType);
+        localSearchSelector.setSelected(settings.localSearchType);
+        graphAlgorithmSelector.setSelected(settings.graphAlgorithmType);
+        randomRestarts.setText(String.valueOf(settings.randomRestarts));
+    }
+
+    public Viewport getViewport() {
+        return viewport;
     }
 
     @Override
