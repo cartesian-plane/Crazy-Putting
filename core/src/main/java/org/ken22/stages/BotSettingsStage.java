@@ -158,7 +158,7 @@ public class BotSettingsStage extends Stage {
         try {
             mapper
                 .writerWithDefaultPrettyPrinter()
-                .writeValue(new File("input/settings/default-settings.json"), settings);
+                .writeValue(new File("input/settings/default-bot-settings.json"), settings);
         } catch (IOException e) {
             e.printStackTrace();
         }

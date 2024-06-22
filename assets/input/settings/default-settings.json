@@ -1,12 +1,7 @@
 {
-  "botType" : "HOLE_IN_ONE",
-  "odesolverType" : null,
-  "differentiatorType" : null,
-  "stepSize" : 0.0,
-  "errorFunctionType" : null,
-  "weightingType" : null,
-  "gridPathfindingType" : null,
-  "localSearchType" : "HILLCLIMB",
-  "graphAlgorithmType" : "NONE",
-  "randomRestarts" : 10
+  "solver" : "RK4",
+  "stepSize" : 0.001,
+  "Differentiator" : "THREE_POINT_CENTERED",
+  "simplifiedPhysics" : true,
+  "allowPlaying" : true
 }
