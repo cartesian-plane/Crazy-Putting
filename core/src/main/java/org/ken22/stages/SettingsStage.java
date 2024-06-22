@@ -35,8 +35,9 @@ public class SettingsStage extends Stage {
     // data holder for the settings
     private GeneralSettings settings;
 
-    public SettingsStage(ScreenManager manager) {
+    public SettingsStage(ScreenManager manager, GeneralSettings settings) {
         super(viewport);
+        this.settings = settings;
         this.manager = manager;
         this.table = new Table();
         this.table.setFillParent(true);
@@ -94,7 +95,7 @@ public class SettingsStage extends Stage {
         });
         table.add(backButton).pad(10).colspan(2).center().row();
 
-        loadSettings();
+        loadButtons();
     }
 
     // save settings
@@ -124,21 +125,13 @@ public class SettingsStage extends Stage {
     /**
      * Loads the settings values from the default file.
      */
-    private void loadSettings() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            settings = mapper.readValue(new File("input/settings/default-settings.json"),
-                GeneralSettings.class);
-
+    private void loadButtons() {
             // make the UI reflect the loaded settings
             odeSolverBox.setSelected(settings.solverType);
             stepSizeField.setText(String.valueOf(settings.stepSize));
             differentiatorBox.setSelected(settings.differentiatorType);
             simplifiedPhysicsCheckBox.setChecked(settings.useSimplifiedPhysics);
             allowPlayingCheckBox.setChecked(settings.allowPlaying);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
