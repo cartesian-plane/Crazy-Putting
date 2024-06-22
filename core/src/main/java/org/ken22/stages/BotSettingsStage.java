@@ -122,6 +122,7 @@ public class BotSettingsStage extends Stage {
         settings.graphAlgorithmType = graphAlgorithmSelector.getSelected();
         settings.randomRestarts = Integer.parseInt(randomRestarts.getText());
 
+        this.manager.botSettings = this.settings;
         // save the new settings in the .json
 
         // Note: everything is written into the default bot settings, meaning there currently aren't multiple settings
@@ -143,7 +144,7 @@ public class BotSettingsStage extends Stage {
         try {
             settings = mapper.readValue(new File("input/settings/default-bot-settings.json"),
                 BotSettings.class);
-
+            this.manager.botSettings = this.settings;
             // make the UI reflect the loaded settings
             botSelector.setSelected(settings.botType);
             localSearchSelector.setSelected(settings.localSearchType);

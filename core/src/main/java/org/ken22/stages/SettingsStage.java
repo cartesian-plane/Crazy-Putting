@@ -32,7 +32,7 @@ public class SettingsStage extends Stage {
     private CheckBox allowPlayingCheckBox;
 
     // data holder for the settings
-    private GeneralSettings settings;
+    public GeneralSettings settings;
 
     public SettingsStage(ScreenManager manager) {
         super(viewport);
@@ -111,6 +111,8 @@ public class SettingsStage extends Stage {
         settings.useSimplifiedPhysics = simplifiedPhysicsCheckBox.isChecked();
         settings.allowPlaying = allowPlayingCheckBox.isChecked();
 
+        this.manager.generalSettings = this.settings;
+
         // save the new settings in the .json
 
         // Note: everything is written into the default settings, meaning there currently aren't multiple settings
@@ -134,6 +136,7 @@ public class SettingsStage extends Stage {
             settings = mapper.readValue(new File("input/settings/default-settings.json"),
                 GeneralSettings.class);
 
+            this.manager.generalSettings = this.settings;
             // make the UI reflect the loaded settings
             odeSolverBox.setSelected(settings.solver);
             stepSizeField.setText(String.valueOf(settings.stepSize));
