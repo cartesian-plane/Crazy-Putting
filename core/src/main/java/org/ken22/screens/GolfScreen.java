@@ -74,6 +74,7 @@ public class GolfScreen extends ScreenAdapter {
     private BotFactory botFactory;
     private SimplePlanarApproximationBot simpleBot;
     private HillClimbingBot hillClimbingBot;
+    private HillClimber hillClimber;
     private HumanPlayer humanPlayer;
 
     private PhysicsFactory physicsFactory;
@@ -99,7 +100,8 @@ public class GolfScreen extends ScreenAdapter {
 
         simpleBot = botFactory.planarApproximationBot(course);
         hillClimbingBot = botFactory.hillClimbingBot(course);
-        humanPlayer = new HumanPlayer();
+        hillClimber = botFactory.hillClimber(course);
+        //humanPlayer = new HumanPlayer();
 
         // Set map limits
         xMin = (float) (course.ballX() > course.targetXcoord() ? course.targetXcoord() -  PADDING_SIZE : course.ballX() - PADDING_SIZE);
@@ -222,6 +224,12 @@ public class GolfScreen extends ScreenAdapter {
 
         // test input
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            engine.setState(simpleBot.play(engine.getState()));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+            engine.setState(simpleBot.play(engine.getState()));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+            engine.setState(hillClimber.play(engine.getState()));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
             engine.setState(humanPlayer.play(engine.getState()));
         }
     }
