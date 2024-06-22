@@ -9,7 +9,7 @@ public enum GridPathfindingType {
         public String toString() {
             return "A*";
         }
-        public GridPathfinding getSolver() {
+        public GridPathfinding getPathfinding() {
             return new AStar();
         }
     };
@@ -24,4 +24,5 @@ public enum GridPathfindingType {
     public String toString() {
         return name;
     }
+    public abstract GridPathfinding getPathfinding();
 }

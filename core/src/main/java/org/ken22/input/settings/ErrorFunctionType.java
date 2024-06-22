@@ -13,7 +13,7 @@ public enum ErrorFunctionType {
         public String toString() {
             return "Euclidean";
         }
-        public ErrorFunction getErrorFunction() {
+        public ErrorFunction getErrorFunction(GridPathfinding pathfinding, Weighting weighting) {
             return new EuclideanError();
         }
     },
@@ -23,7 +23,7 @@ public enum ErrorFunctionType {
         public String toString() {
             return "Euclidean and velocity";
         }
-        public ErrorFunction getErrorFunction() {
+        public ErrorFunction getErrorFunction(GridPathfinding pathfinding, Weighting weighting) {
             return new EuclAndVelError();
         }
     },
@@ -44,6 +44,7 @@ public enum ErrorFunctionType {
         this.name = name;
     }
 
+    public abstract ErrorFunction getErrorFunction(GridPathfinding pathfinding, Weighting weighting);
     @Override
     public String toString() {
         return name;

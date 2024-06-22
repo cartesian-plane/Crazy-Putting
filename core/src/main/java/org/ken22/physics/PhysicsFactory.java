@@ -12,6 +12,8 @@ public class PhysicsFactory {
     }
 
     public PhysicsEngine physicsEngine(GolfCourse course) {
-        return new PhysicsEngine(course, null, settings.stepSize, settings.differentiator, settings.solver, !settings.useSimplifiedPhysics);
+        return new PhysicsEngine(course, null, settings.stepSize,
+            settings.differentiatorType.getDifferentiator(), settings.solverType.getSolver(),
+            !settings.useSimplifiedPhysics);
     }
 }

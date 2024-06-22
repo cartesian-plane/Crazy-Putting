@@ -46,4 +46,5 @@ public enum ODESolverType {
     public String toString() {
         return name;
     }
+    public abstract ODESolver getSolver();
 }

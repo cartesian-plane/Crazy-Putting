@@ -35,4 +35,5 @@ public enum WeightingType {
     public String toString() {
         return name;
     }
+    public abstract Weighting getWeighting();
 }

@@ -34,4 +34,5 @@ public enum DifferentiatorType {
     public String toString() {
         return name;
     }
+    public abstract Differentiator getDifferentiator();
 }

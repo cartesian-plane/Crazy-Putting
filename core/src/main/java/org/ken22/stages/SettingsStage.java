@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.settings.GeneralSettings;
+import org.ken22.input.settings.ODESolverType;
 import org.ken22.screens.ScreenManager;
 
 import java.io.File;
@@ -104,7 +105,17 @@ public class SettingsStage extends Stage {
     private void saveSettings() {
 
         // copy the settings into the settings object
-        settings.solver = odeSolverBox.getSelected();
+        switch (odeSolverBox.getSelected()) {
+            case "Euler":
+                settings.solverType = ODESolverType.EULER;
+                break;
+            case "Runge-Kutta 2":
+                settings.solverType = ODESolverType.RUNGE_KUTTA_2;
+                break;
+            case "Runge-Kutta 4":
+                settings.solverType = ODESolverType.RUNGE_KUTTA_4;
+                break;
+        }
         settings.stepSize = Double.parseDouble(stepSizeField.getText());
         settings.differentiator = differentiatorBox.getSelected();
         settings.differentiationStepSize = Double.parseDouble(differentiationField.getText());

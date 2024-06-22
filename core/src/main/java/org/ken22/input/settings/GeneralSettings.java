@@ -10,11 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class GeneralSettings {
     @JsonProperty("solver")
-    public String solver;
+    public ODESolverType solverType;
     @JsonProperty("stepSize")
     public double stepSize;
     @JsonProperty("Differentiator")
-    public String differentiator;
+    public DifferentiatorType differentiatorType;
     @JsonProperty("simplifiedPhysics")
     public boolean useSimplifiedPhysics;
     @JsonProperty("allowPlaying")

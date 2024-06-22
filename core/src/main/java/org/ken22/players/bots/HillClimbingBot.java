@@ -34,7 +34,8 @@ public class HillClimbingBot implements Player {
     Input2 currentBest;
     double stepSize; // Default step size
 
-    public HillClimbingBot(ErrorFunction errorFunction, Differentiator dif, ODESolver<StateVector4> solver, double stepSize) {
+    public HillClimbingBot(GolfCourse course, ErrorFunction errorFunction, Differentiator dif, ODESolver<StateVector4> solver, double stepSize) {
+        this.course = course;
         this.errorFunction = errorFunction;
         this.stepSize = stepSize;
         this.differentiator = dif;

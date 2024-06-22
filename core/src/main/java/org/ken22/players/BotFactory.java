@@ -13,10 +13,12 @@ public class BotFactory {
     }
 
     public HillClimbingBot hillClimbingBot(GolfCourse course) {
-        return new HillClimbingBot(course, settings.errorFunction, settings.differentiator, settings.odesolver, settings.stepSize);
+        return new HillClimbingBot(course,
+            settings.errorFunctionType.getErrorFunction(settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting()),
+            settings.differentiatorType.getDifferentiator(), settings.odesolverType.getSolver(), settings.stepSize);
     }
 
-    public SimplePlanarApproximationBot planarApproximationBot() {
-        return new SimplePlanarApproximationBot();
+    public SimplePlanarApproximationBot planarApproximationBot(GolfCourse course) {
+        return new SimplePlanarApproximationBot(course);
     }
 }
