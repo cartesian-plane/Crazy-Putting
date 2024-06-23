@@ -3,9 +3,7 @@ package org.ken22.players.bots.hillclimbing;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
-import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.odesolvers.ODESolver;
-import org.ken22.physics.odesolvers.RK2;
 import org.ken22.physics.odesolvers.RK4;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.error.ErrorFunction;
@@ -44,9 +42,6 @@ public final class Evaluator {
     /**
      * <p>Evaluates each neighbour by the cost function h.</p>
      *
-     * The cost function is the Euclidean distance from the target at the moment the ball stops,
-     * (lower is better)
-     *
      * @param neighbours list of neighbours
      * @return Map of {@code (neighbour, h-value)} pairs
      */
@@ -60,9 +55,6 @@ public final class Evaluator {
 
     /**
      * <p>Evaluates a state by the cost function h.</p>
-     * <p>
-     * The cost function is defined as the Euclidean distance from the target at the moment the ball stops,
-     * (lower is better).
      *
      * @param state the state to evaluate
      * @return h (cost function value)
