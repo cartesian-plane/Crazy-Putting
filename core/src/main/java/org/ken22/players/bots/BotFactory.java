@@ -4,6 +4,7 @@ import org.ken22.input.settings.BotSettings;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.PhysicsFactory;
 import org.ken22.players.bots.hillclimbing.HillClimber;
+import org.ken22.players.bots.hillclimbing.SimulatedAnnealing;
 import org.ken22.players.error.ErrorFunction;
 
 public class BotFactory {
@@ -24,6 +25,11 @@ public class BotFactory {
         return new HillClimber(0.01, course.targetRadius, settings.sidewaysMoves, settings.randomRestarts,
             course, settings.odesolverType.getSolver(), settings.differentiatorType.getDifferentiator(),
             settings.stepSize, errorFunction(course));
+    }
+
+    public SimulatedAnnealing simulatedAnnealing(GolfCourse course)  {
+        return new SimulatedAnnealing(course, settings.odesolverType.getSolver(),
+            settings.differentiatorType.getDifferentiator(), settings.stepSize, 100, errorFunction(course));
     }
 
     public NewtonRaphsonBot newtonRaphsonBot(GolfCourse course) {

@@ -8,6 +8,7 @@ import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.odesolvers.ODESolver;
 import org.ken22.physics.odesolvers.RK4;
 import org.ken22.physics.vectors.StateVector4;
+import org.ken22.players.Player;
 import org.ken22.players.bots.LinearSchedule;
 import org.ken22.players.bots.Schedule;
 import org.ken22.players.error.ErrorFunction;
@@ -36,7 +37,7 @@ import java.util.logging.Logger;
  *
  * </ul>
  */
-public final class SimulatedAnnealing {
+public final class SimulatedAnnealing implements Player {
     private static final Logger LOGGER = Logger.getLogger(HillClimber.class.getName());
 
     static {
@@ -61,7 +62,6 @@ public final class SimulatedAnnealing {
     private final Differentiator differentiator;
     private final double stepSize;
 
-    private final StateVector4 initialState;
     private final ErrorFunction heuristicFunction;
     private final Evaluator evaluator;
 
@@ -69,6 +69,7 @@ public final class SimulatedAnnealing {
                               ODESolver<StateVector4> solver,
                               Differentiator differentiator,
                               double stepSize,
+                              double initialTemperature,
                               ErrorFunction errorFunction) {
         this.course = course;
         this.solver = solver;
@@ -82,13 +83,10 @@ public final class SimulatedAnnealing {
 
         this.initialTemperature = 100;
         this.schedule = new LinearSchedule(initialTemperature, 0.8);
+    }
 
-        var initialX = course.ballX();
-        var initialY = course.ballY();
-
-        // choose random speed vector to start with
-        var speedVector = getRandomSpeedVector();
-        initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
+    public StateVector4 play(StateVector4 state) {
+        return search(state);
     }
 
     private StateVector4 search(StateVector4 state) {
