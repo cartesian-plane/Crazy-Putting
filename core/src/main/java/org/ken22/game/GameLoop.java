@@ -1,47 +1,36 @@
 package org.ken22.game;
 
 import com.badlogic.gdx.graphics.Camera;
+import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.players.HumanPlayer;
+import org.ken22.screens.GolfScreen;
 
 public class GameLoop {
-    //init
-    private PhysicsEngine physicsEngine;
-    private HumanPlayer humanPlayer;
+    GolfScreen screen;
+
+    PhysicsFactory physicsFactory;
+    PhysicsEngine physicsEngine;
     private GolfCourse course;
-    private Camera camera;
+
     private int shotCount;
     private boolean ballInMotion;
     private StateVector4 lastValidState;
 
 
-
-    //recieve stuff
-    public GameLoop(PhysicsEngine physicsEngine, GolfCourse course, Camera camera) {
-        this.physicsEngine = physicsEngine;
+    public GameLoop(GolfCourse course, PhysicsFactory physicsFactory) {
+        this.physicsFactory = physicsFactory;
+        this.physicsEngine = physicsFactory.physicsEngine(course, new StateVector4(course.ballX(), course.ballY(), 0, 0));
         this.course = course;
-        this.camera = camera;
-        this.humanPlayer = new HumanPlayer();
         this.shotCount = 0;
         this.ballInMotion = false;
-        this.lastValidState = physicsEngine.getTrajectory().get(0); // initial state
     }
 
-
-    //update and check for flags in new step
-    public void update(float deltaTime) {
-        if (ballInMotion) {
-            StateVector4 newState = physicsEngine.nextStep();
-            if (physicsEngine.isAtRest()) {
-                handleRestState();
-            } else {
-                lastValidState = newState;
-            }
-        }
+    public void  setGolfScreen(GolfScreen screen) {
+        this.screen = screen;
     }
-
 
     //find out what went wrong and revert to last position to shoot
     private void handleRestState() {
@@ -55,35 +44,29 @@ public class GameLoop {
             System.out.println("Ball went out of bounds.");
             revertToLastValidState();
         }
-        promptHumanPlayer();
     }
 
-
-
-
-
-    //get the player input for a shot with Y and X velocities
-    private void promptHumanPlayer() {
-        StateVector4 currentState = physicsEngine.getTrajectory().get(physicsEngine.getTrajectory().size() - 1);
-        StateVector4 velocities = humanPlayer.play(currentState, course);
-
-        // setting the new velocities
-        StateVector4 newState = new StateVector4(
-            currentState.x(),
-            currentState.y(),
-            velocities.vx(),
-            velocities.vy()
-        );
-        physicsEngine = new PhysicsEngine(course, newState);
-        //one more shot
-        ballInMotion = true;
-        shotCount++;
+    //shoot the ball
+    public void shootBall(StateVector4 shot) {
+        if (!ballInMotion) {
+            lastValidState = physicsEngine.getState();
+            physicsEngine.setState(shot);
+            shotCount++;
+            screen.renderShot(physicsEngine.iterator());
+            ballInMotion = true;
+        }
     }
 
-
+    public void renditionFinished() {
+        if (ballInMotion) {
+            handleRestState();
+        }
+        ballInMotion = false;
+    }
 
     //return to last game state if something bad
-    private void revertToLastValidState() {
+    public void revertToLastValidState() {
+        screen.setCurrentState(lastValidState);
         physicsEngine = new PhysicsEngine(course, lastValidState);
     }
 }

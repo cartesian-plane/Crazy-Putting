@@ -1,6 +1,11 @@
 {
-  "botType" : "HOLE_IN_ONE",
-  "localSearchType" : "HILLCLIMB",
-  "graphAlgorithmType" : "NONE",
-  "randomRestarts" : 10
+  "odesolverType" : "RK4",
+  "differentiatorType" : "THREE_POINT_CENTERED",
+  "stepSize" : 0.001,
+  "errorFunctionType" : "EUCLIDEAN",
+  "weightingType" : "EQUIVALENT",
+  "gridPathfindingType" : "A_STAR",
+  "localSearchType" : "NONE",
+  "randomRestarts" : 9,
+  "sidewaysMoves" : 10
 }

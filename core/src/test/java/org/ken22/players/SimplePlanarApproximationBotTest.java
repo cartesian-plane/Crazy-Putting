@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.TestUtils;
 import org.ken22.physics.vectors.StateVector4;
+import org.ken22.players.bots.SimplePlanarApproximationBot;
 
 class SimplePlanarApproximationBotTest {
 
@@ -20,8 +21,8 @@ class SimplePlanarApproximationBotTest {
 
     @Test
     void play() {
-        SimplePlanarApproximationBot bot = new SimplePlanarApproximationBot();
-        var result = bot.play(new StateVector4(0, 0, 1, 0), course);
+        SimplePlanarApproximationBot bot = new SimplePlanarApproximationBot(course);
+        var result = bot.play(new StateVector4(0, 0, 1, 0));
         var expected = TestUtils.prediction.apply(result, course);
         System.out.println(expected);
     }

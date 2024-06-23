@@ -1,12 +1,14 @@
 package org.ken22.physics.differentiation;
 
+//fml
+
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.differentiators.Differentiator;
-import org.ken22.physics.utils.PhysicsUtils;
 import org.ken22.physics.vectors.StateVector4;
+import org.ken22.utils.MathUtils;
 
-public class InstantaneousVectorDifferentiationFactory {
+public class InstantaneousVectorDifferentiationFactory implements InstVecDiffFactory {
     private Differentiator differentiator;
     private double h;
 
@@ -24,7 +26,7 @@ public class InstantaneousVectorDifferentiationFactory {
         return (sv) -> {
             double df_dx = xSlope(sv.x(), sv.y());
             double df_dy = ySlope(sv.x(), sv.y());
-            double v_norm = PhysicsUtils.magnitude(sv.vx(), sv.vy());
+            double v_norm = MathUtils.magnitude(sv.vx(), sv.vy());
             return new StateVector4(
                 sv.vx(),
                 sv.vy(),
@@ -37,7 +39,7 @@ public class InstantaneousVectorDifferentiationFactory {
         return (sv) -> {
             double df_dx = xSlope(sv.x(), sv.y());
             double df_dy = ySlope(sv.x(), sv.y());
-            double d_norm = PhysicsUtils.magnitude(df_dx, df_dy);
+            double d_norm = MathUtils.magnitude(df_dx, df_dy);
             return new StateVector4(
                 sv.vx(),
                 sv.vy(),
@@ -48,11 +50,11 @@ public class InstantaneousVectorDifferentiationFactory {
     }
 
     public double xSlope(double x, double y) {
-        return PhysicsUtils.xSlope(x, y, h, expr, differentiator);
+        return MathUtils.xSlope(x, y, h, expr, differentiator);
     }
 
     public double ySlope(double x, double y) {
-        return PhysicsUtils.ySlope(x, y, h, expr, differentiator);
+        return MathUtils.ySlope(x, y, h, expr, differentiator);
     }
 
 //    private static final Function<StateVector4, Double> dx = (stateVector4) -> stateVector4.vx();
@@ -61,23 +63,23 @@ public class InstantaneousVectorDifferentiationFactory {
 //    Function<StateVector4, Double> inst_dvx = (stateVector4) -> {
 //        double df_dx = xSlope(stateVector4.x(), stateVector4.y());
 //        return (-course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * stateVector4.vx() /
-//            PhysicsUtils.magnitude(stateVector4.vx(), stateVector4.vy())));
+//            MathUtils.magnitude(stateVector4.vx(), stateVector4.vy())));
 //    };
 //    Function<StateVector4, Double> inst_dvy = (stateVector4) -> {
 //        double df_dy = ySlope(stateVector4.x(), stateVector4.y());
 //        return(-course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * stateVector4.vy()/
-//            PhysicsUtils.magnitude(stateVector4.vx(), stateVector4.vy())));
+//            MathUtils.magnitude(stateVector4.vx(), stateVector4.vy())));
 //    };
 //    Function<StateVector4, Double> inst_alt_dvx = (stateVector4) -> {
 //        double df_dx = xSlope(stateVector4.x(), stateVector4.y());
 //        double df_dy = ySlope(stateVector4.x(), stateVector4.y());
 //        return (-course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * df_dx /
-//            PhysicsUtils.magnitude(df_dx, df_dy)));
+//            MathUtils.magnitude(df_dx, df_dy)));
 //    };
 //    Function<StateVector4, Double> inst_alt_dvy = (stateVector4) -> {
 //        double df_dy = ySlope(stateVector4.x(), stateVector4.y());
 //        double df_dx = xSlope(stateVector4.x(), stateVector4.y());
 //        return (-course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * df_dy /
-//            PhysicsUtils.magnitude(df_dx, df_dy)));
+//            MathUtils.magnitude(df_dx, df_dy)));
 //    };
 }

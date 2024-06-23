@@ -1,8 +1,7 @@
 {
   "solver" : "RK4",
   "stepSize" : 0.001,
-  "Differentiator" : "FivePointCenteredDifference",
-  "differentiationStepSize" : 0.0,
+  "Differentiator" : "THREE_POINT_CENTERED",
   "simplifiedPhysics" : true,
   "allowPlaying" : true
 }

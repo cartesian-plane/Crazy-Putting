@@ -10,7 +10,7 @@ import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.SandPit;
 import org.ken22.obstacles.Tree;
-import org.ken22.obstacles.Wall;
+import org.ken22.screens.GolfScreen;
 import org.ken22.utils.GolfExpression;
 import org.ken22.utils.MathUtils;
 
@@ -31,26 +31,32 @@ public class Minimap {
     private GolfCourse course;
     private Expression expr;
 
-    public Minimap(GolfCourse course, Viewport viewport) {
+    private double[][] heightMap = new double[WIDTH][HEIGHT];
+    private boolean[][] waterMask = new boolean[WIDTH][HEIGHT];
+
+    public Minimap(GolfCourse course) {
         this.course = course;
         this.expr = GolfExpression.expr(course);
 
-        this.xMin = (float) (course.ballX() < course.targetXcoord() ? course.ballX() : course.targetXcoord());
-        this.xMax = (float) (course.ballX() > course.targetXcoord() ? course.ballX() : course.targetXcoord());
-        this.yMin = (float) (course.ballY() > course.targetYcoord() ? course.targetYcoord() : course.ballY());
-        this.yMax = (float) (course.ballY() < course.targetYcoord() ? course.targetYcoord() : course.ballY());
+        this.xMin = (float) (course.ballX() < course.targetXcoord() ? course.ballX() - GolfScreen.PADDING_SIZE  : course.targetXcoord()) - GolfScreen.PADDING_SIZE;
+        this.xMax = (float) (course.ballX() > course.targetXcoord() ? course.ballX() + GolfScreen.PADDING_SIZE : course.targetXcoord()) + GolfScreen.PADDING_SIZE;
+        this.yMin = (float) (course.ballY() > course.targetYcoord() ? course.targetYcoord() - GolfScreen.PADDING_SIZE : course.ballY()) - GolfScreen.PADDING_SIZE;
+        this.yMax = (float) (course.ballY() < course.targetYcoord() ? course.targetYcoord() + GolfScreen.PADDING_SIZE: course.ballY()) + GolfScreen.PADDING_SIZE;
 
         init();
     }
 
     public void init() {
         terrainmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGB888);
-        double[][] heightMap = heightMap(expr);
+        initHeightMap(expr);
 
         for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
-                double gray = heightMap[i][j];
-                Color color = new Color(0f, (float) gray, 0f, 1); //takes normalized values to [0, 1]
+                Color color;
+                    if(waterMask[i][j])
+                        color = Color.BLUE;
+                    else
+                        color = new Color(0f, (float) heightMap[i][j], 0f, 1); //takes normalized values to [0, 1]
 
                 terrainmap.setColor(color);
                 terrainmap.drawPixel(i, j);
@@ -101,8 +107,9 @@ public class Minimap {
         image.setDrawable(new TextureRegionDrawable(texture));
     }
 
-    private double[][] heightMap(Expression heightFunction) {
-        double[][] heightMap = new double[WIDTH][HEIGHT];
+
+    //creating base map height
+    private void initHeightMap(Expression heightFunction) {
         double[] xCoords = MathUtils.linspace(xMin, xMax, WIDTH);
         double[] yCoords = MathUtils.linspace(yMin, yMax, HEIGHT);
 
@@ -114,6 +121,7 @@ public class Minimap {
                     .setVariable("y", yCoords[j]);
 
                 heightMap[i][j] = heightFunction.evaluate();
+                if (heightMap[i][j] < 0) waterMask[i][j] = true; // water at (i, j)
             }
         }
 
@@ -126,8 +134,6 @@ public class Minimap {
                 heightMap[i][j] = (heightMap[i][j] - min) / (max - min);
             }
         }
-
-        return heightMap;
     }
 
     public int projectX(float x) {

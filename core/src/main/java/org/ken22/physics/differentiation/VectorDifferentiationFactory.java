@@ -3,24 +3,26 @@ package org.ken22.physics.differentiation;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.differentiators.Differentiator;
-import org.ken22.physics.utils.PhysicsUtils;
 import org.ken22.physics.vectors.StateVector4;
+import org.ken22.utils.MathUtils;
 
 public class VectorDifferentiationFactory {
     private Differentiator differentiator;
     private double h;
 
-    private GolfCourse course;
     private Expression expr;
 
-    InstantaneousVectorDifferentiationFactory instDiffFact;
+    InstVecDiffFactory instDiffFact;
 
-    public VectorDifferentiationFactory(double h, Expression expr, GolfCourse course, Differentiator differentiator) {
+    public VectorDifferentiationFactory(double h, Expression expr, GolfCourse course, Differentiator differentiator, boolean completePhysics) {
         this.h = h;
         this.expr = expr;
-        this.course = course;
         this.differentiator = differentiator;
-        instDiffFact= new InstantaneousVectorDifferentiationFactory(h, expr, course, differentiator);
+        if(completePhysics) {
+            instDiffFact = new InstVecDiffFactoryComplete(h, expr, course, differentiator);
+        } else {
+            instDiffFact = new InstantaneousVectorDifferentiationFactory(h, expr, course, differentiator);
+        }
     }
 
     public VectorDifferentiation4 normalSpeedVectorDifferentiation4() {
@@ -44,10 +46,10 @@ public class VectorDifferentiationFactory {
     }
 
     public double xSlope(double x, double y) {
-        return PhysicsUtils.xSlope(x, y, h, expr, differentiator);
+        return MathUtils.xSlope(x, y, h, expr, differentiator);
     }
 
     public double ySlope(double x, double y) {
-        return PhysicsUtils.ySlope(x, y, h, expr, differentiator);
+        return MathUtils.ySlope(x, y, h, expr, differentiator);
     }
 }

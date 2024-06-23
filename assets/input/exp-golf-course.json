@@ -4,14 +4,14 @@
   "range": 5.0,
   "mass": 0.0459,
   "gravitationalConstant": 9.80665,
-  "kineticFrictionGrass": 0.15,
-  "staticFrictionGrass": 0.3,
+  "kineticFrictionGrass": 0.08,
+  "staticFrictionGrass": 0.2,
   "kineticFrictionSand": 0.8,
   "staticFrictionSand": 0.9,
   "maximumSpeed": 5.0,
-  "targetRadius": 0.10,
-  "targetXcoord": 2,
-  "targetYcoord": 0.5,
-  "ballXcoord": 2.0,
-  "ballYcoord": 2.0
+  "targetRadius": 0.15,
+  "targetXcoord": 4.0,
+  "targetYcoord": 1.0,
+  "ballXcoord": -3.0,
+  "ballYcoord": 0.0
 }
