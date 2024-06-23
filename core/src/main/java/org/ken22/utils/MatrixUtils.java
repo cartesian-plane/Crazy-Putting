@@ -1,11 +1,12 @@
 package org.ken22.utils;
 
 public final class MatrixUtils {
-    public static double[][] multiply(double[][] a, double[][] b) {
+    public static double[][] transform(double[][] a, double[] b) {
+        var newB = transpose(b);
         int aRows = a.length;
         int aCols = a[0].length;
         int bRows = b.length;
-        int bCols = b[0].length;
+        int bCols = newB[0].length;
         if (aCols != bRows) {
             throw new IllegalArgumentException("A:Rows: " + aCols + " did not match B:Columns " + bRows + ".");
         }
@@ -18,7 +19,7 @@ public final class MatrixUtils {
         for (int i = 0; i < aRows; i++) { // aRow
             for (int j = 0; j < bCols; j++) { // bColumn
                 for (int k = 0; k < aCols; k++) { // aColumn
-                    result[i][j] += a[i][k] * b[k][j];
+                    result[i][j] += a[i][k] * newB[k][j];
                 }
             }
         }
@@ -37,5 +38,12 @@ public final class MatrixUtils {
             {-a[0][1] * k, a[0][0] * k}
         };
 
+    }
+
+    public static double[][] transpose(double[] b) {
+        return new double[][] {
+            {b[0]},
+            {b[1]}
+        };
     }
 }

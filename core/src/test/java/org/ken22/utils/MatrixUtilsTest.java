@@ -4,26 +4,37 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.ken22.utils.MatrixUtils.transform;
 
 class MatrixUtilsTest {
 
     @Test
     @DisplayName("Multiplication")
-    void multiply() {
-        double[][] a = new double[][] {
+    void transformTest() {
+        double[][] a = new double[][]{
             {5, 3},
             {4, 2}
         };
 
-        double[][] v = new double[][] {
-            {4},
-            {1}
+        double[] b = new double[] {4, 1};
+
+        var actual = transform(a, b);
+        var expected = new double[][]{
+            {23},
+            {18}
         };
 
-        // var actual = multiply();
+        assertEquals(expected[0][0], actual[0][0]);
+        assertEquals(expected[1][0], actual[1][0]);
     }
 
     @Test
     void inverse() {
+        double[][] a = new double[][]{
+            {5, 3},
+            {4, 2}
+        };
+
+
     }
 }
