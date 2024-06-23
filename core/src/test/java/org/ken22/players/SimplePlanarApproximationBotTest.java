@@ -21,7 +21,7 @@ class SimplePlanarApproximationBotTest {
 
     @Test
     void play() {
-        SimplePlanarApproximationBot bot = new SimplePlanarApproximationBot();
+        SimplePlanarApproximationBot bot = new SimplePlanarApproximationBot(course);
         var result = bot.play(new StateVector4(0, 0, 1, 0), course);
         var expected = TestUtils.prediction.apply(result, course);
         System.out.println(expected);

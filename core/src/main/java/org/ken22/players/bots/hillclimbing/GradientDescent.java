@@ -261,8 +261,7 @@ public class GradientDescent implements Player {
                 break;
             } else {
                 restartCount += 1;
-                double[] randomSpeedVector = getRandomSpeedVector();
-
+                double[] randomSpeedVector = getRandomSpeedVector(visited);
                 // choose a new random starting point
                 currentState = new StateVector4(initialState.x(), initialState.y(), randomSpeedVector[0],
                     randomSpeedVector[1]);
@@ -351,7 +350,9 @@ public class GradientDescent implements Player {
                 break;
             } else {
                 restartCount += 1;
-                double[] randomSpeedVector = getRandomSpeedVector();
+                double[] randomSpeedVector = getRandomSpeedVector(visited);
+                visited = new StateVector4[400];
+                visitedidx = 0;
 
                 // choose a new random starting point
                 currentState = new StateVector4(initialState.x(), initialState.y(), randomSpeedVector[0],
@@ -441,28 +442,52 @@ public class GradientDescent implements Player {
      *
      * @return randomly generated speed vector (vx, vy)
      */
-    private double[] getRandomSpeedVector() {
+    private double[] getRandomSpeedVector(StateVector4[] visited) {
+        boolean similar = true;
         double[] vector = new double[2];
-        Random random = new Random();
-        vector[0] = random.nextDouble() * 5 * 2 - 5; // random number between -5 and 5
-        double x = Math.sqrt(25-vector[0]*vector[0]);
-        vector[1] = random.nextDouble()*2*x-x; // random number between -5 and 5
+
+        while(similar) {
+            Random random = new Random();
+            vector[0] = random.nextDouble() * 5 * 2 - 5; // random number between -5 and 5
+            double maxspeed = this.course.maximumSpeed();
+            double x = Math.sqrt(maxspeed*maxspeed-vector[0]*vector[0]);
+            vector[1] = random.nextDouble()*2*x-x; // random number between -5 and 5
+
+            for(StateVector4 state : visited) {
+                if(state.sameVelocity(vector, 0.01)) {
+                    similar = true;
+                    break;
+                }
+                else {
+                    similar = false;
+                }
+            }
+        }
         return vector;
 
     }
 
-    private List<StateVector4> checkVisited(StateVector4[] visited, List<StateVector4> neighbours, int visitedidx) {
+    private double[] getRandomSpeedVector() {
+        double[] vector = new double[2];
+        Random random = new Random();
+        vector[0] = random.nextDouble() * 5 * 2 - 5; // random number between -5 and 5
+        double maxspeed = this.course.maximumSpeed();
+        double x = Math.sqrt(maxspeed*maxspeed-vector[0]*vector[0]);
+        vector[1] = random.nextDouble()*2*x-x; // random number between -5 and 5
+        return vector;
+    }
+
+    private void checkVisited(StateVector4[] visited, List<StateVector4> neighbours, int visitedidx) {
         for(int i = 0; i < visitedidx; i++) {
             if(visited[i] == null) {
                 throw new RuntimeException("Previous states are not being stored correctly.");
             }
             for(StateVector4 neighbour : neighbours) {
-                if(visited[i].approxEquals(neighbour)) {
+                if(visited[i].approxEquals(neighbour, this.course.targetRadius()/2.0, this.DELTA)) {
                     neighbours.remove(neighbour);
                 }
             }
         }
-        return neighbours;
     }
 
     private Direction checkDirection(StateVector4 bestNeighbour) {

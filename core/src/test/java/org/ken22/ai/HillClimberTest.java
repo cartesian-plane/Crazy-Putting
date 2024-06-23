@@ -1,24 +1,25 @@
 package org.ken22.ai;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import org.ken22.ai.hillclimbing.HillClimber;
+import org.ken22.players.bots.hillclimbing.GradientDescent;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
+import org.ken22.players.error.ErrorFunction;
+import org.ken22.players.error.EuclAndVelError;
+import org.ken22.players.error.EuclideanError;
+import org.ken22.players.error.GradientDescent2;
 import org.ken22.utils.MathUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -137,13 +138,13 @@ public class HillClimberTest {
         double yt = gen.nextDouble()*20-10;
         double vx = (xt - x)/4;
         double vy = (yt - y)/4;
-        testManualSpeedCoursePos(MathUtils.courses[3], vx, vy, x, y, Heuristic.HEURISTIC1);
+        testManualSpeedCoursePos(MathUtils.courses[3], vx, vy, x, y, new GradientDescent2());
     }
 
     @Test
-    @DisplayName("Flat plane, random initial guess, Heuristic1")
+    @DisplayName("Flat plane, random initial guess, Heuristic2")
     void flatPlaneRandomInitGuessHeuristic1() {
-        testManualCourse(MathUtils.courses[3], Heuristic.HEURISTIC1);
+        testManualCourse(MathUtils.courses[3], new GradientDescent2());
     }
 
     @Test
@@ -191,7 +192,7 @@ public class HillClimberTest {
         double y = course.ballY();
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
         System.out.println("Starting vector: " + initialState);
-        HillClimber climber = new HillClimber(course, initialState, Heuristic.EUCLIDIAN2D);
+        GradientDescent climber = new GradientDescent(course, initialState, new EuclAndVelError());
         System.out.println("Terrain equation: z=" + course.courseProfile());
         System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
         StateVector4 solution = climber.search();
@@ -211,7 +212,7 @@ public class HillClimberTest {
         GolfCourse course = randomCourse(terrain, terrain, gen);
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
         System.out.println("Starting vector: " + initialState);
-        HillClimber climber = new HillClimber(course, initialState, Heuristic.EUCLIDIAN2D);
+        GradientDescent climber = new GradientDescent(course, initialState, new EuclAndVelError());
         System.out.println("Terrain equation: z=" + course.courseProfile());
         System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
         System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
@@ -227,12 +228,12 @@ public class HillClimberTest {
         );
     }
 
-    public void testManualSpeedCoursePos(String terrain, double vx, double vy, double x, double y, Heuristic heur) {
+    public void testManualSpeedCoursePos(String terrain, double vx, double vy, double x, double y, ErrorFunction heur) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
         System.out.println("Starting vector: " + initialState);
-        HillClimber climber = new HillClimber(course, initialState, heur);
+        GradientDescent climber = new GradientDescent(course, initialState, heur);
         System.out.println("Terrain equation: z=" + course.courseProfile());
         System.out.println("Heuristic: " + heur);
         System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
@@ -257,7 +258,7 @@ public class HillClimberTest {
         System.out.println("Starting vector: " + initialState);
         System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
 
-        HillClimber climber = new HillClimber(course, initialState, Heuristic.EUCLIDIAN2D);
+        GradientDescent climber = new GradientDescent(course, initialState, new EuclideanError());
         System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
         StateVector4 solution = climber.search();
         System.out.println("Solution: " + solution);
@@ -271,7 +272,7 @@ public class HillClimberTest {
         );
     }
 
-    public void testManualCourse(String terrain, Heuristic heur) {
+    public void testManualCourse(String terrain, ErrorFunction heur) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
 
@@ -280,7 +281,7 @@ public class HillClimberTest {
         System.out.println("Starting vector: " + initialState);
         System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
 
-        HillClimber climber = new HillClimber(course, initialState, heur);
+        GradientDescent climber = new GradientDescent(course, initialState, heur);
         System.out.println("Heuristic: " + heur);
         StateVector4 solution = climber.search();
         System.out.println("Solution: " + solution);
@@ -302,7 +303,7 @@ public class HillClimberTest {
         StateVector4 initialState = generateInitialVector(x, y, gen);
         System.out.println("Starting vector: " + initialState);
         System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
-        HillClimber climber = new HillClimber(course, initialState, Heuristic.EUCLIDIAN2D);
+        GradientDescent climber = new GradientDescent(course, initialState, new EuclAndVelError());
         System.out.println("Searching for solution " + name);
         System.out.println("Terrain: " + course.courseProfile());
         StateVector4 solution = climber.search();
@@ -336,7 +337,7 @@ public class HillClimberTest {
 
         double vx = gen.nextDouble()*10-5;
         double vymax = Math.sqrt(25-vx*vx);
-        double vy = gen.nextDouble()*2*vymax-vymax-0.05; //HillClimber delta, to prevent the delta from overshooting
+        double vy = gen.nextDouble()*2*vymax-vymax-0.05; //GradientDescent delta, to prevent the delta from overshooting
         return new StateVector4(x,y,vx,vy);
     }
 
