@@ -10,10 +10,6 @@ import org.ken22.utils.MathUtils;
 import org.ken22.utils.MatrixUtils;
 
 public class NewtonRaphsonBot implements Player {
-    private GolfCourse course;
-    private Expression expr;
-
-    private PhysicsFactory physicsFactory;
     private double stepSize;
 
     private StateVector4 currentState;
@@ -26,12 +22,11 @@ public class NewtonRaphsonBot implements Player {
     private double[] gradient;
     private double hessianDet;
 
-    public NewtonRaphsonBot(GolfCourse course, PhysicsFactory physicsFactory, double stepSize, ErrorFunction errorFunction) {
-        this.course = course;
-        this.expr = course.expression;
-        this.physicsFactory = physicsFactory;
+    public NewtonRaphsonBot(ErrorFunction errorFunction, double stepSize, double maxIterations, double tolerance) {
         this.stepSize = stepSize;
         this.errorFunction = errorFunction;
+        this.maxIterations = maxIterations;
+        this.tolerance = tolerance;
     }
 
     @Override

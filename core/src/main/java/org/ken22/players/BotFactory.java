@@ -3,6 +3,7 @@ package org.ken22.players;
 import org.ken22.input.settings.BotSettings;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.players.bots.HillClimbingBot;
+import org.ken22.players.bots.NewtonRaphsonBot;
 import org.ken22.players.bots.SimplePlanarApproximationBot;
 import org.ken22.players.bots.hillclimbing.HillClimber;
 
@@ -21,6 +22,10 @@ public class BotFactory {
 
     public HillClimber hillClimber(GolfCourse course) {
         return new HillClimber(course, settings.randomRestarts, 10);
+    }
+
+    public NewtonRaphsonBot newtonRaphsonBot(GolfCourse course) {
+        return new NewtonRaphsonBot(course,
     }
 
     public SimplePlanarApproximationBot planarApproximationBot(GolfCourse course) {

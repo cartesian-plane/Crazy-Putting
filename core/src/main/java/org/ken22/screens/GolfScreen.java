@@ -21,6 +21,7 @@ import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.BotFactory;
 import org.ken22.players.HumanPlayer;
 import org.ken22.players.bots.HillClimbingBot;
+import org.ken22.players.bots.NewtonRaphsonBot;
 import org.ken22.players.bots.SimplePlanarApproximationBot;
 import org.ken22.players.bots.hillclimbing.HillClimber;
 import org.ken22.utils.GolfExpression;
@@ -74,6 +75,7 @@ public class GolfScreen extends ScreenAdapter {
     private BotFactory botFactory;
     private SimplePlanarApproximationBot simpleBot;
     private HillClimbingBot hillClimbingBot;
+    private NewtonRaphsonBot newtonRaphsonBot;
     private HillClimber hillClimber;
     private HumanPlayer humanPlayer;
 
@@ -100,6 +102,7 @@ public class GolfScreen extends ScreenAdapter {
 
         simpleBot = botFactory.planarApproximationBot(course);
         hillClimbingBot = botFactory.hillClimbingBot(course);
+        newtonRaphsonBot = botFactory.newtonRaphsonBot(course);
         hillClimber = botFactory.hillClimber(course);
         //humanPlayer = new HumanPlayer();
 
