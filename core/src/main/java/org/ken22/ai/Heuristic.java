@@ -208,12 +208,17 @@ public enum Heuristic {
         System.out.println("Final state: (" + x_f + ", " + y_f + ", " + z_f + ")");
         System.out.println("Final velocities: (" + vx_f + ", " + vy_f + ")");
 
-        double usefulness = (d_f/d_i)/(MathUtils.magnitude(vx_i, vy_i, 0.0)/5.0);
-        double improvement = v_i/(5.0*(d_i-d_f));
-        double overshoot = (v_f)/(Math.exp(d_f)*PhysicsEngine.MAX_SCORE_SPEED);
-        double feasibility = d_c*v_i/(5*(d_i-course.targetRadius));;
+        double d_total = MathUtils.magnitude(x_f-x_i, y_f-y_i, z_f-z_i);
+        double vscale = v_i/5;
+        double a = d_i-course.targetRadius();
 
-        return usefulness+improvement+overshoot+feasibility;
+//        double efficiency = (d_i-d_f)/d_total;
+//        double action = (vscale)/(d_total);
+        double improvement = vscale*d_f/(a);
+        double overshoot = (v_f)/(Math.exp(d_f-course.targetRadius())*PhysicsEngine.MAX_SCORE_SPEED)-1;
+        double feasibility = vscale*d_c/(a);
+
+        return improvement+overshoot+feasibility;
     });
 
     private final BiFunction<StateVector4, GolfCourse, Double> function;

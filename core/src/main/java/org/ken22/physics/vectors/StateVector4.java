@@ -41,4 +41,10 @@ public class StateVector4 {
     public boolean equals(StateVector4 compared) {
         return compared.x() == x && compared.y() == y && compared.vx() == vx && compared.vy() == vy;
     }
+
+    public boolean approxEquals(StateVector4 compared) {
+        return Math.abs(compared.x() - x) < 0.05 && Math.abs(compared.y() - y) < 0.05 &&
+            Math.abs(compared.vx() - vx) < 0.01 && Math.abs(compared.vy() - vy) < 0.01;
+    }
+
 }

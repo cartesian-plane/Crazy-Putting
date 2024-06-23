@@ -120,7 +120,7 @@ public class HillClimber implements Player {
         this.stepSize = 0.0001;
         this.DELTA = 0.01;
         this.THRESHOLD = course.targetRadius();
-        this.MAX_SIDEWAYS_MOVES = 10;
+        this.MAX_SIDEWAYS_MOVES = 50;
         this.MAX_RESTARTS = 10;
         this.initialState = initialState;
         // default heuristic function
@@ -191,7 +191,13 @@ public class HillClimber implements Player {
         // if the search stops before a solution is found, a logging message is displayed
         boolean foundSolution = false;
 
+        int visitedidx = 0;
+        StateVector4[] visited = new StateVector4[400];
+
         var currentState = initialState;
+        var currentStateValue = evaluator.evaluateState(initialState);
+        System.out.println("Current state value: " + currentStateValue);
+        visited[visitedidx] = currentState;
 
         int restartCount = 0;
 
@@ -199,32 +205,42 @@ public class HillClimber implements Player {
 
             int sidewaysMoves = 0;
             System.out.println("Restart count: " + restartCount);
+            var referenceStatePoint = currentState;
+            var referenceStateValue = evaluator.evaluateState(referenceStatePoint);
+            Direction currentDirection = null; //private inner enum
 
             while (sidewaysMoves < MAX_SIDEWAYS_MOVES) {
-                System.out.println("Sideways move: " + sidewaysMoves);
 
-                double currentStateValue = evaluator.evaluateState(currentState);
-                System.out.println("Current state value: " + currentStateValue);
-
-                var neighbours = generateNeighbours(currentState);
-//                for(StateVector4 neighbour : neighbours) {
-//                    System.out.println(neighbour);
-//                }
+                var neighbours = generateNeighbours(currentState, visited, visitedidx);
                 var neighbourEvaluations = evaluator.evaluateNeighbours(neighbours);
                 var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
-
                 double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
                 System.out.println("Best neighbour value: " + bestNeighbourValue);
 
-                if (bestNeighbourValue <= currentStateValue) {
-                    sidewaysMoves = 0;
-                    System.out.println("Improvement? true");
-                } else {
-                    sidewaysMoves += 1;
-                    System.out.println("Improvement? false");
+                if(sidewaysMoves > 0) { //check if you are moving sideways or if you're moving normally
+                    if(bestNeighbourValue <= referenceStateValue) {
+                        sidewaysMoves = 0;
+                        referenceStatePoint = bestNeighbour;
+                        referenceStateValue = bestNeighbourValue;
+                    }
+                    else {
+                        moveSideways(currentState, currentDirection);
+                        sidewaysMoves++;
+                    }
                 }
-                currentState = bestNeighbour;
 
+                else { //Not moving sideways
+                    if (bestNeighbourValue >= currentStateValue) {
+                        referenceStatePoint = currentState;
+                        sidewaysMoves += 1;
+                        System.out.println("Improvement? false");
+                    }
+
+
+                }
+
+                currentState = bestNeighbour;
+                currentStateValue = bestNeighbourValue;
 
                 // check if a solution is reached
                 if (bestNeighbourValue < THRESHOLD) {
@@ -244,6 +260,8 @@ public class HillClimber implements Player {
                 // choose a new random starting point
                 currentState = new StateVector4(initialState.x(), initialState.y(), randomSpeedVector[0],
                     randomSpeedVector[1]);
+                visited = new StateVector4[400];;
+                visitedidx = 0;
             }
         }
 
@@ -270,7 +288,12 @@ public class HillClimber implements Player {
         // if the search stops before a solution is found, a logging message is displayed
         boolean foundSolution = false;
 
+        int visitedidx = 0;
+        StateVector4[] visited = new StateVector4[100];
+
         var currentState = initialState;
+        visited[visitedidx] = currentState;
+        var previousState = currentState;
 
         int restartCount = 0;
 
@@ -285,13 +308,12 @@ public class HillClimber implements Player {
                 double currentStateValue = evaluator.evaluateState(currentState);
                 System.out.println("Current state value: " + currentStateValue);
 
-                var neighbours = generateNeighbours(currentState);
+                var neighbours = generateNeighbours(currentState, visited, visitedidx);
 //                for(StateVector4 neighbour : neighbours) {
 //                    System.out.println(neighbour);
 //                }
                 neighbours.remove(previousState);
 
-                var neighbourEvaluations = evaluateNeighbours(neighbours);
                 var neighbourEvaluations = evaluator.evaluateNeighbours(neighbours);
                 var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
 
@@ -348,7 +370,7 @@ public class HillClimber implements Player {
      * @param currentState the state to generate the neighbours of
      * @return {@link List} of the state's neighbours
      */
-    private List<StateVector4> generateNeighbours(StateVector4 currentState) {
+    private List<StateVector4> generateNeighbours(StateVector4 currentState, StateVector4[] visited, int visitedidx) {
 
         final double initialX = currentState.x();
         final double initialY = currentState.y();
@@ -370,6 +392,8 @@ public class HillClimber implements Player {
         neighbours.add(neighbour2);
         neighbours.add(neighbour3);
         neighbours.add(neighbour4);
+
+        checkVisited(visited, neighbours, visitedidx);
 
         return neighbours;
     }
@@ -402,7 +426,7 @@ public class HillClimber implements Player {
      * @return h (cost function value)
      */
     private double evaluateState(StateVector4 state) {
-        return heuristicFunction.apply(state, course);
+        return evaluator.evaluateState(state);
     }
 
     /**
@@ -421,6 +445,51 @@ public class HillClimber implements Player {
 
     }
 
+    private List<StateVector4> checkVisited(StateVector4[] visited, List<StateVector4> neighbours, int visitedidx) {
+        for(int i = 0; i < visitedidx; i++) {
+            if(visited[i] == null) {
+                throw new RuntimeException("Previous states are not being stored correctly.");
+            }
+            for(StateVector4 neighbour : neighbours) {
+                if(visited[i].approxEquals(neighbour)) {
+                    neighbours.remove(neighbour);
+                }
+            }
+        }
+        return neighbours;
+    }
+
+    private Direction checkDirection(StateVector4 bestNeighbour) {
+        if(bestNeighbour.vx() > initialState.vx()) {
+            return Direction.positiveX;
+        }
+        else if(bestNeighbour.vx() < initialState.vx()) {
+            return Direction.negativeX;
+        }
+        else if(bestNeighbour.vy() > initialState.vy()) {
+            return Direction.positiveY;
+        }
+        else {
+            return Direction.negativeY;
+        }
+    }
+
+    private StateVector4 moveSideways(StateVector4 currentState, Direction direction) {
+        return switch (direction) {
+            case Direction.negativeX ->
+                new StateVector4(currentState.x(), currentState.y(), currentState.vx() - DELTA, currentState.vy());
+            case Direction.positiveY ->
+                new StateVector4(currentState.x(), currentState.y(), currentState.vx(), currentState.vy() + DELTA);
+            case Direction.negativeY ->
+                new StateVector4(currentState.x(), currentState.y(), currentState.vx(), currentState.vy() - DELTA);
+            default ->
+                new StateVector4(currentState.x(), currentState.y(), currentState.vx() + DELTA, currentState.vy());
+        };
+    }
+
+    private enum Direction {
+        positiveX, negativeX, positiveY, negativeY
+    }
 }
 
 
