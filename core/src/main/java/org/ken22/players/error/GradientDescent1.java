@@ -3,6 +3,7 @@ package org.ken22.players.error;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.utils.MathUtils;
@@ -10,6 +11,10 @@ import org.ken22.utils.MathUtils;
 public class GradientDescent1 implements ErrorFunction {
 
     private GolfCourse course;
+
+    public void init(GolfCourse course, PhysicsFactory physicsFactory) {
+        this.course = course;
+    }
 
     public double calculateError(StateVector4 state) {
         var engine = new PhysicsEngine(course, state);

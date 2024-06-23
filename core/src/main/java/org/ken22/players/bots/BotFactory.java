@@ -42,6 +42,10 @@ public class BotFactory {
         return new SimplePlanarApproximationBot(course);
     }
 
+    public InitialGuessBot initialGuessBot(GolfCourse course) {
+        return new InitialGuessBot(course);
+    }
+
     private ErrorFunction errorFunction(GolfCourse course) {
         ErrorFunction errorFunction = settings.errorFunctionType
             .getErrorFunction(course, physicsFactory, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting());

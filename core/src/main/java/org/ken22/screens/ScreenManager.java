@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.Application;
 import org.ken22.controller.ApplicationController;
+import org.ken22.game.GameLoop;
 import org.ken22.input.settings.BotSettings;
 import org.ken22.input.settings.GeneralSettings;
 import org.ken22.input.courseinput.CourseParser;
@@ -39,12 +40,13 @@ public class ScreenManager extends ScreenAdapter {
     private Screen currentScreen;
     private boolean isStage = true; //whether current is a stage or a screen
 
-
     public GeneralSettings generalSettings;
     public BotSettings botSettings;
 
     private PhysicsFactory physicsFactory;
     private BotFactory botFactory;
+
+    private GameLoop gameLoop;
 
     private KeyboardNavigator keyboardNavigator;
 
@@ -81,7 +83,8 @@ public class ScreenManager extends ScreenAdapter {
     /// transitions
     public void toGolfScreen() {
         if(this.currentScreen != null) this.currentScreen.dispose();
-        this.currentScreen = new GolfScreen(selectedCourse, botFactory, physicsFactory);
+        this.gameLoop = new GameLoop(selectedCourse, physicsFactory);
+        this.currentScreen = new GolfScreen(selectedCourse, botFactory, gameLoop);
         this.isStage = false;
         // Gdx.input.setInputProcessor(this.currentScreen);
     }

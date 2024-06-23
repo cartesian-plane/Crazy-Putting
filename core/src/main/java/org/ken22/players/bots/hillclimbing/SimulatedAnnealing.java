@@ -59,7 +59,7 @@ public final class SimulatedAnnealing implements Player {
     private final ODESolver<StateVector4> solver;
     private final Differentiator differentiator;
     private final double stepSize;
-    private final double allottedTime;
+    private double allottedTime;
 
     private final ErrorFunction heuristicFunction;
     private final Evaluator evaluator;
@@ -72,7 +72,7 @@ public final class SimulatedAnnealing implements Player {
         this.DELTA = 0.01;
         this.THRESHOLD = course.targetRadius;
         this.heuristicFunction = new EuclideanError();
-        this.heuristicFunction.init(this.course);
+       // this.heuristicFunction.init(this.course);
         this.evaluator = new Evaluator(this.heuristicFunction, this.course);
 
         this.initialTemperature = 100;
@@ -83,7 +83,7 @@ public final class SimulatedAnnealing implements Player {
 
         // choose random speed vector to start with
         var speedVector = getRandomSpeedVector();
-        initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
+       // initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
     }
 
     public SimulatedAnnealing(GolfCourse course,
@@ -120,7 +120,7 @@ public final class SimulatedAnnealing implements Player {
         var current = state;
         // simulated annealing
         for (double t = 0; t < allottedTime; t += 0.1) {
-            double temperature = schedule.getNewTemperature(t);
+            //double temperature = schedule.getNewTemperature(t);
             System.out.println("temperature = " + temperature);
             if (temperature == 0) {
                 LOGGER.log(Level.INFO, "Temperature reached 0, returning current state");

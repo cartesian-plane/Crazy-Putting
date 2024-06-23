@@ -13,17 +13,14 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
+import org.ken22.game.GameLoop;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.models.*;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
-import org.ken22.players.BotFactory;
-import org.ken22.players.HumanPlayer;
 import org.ken22.players.bots.BotFactory;
-import org.ken22.players.bots.HillClimbingBot;
-import org.ken22.players.bots.NewtonRaphsonBot;
-import org.ken22.players.bots.SimplePlanarApproximationBot;
-//import org.ken22.players.bots.hillclimbing.GradientDescent;
+import org.ken22.players.HumanPlayer;
+import org.ken22.players.bots.*;
 import org.ken22.players.bots.hillclimbing.GradientDescent;
 import org.ken22.players.bots.hillclimbing.SimulatedAnnealing;
 import org.ken22.utils.GolfExpression;
@@ -74,12 +71,15 @@ public class GolfScreen extends ScreenAdapter {
     private Environment environment;
 
     private BotFactory botFactory;
+    private InitialGuessBot initialGuessBot;
     private SimplePlanarApproximationBot simpleBot;
     private HillClimbingBot hillClimbingBot;
     private NewtonRaphsonBot newtonRaphsonBot;
     private GradientDescent gradientDescent;
     private HumanPlayer humanPlayer;
     private SimulatedAnnealing simulatedAnnealing;
+
+    private GameLoop gameLoop;
 
     private PhysicsEngine engine;
     private PhysicsEngine.FrameRateIterator iterator;
@@ -95,12 +95,15 @@ public class GolfScreen extends ScreenAdapter {
      * This is because the show() method is only called when the screen is set as the current screen
      * in the Game class, which is not the case here.
      */
-    public GolfScreen(GolfCourse course, BotFactory botFactory) {
+    public GolfScreen(GolfCourse course, BotFactory botFactory, GameLoop gameLoop) {
         this.course = course;
         this.expr = GolfExpression.expr(course);
         this.currentState = new StateVector4(course.ballX(), course.ballY(), 0, 0);
         this.botFactory = botFactory;
+        this.gameLoop = gameLoop;
+        gameLoop.setGolfScreen(this);
 
+        initialGuessBot = botFactory.initialGuessBot(course);
         simpleBot = botFactory.planarApproximationBot(course);
         hillClimbingBot = botFactory.hillClimbingBot(course);
         newtonRaphsonBot = botFactory.newtonRaphsonBot(course);
@@ -182,15 +185,18 @@ public class GolfScreen extends ScreenAdapter {
         // Render golf ball
         double height;
         if (iterator != null && iterator.hasNext()){
-            StateVector4 state = iterator.next();
-            LOGGER.log(Level.FINE, state.x() + " " + state.y());
+            currentState = iterator.next();
+            LOGGER.log(Level.FINE, currentState.x() + " " + currentState.y());
             //System.out.println(state.x() + " " + state.y());
-            height = 0.05 + expr.setVariable("x", state.x()).setVariable("y", state.y()).evaluate();
-            golfBallInstance.transform.setTranslation((float) state.x(), (float) height, (float) state.y());
+            height = 0.05 + expr.setVariable("x", currentState.x()).setVariable("y", currentState.y()).evaluate();
+            golfBallInstance.transform.setTranslation((float) currentState.x(), (float) height, (float) currentState.y());
+        } else if (iterator != null) {
+            currentState = iterator.last();
+            iterator = null;
         } else {
-            StateVector4 state = iterator.last();
-            height = 0.05 + expr.setVariable("x", state.x()).setVariable("y", state.y()).evaluate();
-            golfBallInstance.transform.setTranslation((float) state.x(), 0.05f, (float) state.y());
+            gameLoop.renditionFinished();
+            height = 0.05 + expr.setVariable("x", currentState.x()).setVariable("y", currentState.y()).evaluate();
+            golfBallInstance.transform.setTranslation((float) currentState.x(), 0.05f, (float) currentState.y());
         }
 
         golfBallShadowBatch.begin(camera);
@@ -231,7 +237,7 @@ public class GolfScreen extends ScreenAdapter {
 
         // test input
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            engine.setState(new InitialGuessBot(course).play(engine.getState()));
+            gameLoop.shootBall(initialGuessBot.play(currentState));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
             engine.setState(simpleBot.play(engine.getState()));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
@@ -254,6 +260,10 @@ public class GolfScreen extends ScreenAdapter {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();
         }
+    }
+
+    public void renderShot(PhysicsEngine.FrameRateIterator iterator) {
+        this.iterator = iterator;
     }
 
     @Override
