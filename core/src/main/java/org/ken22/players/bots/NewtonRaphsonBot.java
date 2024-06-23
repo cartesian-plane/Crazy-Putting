@@ -14,31 +14,34 @@ public class NewtonRaphsonBot implements Player {
 
     private StateVector4 currentState;
 
+    private Player initialGuessBot;
     private ErrorFunction errorFunction;
-    private double maxIterations = 100;
-    private double tolerance = 1e-1;
+    private double maxIterations;
+    private double tolerance;
 
     private double[][] hessian = new double[2][2];
     private double[] gradient = new double[2];
     private double hessianDet;
 
-    public NewtonRaphsonBot(ErrorFunction errorFunction, double stepSize) {
-        this(errorFunction, stepSize, 100, 1e-6);
+    public NewtonRaphsonBot(Player initialGuessBot, ErrorFunction errorFunction, double stepSize) {
+        this(initialGuessBot, errorFunction, stepSize, 250, 1e-6);
     }
 
-    public NewtonRaphsonBot(ErrorFunction errorFunction, double stepSize, double maxIterations, double tolerance) {
+    public NewtonRaphsonBot(Player initialGuessBot, ErrorFunction errorFunction, double stepSize, double maxIterations, double tolerance) {
+        this.initialGuessBot = initialGuessBot;
         this.stepSize = stepSize;
         this.errorFunction = errorFunction;
         this.maxIterations = maxIterations;
         this.tolerance = tolerance;
-
-        //TODO: temp
-        this.stepSize = 0.2;
     }
 
     @Override
     public StateVector4 play(StateVector4 state) {
-        currentState = state;
+        if (initialGuessBot != null) {
+            currentState = initialGuessBot.play(state);
+        } else {
+            currentState = state;
+        }
         for(int i = 0; i < maxIterations; i++) { // Newton-Raphson iteration
             hessianAndGradient3Point(currentState, errorFunction, stepSize);
             if (hessianDet == 0) {
@@ -46,8 +49,11 @@ public class NewtonRaphsonBot implements Player {
                 return currentState;
             }
             double[] delta = MatrixUtils.transform(MatrixUtils.inverse(hessian), gradient);
+            System.out.println("Delta: [" + delta[0] + ", " + delta[1] + "]");
             currentState = new StateVector4(currentState.x(), currentState.y(), currentState.vx() - delta[0], currentState.vy() - delta[1]);
             if(MathUtils.magnitude(delta) < tolerance) { // Converged
+                break;
+            } else if (errorFunction.calculateError(currentState) < 0.1) {
                 break;
             }
         }
@@ -104,6 +110,8 @@ public class NewtonRaphsonBot implements Player {
         gradient[0] = (e10 - e_10) / (2 * stepSize);
         gradient[1] = (e01 - e0_1) / (2 * stepSize);
 
-        System.out.println("Gradients:" + gradient[0] + "; " + gradient[1]);
+        //System.out.println("Hessian: [" + hessian[0][0] + ", " + hessian[0][1] + "; " + hessian[1][0] + ", " + hessian[1][1] + "]");
+        System.out.println(currentState);
+        System.out.println("Gradient: [" + gradient[0] + ", " + gradient[1] + "]");
     }
 }

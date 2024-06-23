@@ -33,7 +33,7 @@ public class BotFactory {
     }
 
     public NewtonRaphsonBot newtonRaphsonBot(GolfCourse course) {
-        return new NewtonRaphsonBot(errorFunction(course), settings.stepSize);
+        return new NewtonRaphsonBot(new InitialGuessBot(course), errorFunction(course), settings.stepSize);
     }
 
     public SimplePlanarApproximationBot planarApproximationBot(GolfCourse course) {

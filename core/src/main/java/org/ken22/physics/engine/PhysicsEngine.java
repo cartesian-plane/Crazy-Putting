@@ -71,9 +71,9 @@ public class PhysicsEngine {
         this.yinit = initialStateVector.y();
         double vx = initialStateVector.vx();
         double vy = initialStateVector.vy();
-        if (MathUtils.magnitude(vx, vy) > course.maximumSpeed()) {
+        if (MathUtils.magnitude(vx, vy) > 100) {
             throw new IllegalArgumentException("Initial vector speed too high! (max speed = "
-                + course.maximumSpeed() + ")");
+                + 100 + ")"); //TODO: use the max speed from settings
         }
         this.xTarget = course.targetXcoord();
         this.yTarget = course.targetYcoord();
@@ -327,9 +327,9 @@ public class PhysicsEngine {
             throw new IllegalArgumentException("State vector cannot have zero velocity");
         }
 
-        if (MathUtils.magnitude(stateVector.vx(), stateVector.vy()) > course.maximumSpeed()) {
+        if (MathUtils.magnitude(stateVector.vx(), stateVector.vy()) > 100) {
             throw new IllegalArgumentException("Initial vector speed too high! (max speed = "
-                + course.maximumSpeed() + ")");
+                + 100 + ")"); //TODO use the max speed from settings
         }
 
         this.trajectory.clear();
