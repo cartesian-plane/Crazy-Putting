@@ -17,12 +17,14 @@ public class GameLoop {
 
     private int shotCount;
     private boolean ballInMotion;
+    private StateVector4 startState;
     private StateVector4 lastValidState;
 
 
     public GameLoop(GolfCourse course, PhysicsFactory physicsFactory) {
         this.physicsFactory = physicsFactory;
-        this.physicsEngine = physicsFactory.physicsEngine(course, new StateVector4(course.ballX(), course.ballY(), 0, 0));
+        this.startState = new StateVector4(course.ballX(), course.ballY(), 0, 0);
+        this.physicsEngine = physicsFactory.physicsEngine(course, startState);
         this.course = course;
         this.shotCount = 0;
         this.ballInMotion = false;
@@ -68,5 +70,10 @@ public class GameLoop {
     public void revertToLastValidState() {
         screen.setCurrentState(lastValidState);
         physicsEngine = new PhysicsEngine(course, lastValidState);
+    }
+
+    public void restartCourse() {
+        screen.setCurrentState(startState);
+        physicsEngine = new PhysicsEngine(course, startState);
     }
 }

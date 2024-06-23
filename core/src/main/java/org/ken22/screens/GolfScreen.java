@@ -257,12 +257,12 @@ public class GolfScreen extends ScreenAdapter {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
             System.out.println(engine.getState());
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
             iterator = null;
             gameLoop.revertToLastValidState();
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+            gameLoop.restartCourse();
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             manager.toMainStage();
         }
     }
