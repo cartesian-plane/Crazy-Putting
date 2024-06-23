@@ -10,20 +10,15 @@ public final class MatrixUtils {
         if (aCols != bRows) {
             throw new IllegalArgumentException("A:Rows: " + aCols + " did not match B:Columns " + bRows + ".");
         }
-        double[][] result = new double[aRows][bCols];
-        for (int i = 0; i < aRows; i++) {
-            for (int j = 0; j < bCols; j++) {
-                result[i][j] = 0.00000;
-            }
-        }
+        double[] result = new double[aRows];
         for (int i = 0; i < aRows; i++) { // aRow
             for (int j = 0; j < bCols; j++) { // bColumn
                 for (int k = 0; k < aCols; k++) { // aColumn
-                    result[i][j] += a[i][k] * newB[k][j];
+                    result[i] += a[i][k] * newB[k][j];
                 }
             }
         }
-        return transpose(result);
+        return result;
     }
 
     public static double[][] inverse(double[][] a) {

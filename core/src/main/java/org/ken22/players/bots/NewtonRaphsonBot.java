@@ -6,6 +6,8 @@ import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
 import org.ken22.players.error.ErrorFunction;
+import org.ken22.utils.MathUtils;
+import org.ken22.utils.MatrixUtils;
 
 public class NewtonRaphsonBot implements Player {
     private GolfCourse course;
@@ -14,7 +16,15 @@ public class NewtonRaphsonBot implements Player {
     private PhysicsFactory physicsFactory;
     private double stepSize;
 
+    private StateVector4 currentState;
+
     private ErrorFunction errorFunction;
+    private double maxIterations = 100;
+    private double tolerance = 1e-1;
+
+    private double[][] hessian;
+    private double[] gradient;
+    private double hessianDet;
 
     public NewtonRaphsonBot(GolfCourse course, PhysicsFactory physicsFactory, double stepSize, ErrorFunction errorFunction) {
         this.course = course;
@@ -26,12 +36,24 @@ public class NewtonRaphsonBot implements Player {
 
     @Override
     public StateVector4 play(StateVector4 state) {
-        return null;
+        currentState = state;
+        for(int i = 0; i < maxIterations; i++) { // Newton-Raphson iteration
+            hessianAndGradient3Point(currentState, errorFunction, stepSize);
+            if (hessianDet == 0) {
+                System.out.println("Hessian determinant is zero, cannot invert");
+                return currentState;
+            }
+            double[] delta = MatrixUtils.transform(MatrixUtils.inverse(hessian), gradient);
+            currentState = new StateVector4(currentState.x(), currentState.y(), currentState.vx() - delta[0], currentState.vy() - delta[1]);
+            if(MathUtils.magnitude(delta) < tolerance) { // Converged
+                break;
+            }
+        }
+
+        return currentState;
     }
 
-    private static double[][] hessian3Point(StateVector4 currentState, ErrorFunction errorFunction, double stepSize) {
-        double[][] hessian = new double[2][2];
-
+    private void hessianAndGradient3Point(StateVector4 currentState, ErrorFunction errorFunction, double stepSize) {
         var e00 = errorFunction.calculateError(currentState);
 
         var e10 = errorFunction.calculateError(new StateVector4(currentState.x() + stepSize, currentState.y(), currentState.vx(), currentState.vy()));
@@ -71,6 +93,9 @@ public class NewtonRaphsonBot implements Player {
         hessian[1][0] = hessian[0][1];
         hessian[1][1] = (e02 - 2 * e00 + e0_2) / (4 * stepSize * stepSize);
 
-        return hessian;
+        hessianDet = hessian[0][0] * hessian[1][1] - hessian[0][1] * hessian[1][0];
+
+        gradient[0] = (e10 - e_10) / (2 * stepSize);
+        gradient[1] = (e01 - e0_1) / (2 * stepSize);
     }
 }
