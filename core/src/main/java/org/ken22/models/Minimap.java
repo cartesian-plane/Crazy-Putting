@@ -3,13 +3,14 @@ package org.ken22.models;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.SandPit;
 import org.ken22.obstacles.Tree;
+import org.ken22.obstacles.Wall;
 import org.ken22.utils.GolfExpression;
 import org.ken22.utils.MathUtils;
 
@@ -21,6 +22,7 @@ public class Minimap {
     private Pixmap terrainmap;
     private Pixmap treemap;
     private Pixmap sandmap;
+    private Pixmap wallmap;
 
     public Texture texture;
     public Image image;
@@ -29,7 +31,7 @@ public class Minimap {
     private GolfCourse course;
     private Expression expr;
 
-    public Minimap(GolfCourse course) {
+    public Minimap(GolfCourse course, Viewport viewport) {
         this.course = course;
         this.expr = GolfExpression.expr(course);
 
@@ -41,7 +43,6 @@ public class Minimap {
         init();
     }
 
-    //initializing
     public void init() {
         terrainmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGB888);
         double[][] heightMap = heightMap(expr);
@@ -60,8 +61,7 @@ public class Minimap {
         image = new Image(new TextureRegionDrawable(texture));
     }
 
-    //updating state of minimap
-    public  void update() {
+    public void update() {
         if (treemap != null) treemap.dispose();
         treemap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGBA8888);
         for (Tree tree : course.trees) {
@@ -80,18 +80,29 @@ public class Minimap {
             sandmap.fillCircle(i, j, (int) sandPit.radius());
         }
 
+        if (wallmap != null) wallmap.dispose();
+        wallmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGBA8888);
+        for (Wall wall : course.walls) {
+            int startX = projectX((float) wall.startPoint()[0]);
+            int startY = projectY((float) wall.startPoint()[1]);
+            int endX = projectX((float) wall.endPoint()[0]);
+            int endY = projectY((float) wall.endPoint()[1]);
+            wallmap.setColor(Color.PINK);
+            wallmap.drawLine(startX, startY, endX, endY);
+            System.out.println("Drawing wall from (projected): " + startX + ", " + startY + " to " + endX + ", " + endY);
+        }
+
         if (minimap != null) minimap.dispose();
         minimap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGBA8888);
         minimap.drawPixmap(terrainmap, 0, 0);
         minimap.drawPixmap(treemap, 0, 0);
         minimap.drawPixmap(sandmap, 0, 0);
+        minimap.drawPixmap(wallmap, 0, 0);
 
         texture = new Texture(minimap);
         image.setDrawable(new TextureRegionDrawable(texture));
     }
 
-
-    //creating base map height
     private double[][] heightMap(Expression heightFunction) {
         double[][] heightMap = new double[WIDTH][HEIGHT];
         double[] xCoords = MathUtils.linspace(xMin, xMax, WIDTH);
@@ -121,8 +132,6 @@ public class Minimap {
         return heightMap;
     }
 
-
-    //projecting stuff onto minimap
     public int projectX(float x) {
         return (int) ((x - xMin) / (xMax - xMin) * WIDTH);
     }
