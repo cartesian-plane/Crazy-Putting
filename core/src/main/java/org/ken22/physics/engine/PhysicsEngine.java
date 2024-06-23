@@ -120,9 +120,6 @@ public class PhysicsEngine {
         } else if(outOfBounds()) {
             //System.out.println("Out of bounds");
             return true;
-        } else if (reachedTarget()) {
-            //System.out.println("Reached target");
-            return true;
         }
 
         double x = lastVector.x();
@@ -178,7 +175,7 @@ public class PhysicsEngine {
 
         double targetRadius = course.targetRadius();
 
-        return MathUtils.magnitude(x - this.xTarget, y - this.yTarget) < targetRadius;
+        return isAtRest() && MathUtils.magnitude(x - this.xTarget, y - this.yTarget) < targetRadius;
     }
 
     /**
@@ -328,6 +325,11 @@ public class PhysicsEngine {
         }
         if(stateVector.vx() == 0.0 && stateVector.vy() == 0.0) {
             throw new IllegalArgumentException("State vector cannot have zero velocity");
+        }
+
+        if (MathUtils.magnitude(stateVector.vx(), stateVector.vy()) > course.maximumSpeed()) {
+            throw new IllegalArgumentException("Initial vector speed too high! (max speed = "
+                + course.maximumSpeed() + ")");
         }
 
         this.trajectory.clear();

@@ -225,6 +225,8 @@ public class GolfScreen extends ScreenAdapter {
         waterBatch.render(waterInstance, environment);
         waterBatch.end();
 
+        System.out.println(engine.getState());
+
         // test input
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             engine.setState(simpleBot.play(engine.getState()));

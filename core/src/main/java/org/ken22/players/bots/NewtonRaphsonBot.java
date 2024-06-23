@@ -23,8 +23,7 @@ public class NewtonRaphsonBot implements Player {
     private double hessianDet;
 
     public NewtonRaphsonBot(ErrorFunction errorFunction, double stepSize) {
-        this.stepSize = stepSize;
-        this.errorFunction = errorFunction;
+        this(errorFunction, stepSize, 100, 1e-1);
     }
 
     public NewtonRaphsonBot(ErrorFunction errorFunction, double stepSize, double maxIterations, double tolerance) {
