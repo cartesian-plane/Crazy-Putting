@@ -86,8 +86,7 @@ public class MinimapListener extends InputListener {
             case Input.Buttons.LEFT -> {
                 var radius = Double.parseDouble(radiusField.getText());
                 if (addingTree) {
-                    //TODO: negating unprojectedY might be a mistake
-                    Tree tree = new Tree(new double[]{unprojectedX, -unprojectedY}, radius);
+                    Tree tree = new Tree(new double[]{unprojectedX, unprojectedY}, radius);
                     course.trees.add(tree);
                     System.out.println("Added tree at: " + unprojectedX + ", " + unprojectedY);
                     System.out.println();
