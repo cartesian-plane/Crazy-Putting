@@ -1,7 +1,7 @@
 package org.ken22.utils;
 
 public final class MatrixUtils {
-    public static double[][] transform(double[][] a, double[] b) {
+    public static double[] transform(double[][] a, double[] b) {
         var newB = transpose(b);
         int aRows = a.length;
         int aCols = a[0].length;
@@ -23,7 +23,7 @@ public final class MatrixUtils {
                 }
             }
         }
-        return result;
+        return transpose(result);
     }
 
     public static double[][] inverse(double[][] a) {
@@ -45,5 +45,9 @@ public final class MatrixUtils {
             {b[0]},
             {b[1]}
         };
+    }
+
+    public static double[] transpose(double[][] b) {
+       return new double[] {b[0][0], b[1][0]};
     }
 }

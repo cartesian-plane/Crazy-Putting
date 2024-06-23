@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.ken22.utils.MatrixUtils.inverse;
 import static org.ken22.utils.MatrixUtils.transform;
 
 class MatrixUtilsTest {
@@ -29,12 +30,16 @@ class MatrixUtilsTest {
     }
 
     @Test
-    void inverse() {
+    void inverseTest() {
         double[][] a = new double[][]{
             {5, 3},
             {4, 2}
         };
 
-
+        var actual = inverse(a);
+        assertEquals(-1, actual[0][0]);
+        assertEquals(1.5, actual[0][1]);
+        assertEquals(2, actual[1][0]);
+        assertEquals(-2.5, actual[1][1]);
     }
 }
