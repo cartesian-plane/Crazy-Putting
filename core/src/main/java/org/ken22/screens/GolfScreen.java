@@ -22,7 +22,7 @@ import org.ken22.players.BotFactory;
 import org.ken22.players.HumanPlayer;
 import org.ken22.players.bots.HillClimbingBot;
 import org.ken22.players.bots.SimplePlanarApproximationBot;
-import org.ken22.players.bots.hillclimbing.HillClimber;
+import org.ken22.players.bots.hillclimbing.GradientDescent;
 import org.ken22.utils.GolfExpression;
 
 import java.util.logging.ConsoleHandler;
@@ -74,7 +74,7 @@ public class GolfScreen extends ScreenAdapter {
     private BotFactory botFactory;
     private SimplePlanarApproximationBot simpleBot;
     private HillClimbingBot hillClimbingBot;
-    private HillClimber hillClimber;
+    private GradientDescent hillClimber;
     private HumanPlayer humanPlayer;
 
     private PhysicsFactory physicsFactory;

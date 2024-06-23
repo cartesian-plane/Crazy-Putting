@@ -4,7 +4,7 @@ import org.ken22.input.settings.BotSettings;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.players.bots.HillClimbingBot;
 import org.ken22.players.bots.SimplePlanarApproximationBot;
-import org.ken22.players.bots.hillclimbing.HillClimber;
+import org.ken22.players.bots.hillclimbing.GradientDescent;
 
 public class BotFactory {
     private BotSettings settings;
@@ -19,8 +19,8 @@ public class BotFactory {
             settings.differentiatorType.getDifferentiator(), settings.odesolverType.getSolver(), settings.stepSize);
     }
 
-    public HillClimber hillClimber(GolfCourse course) {
-        return new HillClimber(course, settings.randomRestarts, 10);
+    public GradientDescent hillClimber(GolfCourse course) {
+        return new GradientDescent(course, settings.randomRestarts, 10);
     }
 
     public SimplePlanarApproximationBot planarApproximationBot(GolfCourse course) {

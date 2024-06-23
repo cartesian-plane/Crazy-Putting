@@ -10,7 +10,6 @@ import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
 import org.ken22.players.error.ErrorFunction;
 import org.ken22.players.error.EuclideanError;
-import org.ken22.utils.MathUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -38,9 +37,9 @@ import java.util.stream.Collectors;
  * </ul>
  */
 @SuppressWarnings({"unused", "DuplicatedCode"})
-public class HillClimber implements Player {
+public class GradientDescent implements Player {
 
-    private static final Logger LOGGER = Logger.getLogger(HillClimber.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GradientDescent.class.getName());
 
     static {
 
@@ -71,7 +70,7 @@ public class HillClimber implements Player {
     private final ErrorFunction heuristicFunction;
     private final Evaluator evaluator;
 
-    public HillClimber(GolfCourse course) {
+    public GradientDescent(GolfCourse course) {
         this.course = course;
         this.solver = new RK4();
         this.differentiator = new FivePointCenteredDifference();
@@ -92,7 +91,7 @@ public class HillClimber implements Player {
         initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
     }
 
-    public HillClimber(GolfCourse course, int maxRestarts, int maxSidewaysMoves) {
+    public GradientDescent(GolfCourse course, int maxRestarts, int maxSidewaysMoves) {
         this.course = course;
         this.solver = new RK4();
         this.differentiator = new FivePointCenteredDifference();
@@ -113,7 +112,7 @@ public class HillClimber implements Player {
         initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
     }
 
-    public HillClimber(GolfCourse course, StateVector4 initialState) {
+    public GradientDescent(GolfCourse course, StateVector4 initialState) {
         this.course = course;
         this.solver = new RK4();
         this.differentiator = new FivePointCenteredDifference();
@@ -130,7 +129,7 @@ public class HillClimber implements Player {
             this.stepSize);
     }
 
-    public HillClimber(GolfCourse course, StateVector4 initialState, ErrorFunction heuristicFunction) {
+    public GradientDescent(GolfCourse course, StateVector4 initialState, ErrorFunction heuristicFunction) {
         this.course = course;
         this.solver = new RK4();
         this.differentiator = new FivePointCenteredDifference();
@@ -147,9 +146,9 @@ public class HillClimber implements Player {
             this.stepSize);
     }
 
-    public HillClimber(double DELTA, double THRESHOLD, int MAX_SIDEWAYS_MOVES, int MAX_RESTARTS, GolfCourse course,
-                       ODESolver<StateVector4> solver, Differentiator differentiator, double stepSize,
-                       StateVector4 initialState, ErrorFunction heuristicFunction) {
+    public GradientDescent(double DELTA, double THRESHOLD, int MAX_SIDEWAYS_MOVES, int MAX_RESTARTS, GolfCourse course,
+                           ODESolver<StateVector4> solver, Differentiator differentiator, double stepSize,
+                           StateVector4 initialState, ErrorFunction heuristicFunction) {
         this.DELTA = DELTA;
         this.THRESHOLD = THRESHOLD;
         this.MAX_SIDEWAYS_MOVES = MAX_SIDEWAYS_MOVES;
@@ -215,32 +214,39 @@ public class HillClimber implements Player {
                 var neighbourEvaluations = evaluator.evaluateNeighbours(neighbours);
                 var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
                 double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
+                currentDirection = checkDirection(bestNeighbour);
                 System.out.println("Best neighbour value: " + bestNeighbourValue);
 
                 if(sidewaysMoves > 0) { //check if you are moving sideways or if you're moving normally
                     if(bestNeighbourValue <= referenceStateValue) {
-                        sidewaysMoves = 0;
                         referenceStatePoint = bestNeighbour;
                         referenceStateValue = bestNeighbourValue;
+                        currentState = bestNeighbour;
+                        currentStateValue = bestNeighbourValue;
+                        sidewaysMoves = 0;
                     }
                     else {
                         moveSideways(currentState, currentDirection);
                         sidewaysMoves++;
                     }
                 }
-
                 else { //Not moving sideways
                     if (bestNeighbourValue >= currentStateValue) {
-                        referenceStatePoint = currentState;
-                        sidewaysMoves += 1;
+                        moveSideways(currentState, currentDirection);
+                        sidewaysMoves++;
                         System.out.println("Improvement? false");
                     }
-
-
+                    else {
+                        currentState = bestNeighbour;
+                        currentStateValue = bestNeighbourValue;
+                        referenceStatePoint = bestNeighbour;
+                        referenceStateValue = bestNeighbourValue;
+                        System.out.println("Improvement? true");
+                    }
                 }
 
-                currentState = bestNeighbour;
-                currentStateValue = bestNeighbourValue;
+                visited[visitedidx] = currentState;
+                visitedidx++;
 
                 // check if a solution is reached
                 if (bestNeighbourValue < THRESHOLD) {

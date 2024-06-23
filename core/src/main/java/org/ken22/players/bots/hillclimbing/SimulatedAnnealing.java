@@ -1,8 +1,6 @@
 package org.ken22.players.bots.hillclimbing;
 
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.input.settings.BotSettings;
-import org.ken22.input.settings.GeneralSettings;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.odesolvers.ODESolver;
@@ -37,7 +35,7 @@ import java.util.logging.Logger;
  * </ul>
  */
 public final class SimulatedAnnealing {
-    private static final Logger LOGGER = Logger.getLogger(HillClimber.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GradientDescent.class.getName());
 
     static {
 
