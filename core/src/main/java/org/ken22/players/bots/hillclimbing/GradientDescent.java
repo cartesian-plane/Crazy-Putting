@@ -25,11 +25,13 @@ import java.util.stream.Collectors;
  *
  * <p>The state space is discretized, and the best neighbours are followed.</p>
  * <p>To avoid getting stuck in a plateau, a certain amount of sideways moves are allowed.</p>
+ * <p>Up to 400 visited states can be stored to avoid cycles </p>
  * <p>A maximum number of random restarts can be specified, meaning the search will eventually reach a solution,
  * given enough random restarts.</p>
  * <p>If the number of random restarts is set to 0, no random restarts will be performed.</p>
  * <p>If the maximum amount of sideways moves is reached, the search restarts and, if the max number of restarts
  * has been reached, the best solution is returned.</p>
+ *
  *
  *
  * <p><b>Note: </b></p>
@@ -198,22 +200,33 @@ public class GradientDescent implements Player {
         // if the search stops before a solution is found, a logging message is displayed
         boolean foundSolution = false;
 
+        //Store visited states
         int visitedidx = 0;
         StateVector4[] visited = new StateVector4[400];
 
+        //Initialise current state
         var currentState = initialState;
         var currentStateValue = evaluator.evaluateState(initialState);
         System.out.println("Current state value: " + currentStateValue);
-        visited[visitedidx] = currentState;
 
+        //Add initial state to neighborus
+        visited[visitedidx] = currentState;
+        visitedidx++;
+
+        //Keep track of restarts
         int restartCount = 0;
 
         while (restartCount <= MAX_RESTARTS) {
 
+            //Keep track of sideways moves
             int sidewaysMoves = 0;
             System.out.println("Restart count: " + restartCount);
+
+            //Reference point (local minimum) from when you started making sideways moves
             var referenceStatePoint = currentState;
             var referenceStateValue = evaluator.evaluateState(referenceStatePoint);
+
+            //Direction of sideways move
             Direction currentDirection = null; //private inner enum
 
             while (sidewaysMoves < MAX_SIDEWAYS_MOVES) {
@@ -222,38 +235,42 @@ public class GradientDescent implements Player {
                 var neighbourEvaluations = evaluator.evaluateNeighbours(neighbours);
                 var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
                 double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
-                currentDirection = checkDirection(bestNeighbour, currentState);
                 System.out.println("Best neighbour value: " + bestNeighbourValue);
 
-                if(sidewaysMoves > 0) { //check if you are moving sideways or if you're moving normally
-                    if(bestNeighbourValue <= referenceStateValue) {
-                        referenceStatePoint = bestNeighbour;
-                        referenceStateValue = bestNeighbourValue;
+                if(sidewaysMoves > 0) { // previous move was a sideways move (escaping local minimum)
+                    if(bestNeighbourValue <= referenceStateValue) { //escaped local minimum
+                        referenceStateValue = bestNeighbourValue; //keep track of local minimum value to be escaped
+                        visited[visitedidx] = bestNeighbour;
                         currentState = bestNeighbour;
                         currentStateValue = bestNeighbourValue;
                         sidewaysMoves = 0;
                     }
-                    else {
-                        moveSideways(currentState, currentDirection);
+                    else { //not escaped local minimum
+                        //check direction from which local minimum was approached
+                        currentDirection = checkDirection(bestNeighbour, currentState);
+                        //move along direction of approach
+                        StateVector4 newState = moveSideways(currentState, currentDirection);
+                        visited[visitedidx] = currentState;
                         sidewaysMoves++;
                     }
                 }
-                else { //Not moving sideways
-                    if (bestNeighbourValue >= currentStateValue) {
-                        moveSideways(currentState, currentDirection);
+                else { //  previous move was not a sideways move (not escaping local minimum)
+                    if (bestNeighbourValue >= currentStateValue) { // local minimum
+                        currentDirection = checkDirection(bestNeighbour, currentState);
+                        currentState = moveSideways(currentState, currentDirection);;
+                        visited[visitedidx] = currentState;
                         sidewaysMoves++;
                         System.out.println("Improvement? false");
                     }
-                    else {
+                    else { // not local minimum
                         currentState = bestNeighbour;
                         currentStateValue = bestNeighbourValue;
-                        referenceStatePoint = bestNeighbour;
-                        referenceStateValue = bestNeighbourValue;
+                        visited[visitedidx] = currentState;
                         System.out.println("Improvement? true");
                     }
                 }
 
-                visited[visitedidx] = currentState;
+                //Update number of visited states
                 visitedidx++;
 
                 // check if a solution is reached
@@ -267,7 +284,7 @@ public class GradientDescent implements Player {
                 var message = "Found solution! " + "vx: " + currentState.vx() + ", vy: " + currentState.vy();
                 LOGGER.log(Level.INFO, message);
                 break;
-            } else {
+            } else { //If solution not found start using new random initial guess
                 restartCount += 1;
                 double[] randomSpeedVector = getRandomSpeedVector(visited);
                 // choose a new random starting point
@@ -445,7 +462,7 @@ public class GradientDescent implements Player {
     }
 
     /**
-     * <p>Generate a random speed vector.</p>
+     * <p> Generate a random speed vector.</p>
      * Ensures that the magnitude of the vector does not exceed 5m/s
      *
      * @return randomly generated speed vector (vx, vy)
@@ -474,6 +491,10 @@ public class GradientDescent implements Player {
 
     }
 
+    /**
+     * <p> Generate random vx and vy velocities </p>
+     * @return: vector containing vx and vy velocities
+     */
     private double[] getRandomSpeedVector() {
         double[] vector = new double[2];
         Random random = new Random();
@@ -483,19 +504,36 @@ public class GradientDescent implements Player {
         return vector;
     }
 
+    /**
+     * <p> Check if any of the current neighbours have already been visited by the ball </p>
+     * @param visited: array of previous visited states
+     * @param neighbours: array of generated neighbours
+     * @param visitedidx: how many visited states are currently stored
+     */
     private void checkVisited(StateVector4[] visited, List<StateVector4> neighbours, int visitedidx) {
-        for(int i = 0; i < visitedidx; i++) {
-            if(visited[i] == null) {
+        List<StateVector4> toRemove = new ArrayList<>();
+
+        for (int i = 0; i < visitedidx; i++) {
+            if (visited[i] == null) {
                 throw new RuntimeException("Previous states are not being stored correctly.");
             }
-            for(StateVector4 neighbour : neighbours) {
-                if(visited[i].approxEquals(neighbour, course.targetRadius(), this.DELTA)) {
-                    neighbours.remove(neighbour);
+
+            for (StateVector4 neighbour : neighbours) {
+                if (visited[i].approxEquals(neighbour, course.targetRadius(), this.DELTA)) {
+                    toRemove.add(neighbour);
                 }
             }
         }
+
+        neighbours.removeAll(toRemove);
     }
 
+    /**
+     * <p> Check which direction speed changed from last position </p>
+     * @param bestNeighbour: current best neighbour
+     * @param currentState: current state
+     * @return: direction of motion in the vx, vy phase space
+     */
     private Direction checkDirection(StateVector4 bestNeighbour, StateVector4 currentState) {
         if(bestNeighbour.vx() > currentState.vx()) {
             return Direction.positiveX;
@@ -511,6 +549,12 @@ public class GradientDescent implements Player {
         }
     }
 
+    /**
+     * <p> Returns new state vector after sideways move </p>
+     * @param currentState: currentState vector
+     * @param direction: direction from which local minimum was initially approached
+     * @return: a new state vector after sideways move
+     */
     private StateVector4 moveSideways(StateVector4 currentState, Direction direction) {
         return switch (direction) {
             case Direction.negativeX ->
@@ -524,6 +568,9 @@ public class GradientDescent implements Player {
         };
     }
 
+    /**
+     * <p> Enumerates possible directions of motion in phase space </p>
+     */
     private enum Direction {
         positiveX, negativeX, positiveY, negativeY
     }
