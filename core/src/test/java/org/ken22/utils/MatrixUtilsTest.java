@@ -25,8 +25,8 @@ class MatrixUtilsTest {
             {18}
         };
 
-        assertEquals(expected[0][0], actual[0][0]);
-        assertEquals(expected[1][0], actual[1][0]);
+        assertEquals(expected[0][0], actual[0]);
+        assertEquals(expected[1][0], actual[1]);
     }
 
     @Test
