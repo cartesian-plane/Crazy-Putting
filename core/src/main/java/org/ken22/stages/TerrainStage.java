@@ -156,6 +156,7 @@ public class TerrainStage extends Stage {
         addLegendItem(legendTable, "Tree", Color.BROWN);
         addLegendItem(legendTable, "Sand Pit", Color.WHITE);
         addLegendItem(legendTable, "Wall", Color.PINK);
+        addLegendItem(legendTable, "Water", Color.BLUE);
         addLegendItem(legendTable, "LEFT CLICK = ADD", Color.BLACK);
         addLegendItem(legendTable, "RIGHT CLICK = REMOVE LAST ADDED", Color.BLACK);
 

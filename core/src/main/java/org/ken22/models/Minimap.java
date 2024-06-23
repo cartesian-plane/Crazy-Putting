@@ -13,6 +13,8 @@ import org.ken22.obstacles.Tree;
 import org.ken22.screens.GolfScreen;
 import org.ken22.utils.GolfExpression;
 import org.ken22.utils.MathUtils;
+import org.ken22.obstacles.Wall;
+
 
 public class Minimap {
     private static final int WIDTH = 512;
@@ -34,7 +36,7 @@ public class Minimap {
     private double[][] heightMap = new double[WIDTH][HEIGHT];
     private boolean[][] waterMask = new boolean[WIDTH][HEIGHT];
 
-    public Minimap(GolfCourse course) {
+    public Minimap(GolfCourse course, Viewport viewport) {
         this.course = course;
         this.expr = GolfExpression.expr(course);
 
