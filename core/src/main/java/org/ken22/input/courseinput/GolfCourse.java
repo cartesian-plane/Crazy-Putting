@@ -1,5 +1,6 @@
 package org.ken22.input.courseinput;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -42,6 +43,7 @@ public class GolfCourse {
     @JsonProperty("ballYcoord")
     public double ballY;
 
+    @JsonIgnore
     public Expression expression;
 
     //obstacles
@@ -50,7 +52,6 @@ public class GolfCourse {
 
     @JsonProperty("sandPits")
     public List<SandPit> sandPits = new ArrayList<>();
-
 
 
     public GolfCourse(
