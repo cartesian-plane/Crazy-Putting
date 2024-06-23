@@ -5,7 +5,7 @@
   "errorFunctionType" : "EUCLIDEAN",
   "weightingType" : "EQUIVALENT",
   "gridPathfindingType" : "A_STAR",
-  "localSearchType" : null,
-  "randomRestarts" : 10,
+  "localSearchType" : "NONE",
+  "randomRestarts" : 9,
   "sidewaysMoves" : 10
 }
