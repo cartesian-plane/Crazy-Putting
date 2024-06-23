@@ -16,7 +16,7 @@ public class BotFactory {
 
     public HillClimbingBot hillClimbingBot(GolfCourse course) {
         return new HillClimbingBot(course,
-            settings.errorFunctionType.getErrorFunction(settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting()),
+            settings.errorFunctionType.getErrorFunction(course, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting()),
             settings.differentiatorType.getDifferentiator(), settings.odesolverType.getSolver(), settings.stepSize);
     }
 
@@ -25,7 +25,9 @@ public class BotFactory {
     }
 
     public NewtonRaphsonBot newtonRaphsonBot(GolfCourse course) {
-        return new NewtonRaphsonBot(course,
+        return new NewtonRaphsonBot(
+            settings.errorFunctionType.getErrorFunction(course, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting()),
+            settings.stepSize);
     }
 
     public SimplePlanarApproximationBot planarApproximationBot(GolfCourse course) {

@@ -1,5 +1,6 @@
 package org.ken22.input.settings;
 
+import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.players.error.ErrorFunction;
 import org.ken22.players.error.EuclAndVelError;
 import org.ken22.players.error.EuclideanError;
@@ -13,8 +14,10 @@ public enum ErrorFunctionType {
         public String toString() {
             return "Euclidean";
         }
-        public ErrorFunction getErrorFunction(GridPathfinding pathfinding, Weighting weighting) {
-            return new EuclideanError();
+        public ErrorFunction getErrorFunction(GolfCourse course, GridPathfinding pathfinding, Weighting weighting) {
+            var euclideanError = new EuclideanError();
+            euclideanError.init(course);
+            return euclideanError;
         }
     },
 
@@ -23,8 +26,10 @@ public enum ErrorFunctionType {
         public String toString() {
             return "Euclidean and velocity";
         }
-        public ErrorFunction getErrorFunction(GridPathfinding pathfinding, Weighting weighting) {
-            return new EuclAndVelError();
+        public ErrorFunction getErrorFunction(GolfCourse course, GridPathfinding pathfinding, Weighting weighting) {
+            var euclAndVelError = new EuclAndVelError();
+            euclAndVelError.init(course);
+            return euclAndVelError;
         }
     },
 
@@ -33,8 +38,10 @@ public enum ErrorFunctionType {
         public String toString() {
             return "Pathfinding";
         }
-        public ErrorFunction getErrorFunction(GridPathfinding pathfinding, Weighting weighting) {
-            return new PathfindingError(pathfinding, weighting);
+        public ErrorFunction getErrorFunction(GolfCourse course, GridPathfinding pathfinding, Weighting weighting) {
+            var pathfindingError = new PathfindingError(pathfinding, weighting);
+            pathfindingError.init(course);
+            return pathfindingError;
         }
     };
 
@@ -44,7 +51,7 @@ public enum ErrorFunctionType {
         this.name = name;
     }
 
-    public abstract ErrorFunction getErrorFunction(GridPathfinding pathfinding, Weighting weighting);
+    public abstract ErrorFunction getErrorFunction(GolfCourse course, GridPathfinding pathfinding, Weighting weighting);
     @Override
     public String toString() {
         return name;
