@@ -18,7 +18,7 @@ import org.ken22.models.*;
 import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
-import org.ken22.players.BotFactory;
+import org.ken22.players.bots.BotFactory;
 import org.ken22.players.HumanPlayer;
 import org.ken22.players.bots.HillClimbingBot;
 import org.ken22.players.bots.NewtonRaphsonBot;

@@ -13,7 +13,7 @@ import org.ken22.input.settings.GeneralSettings;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.PhysicsFactory;
-import org.ken22.players.BotFactory;
+import org.ken22.players.bots.BotFactory;
 import org.ken22.stages.*;
 
 import java.io.File;
@@ -43,12 +43,16 @@ public class ScreenManager extends ScreenAdapter {
     public GeneralSettings generalSettings;
     public BotSettings botSettings;
 
+    private PhysicsFactory physicsFactory;
+    private BotFactory botFactory;
 
     private KeyboardNavigator keyboardNavigator;
 
     public ScreenManager(Application app) {
         this.app = app;
         loadSettings();
+        this.physicsFactory = new PhysicsFactory(generalSettings);
+        this.botFactory = new BotFactory(botSettings, physicsFactory);
         this.currentStage = new MainStage(this);
         keyboardNavigator = new KeyboardNavigator(this.currentStage);
         Gdx.input.setInputProcessor(keyboardNavigator);
@@ -77,9 +81,7 @@ public class ScreenManager extends ScreenAdapter {
     /// transitions
     public void toGolfScreen() {
         if(this.currentScreen != null) this.currentScreen.dispose();
-
-        // TODO implement settings
-        this.currentScreen = new GolfScreen(selectedCourse, new BotFactory(botSettings), new PhysicsFactory(generalSettings));
+        this.currentScreen = new GolfScreen(selectedCourse, botFactory, physicsFactory);
         this.isStage = false;
         // Gdx.input.setInputProcessor(this.currentScreen);
     }

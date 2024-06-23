@@ -3,6 +3,7 @@ package org.ken22.players.error;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.Tree;
+import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.pathfinding.GridPathfinding;
 import org.ken22.players.pathfinding.Node;
@@ -16,6 +17,8 @@ public class PathfindingError implements ErrorFunction {
     private GolfCourse course;
     private Expression expr;
 
+    private PhysicsFactory physicsEngine;
+
     private GridPathfinding pathfinding;
     private Weighting weighting;
     private double xMin, xMax, yMin, yMax;
@@ -26,9 +29,10 @@ public class PathfindingError implements ErrorFunction {
         this.weighting = weighting;
     }
 
-    public void init(GolfCourse course) {
+    public void init(GolfCourse course, PhysicsFactory physicsEngine) {
         this.course = course;
         this.expr = course.expression;
+        this.physicsEngine = physicsEngine;
 
         // generate terrain grid // we use Double.MAX_VALUE to enconde where the ball can't go
         xMin = course.ballX() < course.targetXcoord() ? course.ballX() - GolfScreen.PADDING_SIZE : course.targetXcoord();
@@ -64,6 +68,7 @@ public class PathfindingError implements ErrorFunction {
 
     @Override
     public double calculateError(StateVector4 state) {
+        state = physicsEngine.runSimulation(state, course);
         return pathfinding.calcPathDist(state.x(), state.y());
     }
 

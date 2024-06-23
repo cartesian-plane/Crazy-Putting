@@ -1,18 +1,18 @@
-package org.ken22.players;
+package org.ken22.players.bots;
 
 import org.ken22.input.settings.BotSettings;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.PhysicsFactory;
-import org.ken22.players.bots.HillClimbingBot;
-import org.ken22.players.bots.NewtonRaphsonBot;
-import org.ken22.players.bots.SimplePlanarApproximationBot;
 import org.ken22.players.bots.hillclimbing.HillClimber;
+import org.ken22.players.error.ErrorFunction;
 
 public class BotFactory {
     private BotSettings settings;
+    private PhysicsFactory physicsFactory;
 
     public BotFactory(BotSettings settings, PhysicsFactory physicsFactory) {
         this.settings = settings;
+        this.physicsFactory = physicsFactory;
     }
 
     public HillClimbingBot hillClimbingBot(GolfCourse course) {
@@ -26,9 +26,10 @@ public class BotFactory {
     }
 
     public NewtonRaphsonBot newtonRaphsonBot(GolfCourse course) {
-        return new NewtonRaphsonBot(
-            settings.errorFunctionType.getErrorFunction(course, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting()),
-            settings.stepSize);
+        ErrorFunction errorFunction = settings.errorFunctionType
+            .getErrorFunction(course, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting());
+        errorFunction.init(course, physicsFactory);
+        return new NewtonRaphsonBot(errorFunction, settings.stepSize);
     }
 
     public SimplePlanarApproximationBot planarApproximationBot(GolfCourse course) {
