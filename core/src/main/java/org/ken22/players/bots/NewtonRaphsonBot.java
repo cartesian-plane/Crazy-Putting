@@ -18,8 +18,8 @@ public class NewtonRaphsonBot implements Player {
     private double maxIterations = 100;
     private double tolerance = 1e-1;
 
-    private double[][] hessian;
-    private double[] gradient;
+    private double[][] hessian = new double[2][2];
+    private double[] gradient = new double[2];
     private double hessianDet;
 
     public NewtonRaphsonBot(ErrorFunction errorFunction, double stepSize) {
