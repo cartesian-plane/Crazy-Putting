@@ -228,8 +228,10 @@ public class GolfScreen extends ScreenAdapter {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
             engine.setState(simpleBot.play(engine.getState()));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            engine.setState(hillClimber.play(engine.getState()));
+            engine.setState(hillClimbingBot.play(engine.getState()));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+            engine.setState(hillClimber.play(engine.getState()));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
             engine.setState(humanPlayer.play(engine.getState()));
         }
     }
