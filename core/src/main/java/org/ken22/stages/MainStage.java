@@ -12,11 +12,14 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.input.courseinput.Settings;
+import org.ken22.models.Minimap;
 import org.ken22.screens.ScreenManager;
 import org.ken22.utils.userinput.UIElementFactory;
 
 import java.util.Arrays;
 import java.util.List;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 
 public class MainStage extends Stage {
 
@@ -37,6 +40,8 @@ public class MainStage extends Stage {
     private TextButton odeSolverButton;
     private TextButton exitButton;
 
+    private Minimap minimap;
+
     public MainStage(ScreenManager manager) {
         super(viewport);
 
@@ -53,8 +58,6 @@ public class MainStage extends Stage {
 
         playButton = UIElementFactory.createStyledButton("Play", skin, Color.GREEN, () -> manager.toGolfScreen());
 
-
-        //premade levels
         courseSelectorButton = UIElementFactory.createStyledButton("Course Selector", skin, null, () -> {
             List<GolfCourse> courses = Arrays.asList(
                 new GolfCourse("Mountain Peak", "sin(x) * cos(y)", 100, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 50, 50, 10, 10),
@@ -65,13 +68,29 @@ public class MainStage extends Stage {
                 new GolfCourse("Sunset Valley", "exp(x) - y", 200, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 90, 90, 22, 22)
             );
             manager.toCourseSelectorScreen(courses);
+            updateMinimap();
         });
 
-        terrainEditorButton = UIElementFactory.createStyledButton("Terrain Editor", skin, null, () -> manager.toTerrainEditorScreen());
-        courseEditorButton = UIElementFactory.createStyledButton("Course Editor", skin, null, () -> manager.toCourseEditorScreen());
-        botSettingsButton = UIElementFactory.createStyledButton("Bot Settings", skin, null, () -> manager.toBotSettingsScreen());
-        generalSettingsButton = UIElementFactory.createStyledButton("General Settings", skin, null, () -> manager.toSettingsStage());
-        odeSolverButton = UIElementFactory.createStyledButton("ODE Solver", skin, null, () -> manager.toOdeSolverScreen());
+        terrainEditorButton = UIElementFactory.createStyledButton("Terrain Editor", skin, null, () -> {
+            manager.toTerrainEditorScreen();
+            updateMinimap();
+        });
+        courseEditorButton = UIElementFactory.createStyledButton("Course Editor", skin, null, () -> {
+            manager.toCourseEditorScreen();
+            updateMinimap();
+        });
+        botSettingsButton = UIElementFactory.createStyledButton("Bot Settings", skin, null, () -> {
+            manager.toBotSettingsScreen();
+            updateMinimap();
+        });
+        generalSettingsButton = UIElementFactory.createStyledButton("General Settings", skin, null, () -> {
+            manager.toSettingsStage();
+            updateMinimap();
+        });
+        odeSolverButton = UIElementFactory.createStyledButton("ODE Solver", skin, null, () -> {
+            manager.toOdeSolverScreen();
+            updateMinimap();
+        });
         exitButton = UIElementFactory.createStyledButton("Exit", skin, Color.RED, () -> manager.exit());
 
         buttonTable.defaults().pad(10).width(300).height(50);
@@ -108,8 +127,27 @@ public class MainStage extends Stage {
         infoTable.add(new Label("Differentiation: " + Settings.getInstance().getDifferentiator(), skin)).row();
         infoTable.add(new Label("Differentiation: " + Settings.getInstance().getDifferentiation(), skin)).row();
 
+
+
+        // minimap
+        minimap = new Minimap(manager.selectedCourse, viewport);
+        Container<Image> minimapContainer = new Container<>(minimap.image);
+        minimapContainer.setTransform(true);
+        minimapContainer.size(500, 500); // set fixed size here
+        minimapContainer.setOrigin(minimapContainer.getWidth() / 2, minimapContainer.getHeight() / 2);
+
+        infoTable.add(minimapContainer).padTop(20).center().row();
+
         mainTable.add(buttonTable).expand().fill().left();
         mainTable.add(infoTable).expand().fill().right();
+
+        updateMinimap(); // initial update
+    }
+
+
+
+    private void updateMinimap() {
+        minimap.update();
     }
 
     @Override

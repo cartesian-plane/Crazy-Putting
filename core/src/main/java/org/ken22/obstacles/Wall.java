@@ -1,4 +1,4 @@
 package org.ken22.obstacles;
 
-public record Wall(double[] coordinates0, double[] coordinates1, double width) {
+public record Wall(double[] startPoint, double[] endPoint, double thickness) {
 }

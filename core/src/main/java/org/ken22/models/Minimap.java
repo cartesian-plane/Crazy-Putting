@@ -3,9 +3,9 @@ package org.ken22.models;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.SandPit;
@@ -22,6 +22,7 @@ public class Minimap {
     private Pixmap terrainmap;
     private Pixmap treemap;
     private Pixmap sandmap;
+    private Pixmap wallmap;
 
     public Texture texture;
     public Image image;
@@ -45,7 +46,6 @@ public class Minimap {
         init();
     }
 
-    //initializing
     public void init() {
         terrainmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGB888);
         initHeightMap(expr);
@@ -67,8 +67,7 @@ public class Minimap {
         image = new Image(new TextureRegionDrawable(texture));
     }
 
-    //updating state of minimap
-    public  void update() {
+    public void update() {
         if (treemap != null) treemap.dispose();
         treemap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGBA8888);
         for (Tree tree : course.trees) {
@@ -87,11 +86,22 @@ public class Minimap {
             sandmap.fillCircle(i, j, (int) sandPit.radius());
         }
 
+        if (wallmap != null) wallmap.dispose();
+        wallmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGBA8888);
+        for (Wall wall : course.walls) {
+            int startX = projectX((float) wall.startPoint()[0]);
+            int startY = projectY((float) wall.startPoint()[1]);
+            int endX = projectX((float) wall.endPoint()[0]);
+            int endY = projectY((float) wall.endPoint()[1]);
+            drawThickLine(wallmap, startX, startY, endX, endY, (int) wall.thickness(), Color.PINK);
+        }
+
         if (minimap != null) minimap.dispose();
         minimap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGBA8888);
         minimap.drawPixmap(terrainmap, 0, 0);
         minimap.drawPixmap(treemap, 0, 0);
         minimap.drawPixmap(sandmap, 0, 0);
+        minimap.drawPixmap(wallmap, 0, 0);
 
         texture = new Texture(minimap);
         image.setDrawable(new TextureRegionDrawable(texture));
@@ -126,8 +136,6 @@ public class Minimap {
         }
     }
 
-
-    //projecting stuff onto minimap
     public int projectX(float x) {
         return (int) ((x - xMin) / (xMax - xMin) * WIDTH);
     }
@@ -137,10 +145,56 @@ public class Minimap {
     }
 
     public float unprojectX(int i) {
-        return xMin + ((float) i)  / WIDTH * (xMax - xMin);
+        return xMin + ((float) i) / WIDTH * (xMax - xMin);
     }
 
     public float unprojectY(int j) {
-        return yMin + ((float) j)  / HEIGHT * (yMax - yMin);
+        return yMin + ((float) j) / HEIGHT * (yMax - yMin);
+    }
+
+
+    //messed up wall drawing
+    private void drawThickLine(Pixmap pixmap, int x1, int y1, int x2, int y2, int thickness, Color color) {
+        double angle = Math.atan2(y2 - y1, x2 - x1);
+        int halfThickness = thickness / 2;
+
+        int dx = (int) (halfThickness * Math.sin(angle));
+        int dy = (int) (halfThickness * Math.cos(angle));
+
+        int[] xPoints = {x1 - dx, x1 + dx, x2 + dx, x2 - dx};
+        int[] yPoints = {y1 + dy, y1 - dy, y2 - dy, y2 + dy};
+
+        pixmap.setColor(color);
+        fillPolygon(pixmap, xPoints, yPoints);
+    }
+
+
+    //filling with triangel
+    private void fillPolygon(Pixmap pixmap, int[] xPoints, int[] yPoints) {
+        int minX = Math.min(Math.min(xPoints[0], xPoints[1]), Math.min(xPoints[2], xPoints[3]));
+        int maxX = Math.max(Math.max(xPoints[0], xPoints[1]), Math.max(xPoints[2], xPoints[3]));
+        int minY = Math.min(Math.min(yPoints[0], yPoints[1]), Math.min(yPoints[2], yPoints[3]));
+        int maxY = Math.max(Math.max(yPoints[0], yPoints[1]), Math.max(yPoints[2], yPoints[3]));
+
+        for (int y = minY; y <= maxY; y++) {
+            for (int x = minX; x <= maxX; x++) {
+                if (isPointInPolygon(x, y, xPoints, yPoints)) {
+                    pixmap.drawPixel(x, y);
+                }
+            }
+        }
+    }
+
+
+
+    private boolean isPointInPolygon(int x, int y, int[] xPoints, int[] yPoints) {
+        boolean result = false;
+        for (int i = 0, j = xPoints.length - 1; i < xPoints.length; j = i++) {
+            if ((yPoints[i] > y) != (yPoints[j] > y) &&
+                (x < (xPoints[j] - xPoints[i]) * (y - yPoints[i]) / (yPoints[j] - yPoints[i]) + xPoints[i])) {
+                result = !result;
+            }
+        }
+        return result;
     }
 }
