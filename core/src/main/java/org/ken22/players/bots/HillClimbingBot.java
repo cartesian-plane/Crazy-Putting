@@ -82,7 +82,6 @@ public class HillClimbingBot implements Player {
     private void  init(StateVector4 state, GolfCourse course) {
         this.currentState = state;
         this.course = course;
-        this.errorFunction.init(course, null); //TODO: move physicsFactory dependency out of here
 
         this.currentBest = new Input2(currentState.vx(), currentState.vy());
         this.targetState = new StateVector4(course.targetXcoord(), course.targetYcoord(), 0, 0);

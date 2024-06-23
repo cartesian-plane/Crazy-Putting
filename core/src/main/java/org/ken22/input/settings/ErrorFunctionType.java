@@ -1,6 +1,7 @@
 package org.ken22.input.settings;
 
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physics.PhysicsFactory;
 import org.ken22.players.error.ErrorFunction;
 import org.ken22.players.error.EuclAndVelError;
 import org.ken22.players.error.EuclideanError;
@@ -14,9 +15,9 @@ public enum ErrorFunctionType {
         public String toString() {
             return "Euclidean";
         }
-        public ErrorFunction getErrorFunction(GolfCourse course, GridPathfinding pathfinding, Weighting weighting) {
+        public ErrorFunction getErrorFunction(GolfCourse course, PhysicsFactory physicsFactory, GridPathfinding pathfinding, Weighting weighting) {
             var euclideanError = new EuclideanError();
-            euclideanError.init(course);
+            euclideanError.init(course, physicsFactory);
             return euclideanError;
         }
     },
@@ -26,9 +27,9 @@ public enum ErrorFunctionType {
         public String toString() {
             return "Euclidean and velocity";
         }
-        public ErrorFunction getErrorFunction(GolfCourse course, GridPathfinding pathfinding, Weighting weighting) {
+        public ErrorFunction getErrorFunction(GolfCourse course, PhysicsFactory physicsFactory, GridPathfinding pathfinding, Weighting weighting) {
             var euclAndVelError = new EuclAndVelError();
-            euclAndVelError.init(course);
+            euclAndVelError.init(course, physicsFactory);
             return euclAndVelError;
         }
     },
@@ -38,9 +39,9 @@ public enum ErrorFunctionType {
         public String toString() {
             return "Pathfinding";
         }
-        public ErrorFunction getErrorFunction(GolfCourse course, GridPathfinding pathfinding, Weighting weighting) {
+        public ErrorFunction getErrorFunction(GolfCourse course, PhysicsFactory physicsFactory, GridPathfinding pathfinding, Weighting weighting) {
             var pathfindingError = new PathfindingError(pathfinding, weighting);
-            pathfindingError.init(course);
+            pathfindingError.init(course, physicsFactory);
             return pathfindingError;
         }
     };
@@ -51,7 +52,7 @@ public enum ErrorFunctionType {
         this.name = name;
     }
 
-    public abstract ErrorFunction getErrorFunction(GolfCourse course, GridPathfinding pathfinding, Weighting weighting);
+    public abstract ErrorFunction getErrorFunction(GolfCourse course, PhysicsFactory physicsFactory, GridPathfinding pathfinding, Weighting weighting);
     @Override
     public String toString() {
         return name;

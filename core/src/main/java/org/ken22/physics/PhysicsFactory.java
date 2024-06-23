@@ -12,14 +12,14 @@ public class PhysicsFactory {
         this.settings = settings;
     }
 
-    public PhysicsEngine physicsEngine(GolfCourse course) {
-        return new PhysicsEngine(course, null, settings.stepSize,
+    public PhysicsEngine physicsEngine(GolfCourse course, StateVector4 initialStateVecor) {
+        return new PhysicsEngine(course, initialStateVecor, settings.stepSize,
             settings.differentiatorType.getDifferentiator(), settings.solverType.getSolver(),
             !settings.useSimplifiedPhysics);
     }
 
    public StateVector4 runSimulation(StateVector4 initialState, GolfCourse course) {
-        PhysicsEngine engine = physicsEngine(course);
+        PhysicsEngine engine = physicsEngine(course, initialState);
         return engine.solve();
    }
 }

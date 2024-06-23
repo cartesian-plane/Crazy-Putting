@@ -16,23 +16,26 @@ public class BotFactory {
     }
 
     public HillClimbingBot hillClimbingBot(GolfCourse course) {
-        return new HillClimbingBot(course,
-            settings.errorFunctionType.getErrorFunction(course, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting()),
+        return new HillClimbingBot(course, errorFunction(course),
             settings.differentiatorType.getDifferentiator(), settings.odesolverType.getSolver(), settings.stepSize);
     }
 
     public HillClimber hillClimber(GolfCourse course) {
-        return new HillClimber(course, settings.randomRestarts, 10);
+        return null;
     }
 
     public NewtonRaphsonBot newtonRaphsonBot(GolfCourse course) {
-        ErrorFunction errorFunction = settings.errorFunctionType
-            .getErrorFunction(course, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting());
-        errorFunction.init(course, physicsFactory);
-        return new NewtonRaphsonBot(errorFunction, settings.stepSize);
+        return new NewtonRaphsonBot(errorFunction(course), settings.stepSize);
     }
 
     public SimplePlanarApproximationBot planarApproximationBot(GolfCourse course) {
         return new SimplePlanarApproximationBot(course);
+    }
+
+    private ErrorFunction errorFunction(GolfCourse course) {
+        ErrorFunction errorFunction = settings.errorFunctionType
+            .getErrorFunction(course, physicsFactory, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting());
+        errorFunction.init(course, physicsFactory);
+        return errorFunction;
     }
 }
