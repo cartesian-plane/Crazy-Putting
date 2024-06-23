@@ -29,10 +29,10 @@ import java.util.logging.Logger;
  *
  * <p><b>References: </b></p>
  * <ul>
- *     <i>Artificial Intelligence: A Modern Approach 3rd ed. (Chapter 4)</i>
- *     <i>Nourani, Y., & Andresen, B. (1998). A comparison of simulated annealing cooling strategies.
+ *     <li>Artificial Intelligence: A Modern Approach 3rd ed. (Chapter 4)</li>
+ *     <li>Nourani, Y., & Andresen, B. (1998). A comparison of simulated annealing cooling strategies.
  *     Journal of Physics. A, Mathematical and General/Journal of Physics. A, Mathematical and General, 31(41),
- *     8373–8385. <a href="https://doi.org/10.1088/0305-4470/31/41/011">https://doi.org/10.1088/0305-4470/31/41/011</a></i>
+ *     8373–8385. <a href="https://doi.org/10.1088/0305-4470/31/41/011">https://doi.org/10.1088/0305-4470/31/41/011</a></li>
  *
  * </ul>
  */
