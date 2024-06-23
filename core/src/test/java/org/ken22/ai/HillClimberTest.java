@@ -1,11 +1,13 @@
 package org.ken22.ai;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.ken22.ai.hillclimbing.HillClimber;
+import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
@@ -15,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,11 +68,6 @@ public class HillClimberTest {
                     String name = "test" + sum;
                     int courseidx = gen.nextInt(MathUtils.courses.length);
 
-//                    double xMin = x > xt ? xt - paddingSize : x - paddingSize;
-//                    double xMax = x < xt ? xt +  paddingSize : x + paddingSize;
-//                    double yMin = y > yt ? yt -  paddingSize : y - paddingSize;
-//                    double yMax = y < yt ? yt +  paddingSize : y + paddingSize;
-
                     GolfCourse course = new GolfCourse(name, MathUtils.courses[courseidx], MathUtils.range, 1, MathUtils.g, kf, sf, kf_s,
                         sf_s, 5.0, 0.1, xt, yt,x,y);
                     objectMapper.writeValue(new File(statisticalJSONs, name + ".json"), course);
@@ -109,46 +108,47 @@ public class HillClimberTest {
     }
 
     @Test
-    @DisplayName("Flat plane with good initial guess velocity")
+    @DisplayName("Flat plane, good initial velocity, Euclidian 2")
     void flatPlaneGoodInitGuess() {
-        double vx =
-        testManualSpeedCourse("0.5", 4.491572403911195, 1.6239689874674115);
+        Random gen  = new Random();
+        double x = gen.nextDouble()*20-10;
+        double y = gen.nextDouble()*20-10;
+        double xt = gen.nextDouble()*20-10;
+        double yt = gen.nextDouble()*20-10;
+        double vx = (xt - x)/4;
+        double vy = (yt - y)/4;
+        testManualSpeedCoursePos(MathUtils.courses[3], vx, vy, x, y);
     }
 
     @Test
-    @DisplayName("Flat plane")
+    @DisplayName("Flat plane, random initial guess, Euclidian 2")
     void flatPlaneEuclidian2D() {
         Random gen = new Random();
-        GolfCourse course = randomCourse("Flat plane", MathUtils.courses[3], gen);
+        testManualCourse(MathUtils.courses[3]);
+    }
 
-//                    double xMin = x > xt ? xt - paddingSize : x - paddingSize;
-//                    double xMax = x < xt ? xt +  paddingSize : x + paddingSize;
-//                    double yMin = y > yt ? yt -  paddingSize : y - paddingSize;
-//                    double yMax = y < yt ? yt +  paddingSize : y + paddingSize;
+    @Test
+    @DisplayName("Flat plane, good initial velocity, Heuristic1")
+    void flatPlaneGoodInitGuessHeuristic1() {
+        Random gen  = new Random();
+        double x = gen.nextDouble()*20-10;
+        double y = gen.nextDouble()*20-10;
+        double xt = gen.nextDouble()*20-10;
+        double yt = gen.nextDouble()*20-10;
+        double vx = (xt - x)/4;
+        double vy = (yt - y)/4;
+        testManualSpeedCoursePos(MathUtils.courses[3], vx, vy, x, y, Heuristic.HEURISTIC1);
+    }
 
-        StateVector4 initialState = generateInitialVector(course.ballX(), course.ballY(), gen);
-        System.out.println("Terrain equation: z=" + course.courseProfile());
-        System.out.println("Starting vector: " + initialState);
-
-        HillClimber climber = new HillClimber(course, initialState, Heuristic.EUCLIDIAN2D);
-        System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
-        StateVector4 solution = climber.search();
-        System.out.println("Solution: " + solution);
-        PhysicsEngine engine = new PhysicsEngine(course, solution);
-        engine.solve();
-        engine.writeToCSV("core/src/test/resources/ai/hillclimber/statistical/solutions", "Flat Plane");
-        double[] result = checkFinalState(engine.getTrajectory().getLast(), course);  // {distance, finalSpeed}
-        assertAll(
-            () -> assertEquals(result[0], MathUtils.targetRadius, this.tolerance),
-            () -> assertTrue(result[1] < PhysicsEngine.MAX_SCORE_SPEED)
-        );
+    @Test
+    @DisplayName("Flat plane, random initial guess, Heuristic1")
+    void flatPlaneRandomInitGuessHeuristic1() {
+        testManualCourse(MathUtils.courses[3], Heuristic.HEURISTIC1);
     }
 
     @Test
     @DisplayName("Statistical tests")
     void allStatisticalTests() {
-        Random gen = new Random();
-        ObjectMapper objectMapper = new ObjectMapper();
 
         File statisticalSolutions = new File("src/test/resources/ai/hillclimber/statistical/solutions");
         if (!statisticalSolutions.isDirectory()) {
@@ -159,35 +159,16 @@ public class HillClimberTest {
         if (!statisticalJSONs.isDirectory()) {
             throw new RuntimeException("Path is not a directory: " + "core/src/test/resources/ai/hillclimber/statistical/jsons");
         }
+        else if (statisticalJSONs.listFiles().length == 0) {
+            throw new RuntimeException("No JSON files found in: " + "core/src/test/resources/ai/hillclimber/statistical/jsons");
+        }
 
         File[] files = statisticalJSONs.listFiles();
         int name = 0;
         ArrayList<Executable> tests = new ArrayList<>();
         for (File file : files) {
             try {
-                GolfCourse course = objectMapper.readValue(file, GolfCourse.class);
-                double x = gen.nextDouble()*20-10;
-                double y = gen.nextDouble()*20-10;
-                double vx = gen.nextDouble()*10-5;
-                double vymax = Math.sqrt(25-vx*vx);
-                double vy = gen.nextDouble()*2*vymax-vymax-0.0001;
-                StateVector4 initialState = generateInitialVector(x, y, gen);
-                System.out.println("Starting vector: " + initialState);
-                HillClimber climber = new HillClimber(course, initialState, Heuristic.EUCLIDIAN2D);
-                System.out.println("Searching for solution " + name);
-                System.out.println("Terrain: " + course.courseProfile());
-                StateVector4 solution = climber.search();
-                System.out.println("Solution: " + solution);
-                PhysicsEngine engine = new PhysicsEngine(course, solution);
-                engine.solve();
-                engine.writeToCSV("core/src/test/resources/ai/hillclimber/statistical/solutions", ""+name);
-                double[] results = checkFinalState(engine.getTrajectory().getLast(), course);  // {distance, finalSpeed}
-                tests.add(() -> {
-                    assertAll(
-                        () -> assertEquals(results[0], MathUtils.targetRadius, this.tolerance),
-                        () -> assertTrue(results[1] < PhysicsEngine.MAX_SCORE_SPEED)
-                    );
-                });
+                testFromJSON(file, "test" + name, tests);
                 name++;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -196,12 +177,13 @@ public class HillClimberTest {
         assertAll(tests);
     }
 
+
     /**
-     * Shoot in specified direction
-     * @param terrain
-     * @param vx
-     * @param vy
-     */
+    * Shoot in specified direction
+    * @param terrain
+    * @param vx
+    * @param vy
+    */
     public void testManualSpeedCourse(String terrain, double vx, double vy) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
@@ -224,16 +206,15 @@ public class HillClimberTest {
         );
     }
 
-    public void testManualSpeedCourseTarget(String terrain, double vx, double vy, double xt, double yt) {
+    public void testManualSpeedCoursePos(String terrain, double vx, double vy, double x, double y) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
-        double x = course.ballX();
-        double y = course.ballY();
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
         System.out.println("Starting vector: " + initialState);
         HillClimber climber = new HillClimber(course, initialState, Heuristic.EUCLIDIAN2D);
         System.out.println("Terrain equation: z=" + course.courseProfile());
         System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
+        System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
         StateVector4 solution = climber.search();
         System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution, true);
@@ -246,8 +227,25 @@ public class HillClimberTest {
         );
     }
 
-    public void testManualSpeedCourseTargetPos(String terrain, double vx, double vy, double xt, double yt, double x, double y) {
-
+    public void testManualSpeedCoursePos(String terrain, double vx, double vy, double x, double y, Heuristic heur) {
+        Random gen = new Random();
+        GolfCourse course = randomCourse(terrain, terrain, gen);
+        StateVector4 initialState = new StateVector4(x, y, vx, vy);
+        System.out.println("Starting vector: " + initialState);
+        HillClimber climber = new HillClimber(course, initialState, heur);
+        System.out.println("Terrain equation: z=" + course.courseProfile());
+        System.out.println("Heuristic: " + heur);
+        System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
+        StateVector4 solution = climber.search();
+        System.out.println("Solution: " + solution);
+        PhysicsEngine engine = new PhysicsEngine(course, solution, true);
+        engine.solve();
+        engine.writeToCSV("core/src/test/resources/ai/hillclimber/statistical/solutions", "Flat Plane");
+        double[] result = checkFinalState(engine.getTrajectory().getLast(), course);  // {distance, finalSpeed}
+        assertAll(
+            () -> assertEquals(MathUtils.targetRadius, result[0], this.tolerance),
+            () -> assertTrue(result[1] < PhysicsEngine.MAX_SCORE_SPEED)
+        );
     }
 
     public void testManualCourse(String terrain) {
@@ -257,6 +255,7 @@ public class HillClimberTest {
         StateVector4 initialState = generateInitialVector(course.ballX(), course.ballY(), gen);
         System.out.println("Terrain equation: z=" + course.courseProfile());
         System.out.println("Starting vector: " + initialState);
+        System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
 
         HillClimber climber = new HillClimber(course, initialState, Heuristic.EUCLIDIAN2D);
         System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
@@ -270,6 +269,54 @@ public class HillClimberTest {
             () -> assertEquals(result[0], MathUtils.targetRadius, this.tolerance),
             () -> assertTrue(result[1] < PhysicsEngine.MAX_SCORE_SPEED)
         );
+    }
+
+    public void testManualCourse(String terrain, Heuristic heur) {
+        Random gen = new Random();
+        GolfCourse course = randomCourse(terrain, terrain, gen);
+
+        StateVector4 initialState = generateInitialVector(course.ballX(), course.ballY(), gen);
+        System.out.println("Terrain equation: z=" + course.courseProfile());
+        System.out.println("Starting vector: " + initialState);
+        System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
+
+        HillClimber climber = new HillClimber(course, initialState, heur);
+        System.out.println("Heuristic: " + heur);
+        StateVector4 solution = climber.search();
+        System.out.println("Solution: " + solution);
+        PhysicsEngine engine = new PhysicsEngine(course, solution);
+        engine.solve();
+        engine.writeToCSV("core/src/test/resources/ai/hillclimber/statistical/solutions", "Flat Plane");
+        double[] result = checkFinalState(engine.getTrajectory().getLast(), course);  // {distance, finalSpeed}
+        assertAll(
+            () -> assertEquals(result[0], MathUtils.targetRadius, this.tolerance),
+            () -> assertTrue(result[1] < PhysicsEngine.MAX_SCORE_SPEED)
+        );
+    }
+
+    public void testFromJSON(File file, String name, ArrayList<Executable> tests) throws IOException {
+        Random gen = new Random();
+        GolfCourse course = (new CourseParser(file)).getCourse();
+        double x = gen.nextDouble()*20-10;
+        double y = gen.nextDouble()*20-10;
+        StateVector4 initialState = generateInitialVector(x, y, gen);
+        System.out.println("Starting vector: " + initialState);
+        System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
+        HillClimber climber = new HillClimber(course, initialState, Heuristic.EUCLIDIAN2D);
+        System.out.println("Searching for solution " + name);
+        System.out.println("Terrain: " + course.courseProfile());
+        StateVector4 solution = climber.search();
+        System.out.println("Solution: " + solution);
+        PhysicsEngine engine = new PhysicsEngine(course, solution);
+        engine.solve();
+        engine.writeToCSV("core/src/test/resources/ai/hillclimber/statistical/solutions", ""+name);
+        double[] results = checkFinalState(engine.getTrajectory().getLast(), course);  // {distance, finalSpeed}
+        tests.add(() -> {
+            assertAll(
+                () -> assertEquals(results[0], MathUtils.targetRadius, this.tolerance),
+                () -> assertTrue(results[1] < PhysicsEngine.MAX_SCORE_SPEED)
+            );
+        });
     }
 
     public GolfCourse randomCourse(String name, String terrain, Random gen) {
@@ -289,7 +336,7 @@ public class HillClimberTest {
 
         double vx = gen.nextDouble()*10-5;
         double vymax = Math.sqrt(25-vx*vx);
-        double vy = gen.nextDouble()*2*vymax-vymax-0.0001;
+        double vy = gen.nextDouble()*2*vymax-vymax-0.05; //HillClimber delta, to prevent the delta from overshooting
         return new StateVector4(x,y,vx,vy);
     }
 
@@ -305,20 +352,5 @@ public class HillClimberTest {
         System.out.println("Final distance: " + distance + ", target reached: " + (distance < MathUtils.targetRadius));
         System.out.println("Final speed: " + finalSpeed + ", slow enough: " + (finalSpeed < PhysicsEngine.MAX_SCORE_SPEED));
         return new double[]{distance, finalSpeed};
-    }
-
-    public GolfCourse randomCourse(String name) {
-        Random gen = new Random();
-        double kf = gen.nextDouble()*0.2;
-        double sf = gen.nextDouble()*0.1;
-        double kf_s = gen.nextDouble()*0.7;
-        double sf_s = gen.nextDouble()*0.6;
-        double x = gen.nextDouble()*20-10;
-        double y = gen.nextDouble()*20-10;
-        double xt = gen.nextDouble()*20-10;
-        double yt = gen.nextDouble()*20-10;;
-        int courseidx = gen.nextInt(MathUtils.courses.length);
-        return new GolfCourse(name, MathUtils.courses[courseidx], MathUtils.range, 1, MathUtils.g, kf, sf, kf_s,
-            sf_s, 5.0, 0.1, xt, yt,x,y);
     }
 }

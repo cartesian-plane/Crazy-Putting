@@ -37,4 +37,8 @@ public class StateVector4 {
     public String toString() {
         return "x: " + x + ", y: " + y + ", vx: " + vx + ", vy: " + vy;
     }
+
+    public boolean equals(StateVector4 compared) {
+        return compared.x() == x && compared.y() == y && compared.vx() == vx && compared.vy() == vy;
+    }
 }

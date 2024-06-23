@@ -25,7 +25,7 @@ class VectorDifferentiationFactoryTest {
         InstantaneousVectorDifferentiation4 instDiff = instDiffFact.instantaneousVectorDifferentiation4();
 
         VectorDifferentiationFactory factory =
-            new VectorDifferentiationFactory(1, expr, course, new FivePointCenteredDifference());
+            new VectorDifferentiationFactory(1, expr, course, new FivePointCenteredDifference(), false);
         VectorDifferentiation4 vd = factory.normalSpeedVectorDifferentiation4();
 
         StateVector4 initial = new StateVector4(4.0, 4.0, 1.0, 1.0);
@@ -59,7 +59,7 @@ class VectorDifferentiationFactoryTest {
         InstantaneousVectorDifferentiation4 instDiff = instDiffFact.altInstantaneousVectorDifferentiation4();
 
         VectorDifferentiationFactory factory =
-            new VectorDifferentiationFactory(0.00001, expr, course, new FivePointCenteredDifference());
+            new VectorDifferentiationFactory(0.00001, expr, course, new FivePointCenteredDifference(), false);
         VectorDifferentiation4 vd = factory.lowSpeedVectorDifferentiation4();
 
         StateVector4 initial = new StateVector4(4.0, 4.0, 1.0, 1.0);

@@ -3,6 +3,7 @@ package org.ken22.ai.hillclimbing;
 import org.ken22.ai.Heuristic;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.vectors.StateVector4;
+import org.ken22.utils.MathUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -49,6 +50,11 @@ public class HillClimber {
 
 
     private final double DELTA;
+
+    public  double getDELTA() {
+        return this.DELTA;
+    }
+
     private final double THRESHOLD;
     private final int MAX_SIDEWAYS_MOVES;
     private final int MAX_RESTARTS;
@@ -58,7 +64,7 @@ public class HillClimber {
 
     public HillClimber(GolfCourse course) {
         this.course = course;
-        this.DELTA = 0.01;
+        this.DELTA = 0.1;
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = 10;
         this.MAX_RESTARTS = 10;
@@ -73,7 +79,7 @@ public class HillClimber {
 
     public HillClimber(GolfCourse course, int maxRestarts, int maxSidewaysMoves) {
         this.course = course;
-        this.DELTA = 0.01;
+        this.DELTA = 0.1;
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = maxSidewaysMoves;
         this.MAX_RESTARTS = maxRestarts;
@@ -88,7 +94,7 @@ public class HillClimber {
 
     public HillClimber(GolfCourse course, StateVector4 initialState) {
         this.course = course;
-        this.DELTA = 0.01;
+        this.DELTA = 0.1;
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = 10;
         this.MAX_RESTARTS = 10;
@@ -99,7 +105,7 @@ public class HillClimber {
 
     public HillClimber(GolfCourse course, StateVector4 initialState, Heuristic heuristicFunction) {
         this.course = course;
-        this.DELTA = 0.05;
+        this.DELTA = 0.1;
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = 10;
         this.MAX_RESTARTS = 10;
@@ -128,6 +134,7 @@ public class HillClimber {
         // if the search stops before a solution is found, a logging message is displayed
         boolean foundSolution = false;
 
+        var previousState = initialState;
         var currentState = initialState;
 
         int restartCount = 0;
@@ -147,10 +154,13 @@ public class HillClimber {
 //                for(StateVector4 neighbour : neighbours) {
 //                    System.out.println(neighbour);
 //                }
+                neighbours.remove(previousState);
+
                 var neighbourEvaluations = evaluateNeighbours(neighbours);
                 var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
 
                 double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
+
                 System.out.println("Best neighbour value: " + bestNeighbourValue);
 
                 if (bestNeighbourValue <= currentStateValue) {
@@ -160,11 +170,12 @@ public class HillClimber {
                     sidewaysMoves += 1;
                     System.out.println("Improvement? false");
                 }
+
+                previousState = currentState;
                 currentState = bestNeighbour;
 
-
                 // check if a solution is reached
-                if (bestNeighbourValue < THRESHOLD) {
+                if (Heuristic.EUCLIDIAN2D.apply(bestNeighbour, course) < THRESHOLD) {
                     foundSolution = true;
                     break;
                 }
@@ -219,10 +230,18 @@ public class HillClimber {
             currentState.vx(), currentState.vy() - DELTA);
 
         ArrayList<StateVector4> neighbours = new ArrayList<>();
-        neighbours.add(neighbour1);
-        neighbours.add(neighbour2);
-        neighbours.add(neighbour3);
-        neighbours.add(neighbour4);
+        if(MathUtils.magnitude(neighbour1.vx(), neighbour1.vy()) <= course.maximumSpeed()) {
+            neighbours.add(neighbour1);
+        }
+        if(MathUtils.magnitude(neighbour2.vx(), neighbour2.vy()) <= course.maximumSpeed()) {
+            neighbours.add(neighbour2);
+        }
+        if(MathUtils.magnitude(neighbour3.vx(), neighbour3.vy()) <= course.maximumSpeed()) {
+            neighbours.add(neighbour3);
+        }
+        if(MathUtils.magnitude(neighbour4.vx(), neighbour4.vy()) <= course.maximumSpeed()) {
+            neighbours.add(neighbour4);
+        }
 
         return neighbours;
     }
