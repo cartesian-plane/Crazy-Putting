@@ -1,7 +1,7 @@
 package org.ken22.players.bots;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class LinearSchedule implements Schedule {
+public class LinearCooling implements Schedule {
 
     public final double initialTemperature;
     public final double alpha;
@@ -11,7 +11,7 @@ public class LinearSchedule implements Schedule {
      * @param initialTemperature T<sub>0</sub>
      * @param alpha the cooling rate
      */
-    public LinearSchedule(double initialTemperature, double alpha) {
+    public LinearCooling(double initialTemperature, double alpha) {
         this.initialTemperature = initialTemperature;
         this.alpha = alpha;
     }
