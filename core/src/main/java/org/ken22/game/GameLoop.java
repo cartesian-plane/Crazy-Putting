@@ -65,7 +65,8 @@ public class GameLoop {
     }
 
     //return to last game state if something bad
-    private void revertToLastValidState() {
+    public void revertToLastValidState() {
+        screen.setCurrentState(lastValidState);
         physicsEngine = new PhysicsEngine(course, lastValidState);
     }
 }

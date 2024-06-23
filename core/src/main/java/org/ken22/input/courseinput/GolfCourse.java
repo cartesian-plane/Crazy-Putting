@@ -6,6 +6,7 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.obstacles.Tree;
 import org.ken22.obstacles.SandPit;
+import org.ken22.obstacles.Wall;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,8 @@ public class GolfCourse {
     @JsonProperty("sandPits")
     public List<SandPit> sandPits = new ArrayList<>();
 
+    @JsonProperty("walls")
+    public List<Wall> walls = new ArrayList<>();
 
     public GolfCourse(
         @JsonProperty("name") String name,

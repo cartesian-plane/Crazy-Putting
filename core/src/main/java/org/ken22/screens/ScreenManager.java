@@ -84,7 +84,7 @@ public class ScreenManager extends ScreenAdapter {
     public void toGolfScreen() {
         if(this.currentScreen != null) this.currentScreen.dispose();
         this.gameLoop = new GameLoop(selectedCourse, physicsFactory);
-        this.currentScreen = new GolfScreen(selectedCourse, botFactory, gameLoop);
+        this.currentScreen = new GolfScreen(this, selectedCourse, botFactory, gameLoop);
         this.isStage = false;
         // Gdx.input.setInputProcessor(this.currentScreen);
     }
