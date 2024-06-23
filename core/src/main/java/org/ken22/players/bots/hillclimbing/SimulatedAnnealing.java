@@ -8,6 +8,7 @@ import org.ken22.physics.odesolvers.RK4;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
 import org.ken22.players.bots.GeometricCooling;
+import org.ken22.players.bots.LinearCooling;
 import org.ken22.players.bots.LogarithmicCooling;
 import org.ken22.players.bots.Schedule;
 import org.ken22.players.error.ErrorFunction;
@@ -75,7 +76,7 @@ public final class SimulatedAnnealing implements Player {
         this.evaluator = new Evaluator(this.heuristicFunction, this.course);
 
         this.initialTemperature = 100;
-        this.schedule = new LinearSchedule(initialTemperature, 0.8);
+        this.schedule = new LinearCooling(initialTemperature, 0.8);
 
         var initialX = course.ballX();
         var initialY = course.ballY();

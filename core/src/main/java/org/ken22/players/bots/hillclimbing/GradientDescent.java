@@ -222,7 +222,7 @@ public class GradientDescent implements Player {
                 var neighbourEvaluations = evaluator.evaluateNeighbours(neighbours);
                 var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
                 double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
-                currentDirection = checkDirection(bestNeighbour, initialState);
+                currentDirection = checkDirection(bestNeighbour, currentState);
                 System.out.println("Best neighbour value: " + bestNeighbourValue);
 
                 if(sidewaysMoves > 0) { //check if you are moving sideways or if you're moving normally
@@ -496,14 +496,14 @@ public class GradientDescent implements Player {
         }
     }
 
-    private Direction checkDirection(StateVector4 bestNeighbour, StateVector4 initialState) {
-        if(bestNeighbour.vx() > initialState.vx()) {
+    private Direction checkDirection(StateVector4 bestNeighbour, StateVector4 currentState) {
+        if(bestNeighbour.vx() > currentState.vx()) {
             return Direction.positiveX;
         }
-        else if(bestNeighbour.vx() < initialState.vx()) {
+        else if(bestNeighbour.vx() < currentState.vx()) {
             return Direction.negativeX;
         }
-        else if(bestNeighbour.vy() > initialState.vy()) {
+        else if(bestNeighbour.vy() > currentState.vy()) {
             return Direction.positiveY;
         }
         else {

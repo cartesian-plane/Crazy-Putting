@@ -1,10 +1,10 @@
 package org.ken22.ai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.function.Executable;
+import org.ken22.obstacles.SandPit;
+import org.ken22.obstacles.Tree;
 import org.ken22.players.bots.hillclimbing.GradientDescent;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
@@ -19,13 +19,30 @@ import org.ken22.utils.MathUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
+@Tags ({
+    @Tag("Gradient Descent")
+    })
 public class HillClimberTest {
 
+    /******************************************************************************************************************
+
+     Fields
+
+     *****************************************************************************************************************/
+
     private double tolerance = 0.02;
+
+    /******************************************************************************************************************
+
+     Setup
+
+     *****************************************************************************************************************/
 
     @DisplayName("Setup testing for handpicked tests")
     @BeforeAll
@@ -108,7 +125,19 @@ public class HillClimberTest {
         }
     }
 
+    /******************************************************************************************************************
+
+     Simple physics
+
+     *****************************************************************************************************************/
+
     @Test
+    @Tag("FlatPlane")
+    @Tag("GoodInitialGuess")
+    @Tag("Euclidian2D")
+    @Tag("SimplePhysics")
+    @Tag("RK4")
+    @Tag("5PointDifference")
     @DisplayName("Flat plane, good initial velocity, Euclidian 2")
     void flatPlaneGoodInitGuess() {
         Random gen  = new Random();
@@ -118,17 +147,29 @@ public class HillClimberTest {
         double yt = gen.nextDouble()*20-10;
         double vx = (xt - x)/4;
         double vy = (yt - y)/4;
-        testManualSpeedCoursePos(MathUtils.courses[3], vx, vy, x, y);
+        testManual(MathUtils.courses[3], vx, vy, x, y);
     }
 
     @Test
+    @Tag("FlatPlane")
+    @Tag("RandomInitialGuess")
+    @Tag("Euclidian2D")
+    @Tag("SimplePhysics")
+    @Tag("RK4")
+    @Tag("5PointDifference")
     @DisplayName("Flat plane, random initial guess, Euclidian 2")
     void flatPlaneEuclidian2D() {
         Random gen = new Random();
-        testManualCourse(MathUtils.courses[3]);
+        testManual(MathUtils.courses[3]);
     }
 
     @Test
+    @Tag("FlatPlane")
+    @Tag("RandomInitialGuess")
+    @Tag("Heuristic1")
+    @Tag("SimplePhysics")
+    @Tag("RK4")
+    @Tag("5PointDifference")
     @DisplayName("Flat plane, good initial velocity, Heuristic1")
     void flatPlaneGoodInitGuessHeuristic1() {
         Random gen  = new Random();
@@ -138,16 +179,27 @@ public class HillClimberTest {
         double yt = gen.nextDouble()*20-10;
         double vx = (xt - x)/4;
         double vy = (yt - y)/4;
-        testManualSpeedCoursePos(MathUtils.courses[3], vx, vy, x, y, new GradientDescent2());
+        testManual(MathUtils.courses[3], vx, vy, x, y, new GradientDescent2());
     }
 
     @Test
+    @Tag("FlatPlane")
+    @Tag("RandomInitialGuess")
+    @Tag("Heuristic2")
+    @Tag("SimplePhysics")
+    @Tag("RK4")
+    @Tag("5PointDifference")
     @DisplayName("Flat plane, random initial guess, Heuristic2")
     void flatPlaneRandomInitGuessHeuristic1() {
-        testManualCourse(MathUtils.courses[3], new GradientDescent2());
+        testManual(MathUtils.courses[3], new GradientDescent2());
     }
 
     @Test
+    @Tag("Statistical")
+    @Tag("RandomInitialGuess")
+    @Tag("SimplePhysics")
+    @Tag("RK4")
+    @Tag("5PointDifference")
     @DisplayName("Statistical tests")
     void allStatisticalTests() {
 
@@ -178,6 +230,20 @@ public class HillClimberTest {
         assertAll(tests);
     }
 
+    /******************************************************************************************************************
+
+     Complete Physics
+
+     *****************************************************************************************************************/
+
+
+
+
+    /******************************************************************************************************************
+
+     Helper methods
+
+     *****************************************************************************************************************/
 
     /**
     * Shoot in specified direction
@@ -185,7 +251,7 @@ public class HillClimberTest {
     * @param vx
     * @param vy
     */
-    public void testManualSpeedCourse(String terrain, double vx, double vy) {
+    public void testManual(String terrain, double vx, double vy) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
         double x = course.ballX();
@@ -207,7 +273,7 @@ public class HillClimberTest {
         );
     }
 
-    public void testManualSpeedCoursePos(String terrain, double vx, double vy, double x, double y) {
+    public void testManual(String terrain, double vx, double vy, double x, double y) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
@@ -216,7 +282,7 @@ public class HillClimberTest {
         System.out.println("Terrain equation: z=" + course.courseProfile());
         System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
         System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
-        StateVector4 solution = climber.search();
+        StateVector4 solution = climber.play(initialState);
         System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution, true);
         engine.solve();
@@ -228,7 +294,7 @@ public class HillClimberTest {
         );
     }
 
-    public void testManualSpeedCoursePos(String terrain, double vx, double vy, double x, double y, ErrorFunction heur) {
+    public void testManual(String terrain, double vx, double vy, double x, double y, ErrorFunction heur) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
@@ -237,7 +303,7 @@ public class HillClimberTest {
         System.out.println("Terrain equation: z=" + course.courseProfile());
         System.out.println("Heuristic: " + heur);
         System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
-        StateVector4 solution = climber.search();
+        StateVector4 solution = climber.play(initialState);
         System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution, true);
         engine.solve();
@@ -249,7 +315,7 @@ public class HillClimberTest {
         );
     }
 
-    public void testManualCourse(String terrain) {
+    public void testManual(String terrain) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
 
@@ -260,7 +326,7 @@ public class HillClimberTest {
 
         GradientDescent climber = new GradientDescent(course, initialState, new EuclideanError());
         System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
-        StateVector4 solution = climber.search();
+        StateVector4 solution = climber.play(initialState);
         System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
         engine.solve();
@@ -272,7 +338,7 @@ public class HillClimberTest {
         );
     }
 
-    public void testManualCourse(String terrain, ErrorFunction heur) {
+    public void testManual(String terrain, ErrorFunction heur) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
 
@@ -283,7 +349,7 @@ public class HillClimberTest {
 
         GradientDescent climber = new GradientDescent(course, initialState, heur);
         System.out.println("Heuristic: " + heur);
-        StateVector4 solution = climber.search();
+        StateVector4 solution = climber.play(initialState);
         System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
         engine.solve();
@@ -306,7 +372,7 @@ public class HillClimberTest {
         GradientDescent climber = new GradientDescent(course, initialState, new EuclAndVelError());
         System.out.println("Searching for solution " + name);
         System.out.println("Terrain: " + course.courseProfile());
-        StateVector4 solution = climber.search();
+        StateVector4 solution = climber.play(initialState);
         System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
         engine.solve();
@@ -329,8 +395,10 @@ public class HillClimberTest {
         double y = gen.nextDouble()*20-10;
         double xt = gen.nextDouble()*20-10;
         double yt = gen.nextDouble()*20-10;;
-        return new GolfCourse(name, terrain, MathUtils.range, 1, MathUtils.g, kf, sf, kf_s,
-            sf_s, 5.0, 0.1, xt, yt,x,y);
+        List<Tree> trees = null;
+        List<SandPit> sandpits = null;
+        return (new GolfCourse(name, terrain, MathUtils.range, 1, MathUtils.g, kf, sf, kf_s,
+            sf_s, 5.0, 0.1, xt, yt,x,y));
     }
 
     public StateVector4 generateInitialVector(double x, double y, Random gen) {
