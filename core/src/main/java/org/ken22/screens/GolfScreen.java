@@ -15,9 +15,14 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.models.*;
+import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
+import org.ken22.players.BotFactory;
+import org.ken22.players.HumanPlayer;
+import org.ken22.players.bots.HillClimbingBot;
 import org.ken22.players.bots.SimplePlanarApproximationBot;
+import org.ken22.players.bots.hillclimbing.HillClimber;
 import org.ken22.utils.GolfExpression;
 
 import java.util.logging.ConsoleHandler;
@@ -66,8 +71,13 @@ public class GolfScreen extends ScreenAdapter {
 
     private Environment environment;
 
-    private SimplePlanarApproximationBot simpleBot = new SimplePlanarApproximationBot();
+    private BotFactory botFactory;
+    private SimplePlanarApproximationBot simpleBot;
+    private HillClimbingBot hillClimbingBot;
+    private HillClimber hillClimber;
+    private HumanPlayer humanPlayer;
 
+    private PhysicsFactory physicsFactory;
     private PhysicsEngine engine;
     private PhysicsEngine.FrameRateIterator iterator;
 
@@ -81,9 +91,17 @@ public class GolfScreen extends ScreenAdapter {
      * This is because the show() method is only called when the screen is set as the current screen
      * in the Game class, which is not the case here.
      */
-    public GolfScreen(GolfCourse course) {
+    public GolfScreen(GolfCourse course, BotFactory botFactory, PhysicsFactory physicsFactory) {
         this.course = course;
         this.expr = GolfExpression.expr(course);
+
+        this.botFactory = botFactory;
+        this.physicsFactory = physicsFactory;
+
+        simpleBot = botFactory.planarApproximationBot(course);
+        hillClimbingBot = botFactory.hillClimbingBot(course);
+        hillClimber = botFactory.hillClimber(course);
+        //humanPlayer = new HumanPlayer();
 
         // Set map limits
         xMin = (float) (course.ballX() > course.targetXcoord() ? course.targetXcoord() -  PADDING_SIZE : course.ballX() - PADDING_SIZE);
@@ -206,7 +224,13 @@ public class GolfScreen extends ScreenAdapter {
 
         // test input
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            engine.setState(simpleBot.play(engine.getState(), course));
+            engine.setState(simpleBot.play(engine.getState()));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+            engine.setState(simpleBot.play(engine.getState()));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+            engine.setState(hillClimber.play(engine.getState()));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+            engine.setState(humanPlayer.play(engine.getState()));
         }
     }
 

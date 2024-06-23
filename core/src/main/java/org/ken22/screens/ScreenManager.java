@@ -5,14 +5,19 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.Application;
 import org.ken22.controller.ApplicationController;
+import org.ken22.input.settings.BotSettings;
+import org.ken22.input.settings.GeneralSettings;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.input.courseinput.Settings;
+import org.ken22.physics.PhysicsFactory;
+import org.ken22.players.BotFactory;
 import org.ken22.stages.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 
@@ -26,8 +31,6 @@ import java.util.List;
 public class ScreenManager extends ScreenAdapter {
     private Application app;
 
-    private Settings settings;
-
     // very much temporary
     private CourseParser parser = new CourseParser(new File("input/sin(x)sin(y).json")); //default course
     public GolfCourse selectedCourse = parser.getCourse();
@@ -36,11 +39,16 @@ public class ScreenManager extends ScreenAdapter {
     private Screen currentScreen;
     private boolean isStage = true; //whether current is a stage or a screen
 
+
+    public GeneralSettings generalSettings;
+    public BotSettings botSettings;
+
+
     private KeyboardNavigator keyboardNavigator;
 
     public ScreenManager(Application app) {
         this.app = app;
-
+        loadSettings();
         this.currentStage = new MainStage(this);
         keyboardNavigator = new KeyboardNavigator(this.currentStage);
         Gdx.input.setInputProcessor(keyboardNavigator);
@@ -69,7 +77,9 @@ public class ScreenManager extends ScreenAdapter {
     /// transitions
     public void toGolfScreen() {
         if(this.currentScreen != null) this.currentScreen.dispose();
-        this.currentScreen = new GolfScreen(selectedCourse);
+
+        // TODO implement settings
+        this.currentScreen = new GolfScreen(selectedCourse, new BotFactory(botSettings), new PhysicsFactory(generalSettings));
         this.isStage = false;
         // Gdx.input.setInputProcessor(this.currentScreen);
     }
@@ -83,7 +93,7 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toSettingsStage() {
         this.currentStage.dispose();
-        this.currentStage = new SettingsStage(this);
+        this.currentStage = new SettingsStage(this, generalSettings);
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
@@ -111,7 +121,7 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toBotSettingsScreen() {
         this.currentStage.dispose();
-        this.currentStage = new BotSettingsStage(this);
+        this.currentStage = new BotSettingsStage(this, botSettings);
         Gdx.input.setInputProcessor(this.currentStage);
         this.isStage = true;
     }
@@ -123,6 +133,18 @@ public class ScreenManager extends ScreenAdapter {
 
     public void setCourse(GolfCourse course) {
         this.selectedCourse = course;
+    }
+
+    private void loadSettings() {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            generalSettings = mapper.readValue(new File("input/settings/default-settings.json"),
+                GeneralSettings.class);
+            botSettings = mapper.readValue(new File("input/settings/default-bot-settings.json"),
+                    BotSettings.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void exit() {

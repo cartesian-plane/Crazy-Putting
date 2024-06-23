@@ -1,5 +1,6 @@
 package org.ken22.input.courseinput;
 
+@Deprecated
 public class Settings {
     private static Settings instance;
 

@@ -14,14 +14,17 @@ public class SimplePlanarApproximationBot implements Player {
     GolfCourse course;
     Expression expr;
 
+    public SimplePlanarApproximationBot(GolfCourse course) {
+        this.course = course;
+        this.expr = GolfExpression.expr(course);
+    }
+
     @Override
-    public StateVector4 play(StateVector4 state, GolfCourse course) {
+    public StateVector4 play(StateVector4 state) {
 
         // init
         this.initState = state;
-        this.course = course;
         this.targetState = new StateVector4(course.targetXcoord(), course.targetYcoord(), 0, 0);
-        this.expr = GolfExpression.expr(course);
 
         // solve
         var currentHeight = expr.setVariable("x", initState.x()).setVariable("y", initState.y()).evaluate();

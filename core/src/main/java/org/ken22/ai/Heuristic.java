@@ -9,6 +9,7 @@ import org.ken22.utils.MathUtils;
 
 import java.util.function.BiFunction;
 
+@Deprecated
 public enum Heuristic {
 
     EUCLIDIAN2D((state, course) -> {
