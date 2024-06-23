@@ -64,81 +64,6 @@ public class HillClimber implements Player {
     private final ErrorFunction heuristicFunction;
     private final Evaluator evaluator;
 
-    public HillClimber(GolfCourse course) {
-        this.course = course;
-        this.solver = new RK4();
-        this.differentiator = new FivePointCenteredDifference();
-        this.stepSize = 0.0001;
-        this.DELTA = 0.01;
-        this.THRESHOLD = course.targetRadius();
-        this.MAX_SIDEWAYS_MOVES = 10;
-        this.MAX_RESTARTS = 10;
-        var errorFunction = new EuclideanError();
-        errorFunction.init(this.course);
-        this.heuristicFunction = errorFunction;
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
-        var initialX = course.ballX();
-        var initialY = course.ballY();
-
-        // choose random speed vector to start with
-        var speedVector = getRandomSpeedVector();
-        initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
-    }
-
-    public HillClimber(GolfCourse course, int maxRestarts, int maxSidewaysMoves) {
-        this.course = course;
-        this.solver = new RK4();
-        this.differentiator = new FivePointCenteredDifference();
-        this.stepSize = 0.0001;
-        this.DELTA = 0.01;
-        this.THRESHOLD = course.targetRadius();
-        this.MAX_SIDEWAYS_MOVES = maxSidewaysMoves;
-        this.MAX_RESTARTS = maxRestarts;
-        this.heuristicFunction = new EuclideanError();
-        this.heuristicFunction.init(this.course);
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
-            this.stepSize);
-        var initialX = course.ballX();
-        var initialY = course.ballY();
-
-        // choose random speed vector to start with
-        var speedVector = getRandomSpeedVector();
-        initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
-    }
-
-    public HillClimber(GolfCourse course, StateVector4 initialState) {
-        this.course = course;
-        this.solver = new RK4();
-        this.differentiator = new FivePointCenteredDifference();
-        this.stepSize = 0.0001;
-        this.DELTA = 0.01;
-        this.THRESHOLD = course.targetRadius();
-        this.MAX_SIDEWAYS_MOVES = 10;
-        this.MAX_RESTARTS = 10;
-        this.initialState = initialState;
-        // default heuristic function
-        this.heuristicFunction = new EuclideanError();
-        this.heuristicFunction.init(this.course);
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
-            this.stepSize);
-    }
-
-    public HillClimber(GolfCourse course, StateVector4 initialState, ErrorFunction heuristicFunction) {
-        this.course = course;
-        this.solver = new RK4();
-        this.differentiator = new FivePointCenteredDifference();
-        this.stepSize = 0.0001;
-        this.DELTA = 0.05;
-        this.THRESHOLD = course.targetRadius();
-        this.MAX_SIDEWAYS_MOVES = 10;
-        this.MAX_RESTARTS = 10;
-        this.initialState = initialState;
-        // default heuristic function
-        this.heuristicFunction = heuristicFunction;
-        this.heuristicFunction.init(this.course);
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
-            this.stepSize);
-    }
 
     public HillClimber(double DELTA, double THRESHOLD, int MAX_SIDEWAYS_MOVES, int MAX_RESTARTS, GolfCourse course,
                        ODESolver<StateVector4> solver, Differentiator differentiator, double stepSize,
@@ -153,7 +78,6 @@ public class HillClimber implements Player {
         this.stepSize = stepSize;
         this.initialState = initialState;
         this.heuristicFunction = heuristicFunction;
-        this.heuristicFunction.init(this.course);
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
             this.stepSize);
     }

@@ -68,24 +68,6 @@ public final class Evaluator {
      * @return h (cost function value)
      */
     public double evaluateState(StateVector4 state) {
-        return heuristicFunction.calculateError(getFinalVector(state));
+        return heuristicFunction.calculateError(state);
     }
-
-    /**
-     * <p>Runs the simulation and returns the final vector (where the ball stops).</p>
-     *
-     * @param input initial conditions
-     * @return the last vector
-     */
-    private StateVector4 getFinalVector(StateVector4 input) {
-        var engine = new PhysicsEngine(course, input);
-        while (!engine.isAtRest()) {
-            engine.nextStep();
-        }
-        return engine.getTrajectory().getLast();
-    }
-
-
-
-
 }

@@ -12,6 +12,7 @@ import java.util.function.BiFunction;
 @Deprecated
 public enum Heuristic {
 
+    //TODO remove this
     EUCLIDIAN2D((state, course) -> {
         double targetX = course.targetXcoord();
         double targetY = course.targetYcoord();
