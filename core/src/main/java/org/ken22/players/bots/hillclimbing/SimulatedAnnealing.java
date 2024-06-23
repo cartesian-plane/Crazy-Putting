@@ -2,12 +2,15 @@ package org.ken22.players.bots.hillclimbing;
 
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.differentiators.Differentiator;
+import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.odesolvers.ODESolver;
+import org.ken22.physics.odesolvers.RK4;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
 import org.ken22.players.bots.LinearSchedule;
 import org.ken22.players.bots.Schedule;
 import org.ken22.players.error.ErrorFunction;
+import org.ken22.players.error.EuclideanError;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +36,7 @@ import java.util.logging.Logger;
  * </ul>
  */
 public final class SimulatedAnnealing implements Player {
-    private static final Logger LOGGER = Logger.getLogger(HillClimber.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GradientDescent.class.getName());
 
     static {
 
@@ -56,6 +59,7 @@ public final class SimulatedAnnealing implements Player {
     private final ODESolver<StateVector4> solver;
     private final Differentiator differentiator;
     private final double stepSize;
+    private final double allottedTime;
 
     private final StateVector4 initialState;
     private final ErrorFunction heuristicFunction;

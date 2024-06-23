@@ -195,7 +195,7 @@ public class HillClimberTest {
         GradientDescent climber = new GradientDescent(course, initialState, new EuclAndVelError());
         System.out.println("Terrain equation: z=" + course.courseProfile());
         System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
-        StateVector4 solution = climber.search();
+        StateVector4 solution = climber.play(initialState);
         System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution, true);
         engine.solve();
