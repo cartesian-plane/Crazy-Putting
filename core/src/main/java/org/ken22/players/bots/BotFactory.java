@@ -29,7 +29,7 @@ public class BotFactory {
 
     public SimulatedAnnealing simulatedAnnealing(GolfCourse course)  {
         return new SimulatedAnnealing(course, settings.odesolverType.getSolver(),
-            settings.differentiatorType.getDifferentiator(), settings.stepSize, 100,1000, errorFunction(course));
+            settings.differentiatorType.getDifferentiator(), settings.stepSize, 100,10000, errorFunction(course));
     }
 
     public NewtonRaphsonBot newtonRaphsonBot(GolfCourse course) {

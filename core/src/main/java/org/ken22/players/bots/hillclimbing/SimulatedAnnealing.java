@@ -5,12 +5,11 @@ import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.odesolvers.ODESolver;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
-import org.ken22.players.bots.LinearSchedule;
+import org.ken22.players.bots.GeometricCooling;
+import org.ken22.players.bots.LogarithmicCooling;
 import org.ken22.players.bots.Schedule;
 import org.ken22.players.error.ErrorFunction;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -78,9 +77,9 @@ public final class SimulatedAnnealing implements Player {
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
             this.stepSize);
 
-        this.initialTemperature = 100;
+        this.initialTemperature = 1000;
         this.allottedTime = allottedTime;
-        this.schedule = new LinearSchedule(initialTemperature, 0.2);
+        this.schedule = new GeometricCooling(initialTemperature, 0.95);
     }
 
     public StateVector4 play(StateVector4 state) {
@@ -96,7 +95,7 @@ public final class SimulatedAnnealing implements Player {
         for (double t = 0; t < allottedTime; t += 0.1) {
             double temperature = schedule.getNewTemperature(t);
             System.out.println("temperature = " + temperature);
-            if (temperature == 0) {
+            if (temperature < 0.001) {
                 LOGGER.log(Level.INFO, "Temperature reached 0, returning current state");
                 System.out.println("current = " + current);
                 return current;
@@ -118,7 +117,9 @@ public final class SimulatedAnnealing implements Player {
             if (deltaE < 0) {
                 current = next; // if the evaluation is improved, accept immediately
             } else {
-                double probability = Math.exp(deltaE / temperature);
+                System.out.println("deltaE = " + deltaE);
+                double probability = Math.exp(-deltaE / temperature);
+                System.out.println("probability = " + probability);
                 if (Math.random() < probability) {
                     current = next;
                 }
@@ -139,31 +140,39 @@ public final class SimulatedAnnealing implements Player {
 
 
     private StateVector4 getRandomNeighbour(StateVector4 currentState) {
+//
+//        final double initialX = currentState.x();
+//        final double initialY = currentState.y();
+//
+//        // we are in a 2-d space, so we have 4 neighbours
+//        var neighbour1 = new StateVector4(initialX, initialY,
+//            currentState.vx() + DELTA, currentState.vy());
+//        var neighbour2 = new StateVector4(initialX, initialY,
+//            currentState.vx() - DELTA, currentState.vy());
+//
+//
+//        var neighbour3 = new StateVector4(initialX, initialY,
+//            currentState.vx(), currentState.vy() + DELTA);
+//        var neighbour4 = new StateVector4(initialX, initialY,
+//            currentState.vx(), currentState.vy() - DELTA);
+//
+//        ArrayList<StateVector4> neighbours = new ArrayList<>();
+//        neighbours.add(neighbour1);
+//        neighbours.add(neighbour2);
+//        neighbours.add(neighbour3);
+//        neighbours.add(neighbour4);
+//
+//        // ensures a random neighbour is always returned
+//        Collections.shuffle(neighbours);
+//        return neighbours.getFirst();
 
-        final double initialX = currentState.x();
-        final double initialY = currentState.y();
+        final double initialVx = currentState.vx();
+        final double initialVy = currentState.vy();
 
-        // we are in a 2-d space, so we have 4 neighbours
-        var neighbour1 = new StateVector4(initialX, initialY,
-            currentState.vx() + DELTA, currentState.vy());
-        var neighbour2 = new StateVector4(initialX, initialY,
-            currentState.vx() - DELTA, currentState.vy());
+        double vx = initialVx + DELTA * ((Math.random() - 0.5) * 2);
+        double vy = initialVy + DELTA * ((Math.random() - 0.5) * 2);
 
-
-        var neighbour3 = new StateVector4(initialX, initialY,
-            currentState.vx(), currentState.vy() + DELTA);
-        var neighbour4 = new StateVector4(initialX, initialY,
-            currentState.vx(), currentState.vy() - DELTA);
-
-        ArrayList<StateVector4> neighbours = new ArrayList<>();
-        neighbours.add(neighbour1);
-        neighbours.add(neighbour2);
-        neighbours.add(neighbour3);
-        neighbours.add(neighbour4);
-
-        // ensures a random neighbour is always returned
-        Collections.shuffle(neighbours);
-        return neighbours.getFirst();
+        return new StateVector4(currentState.x(), currentState.y(), vx, vy);
     }
 
     /**
