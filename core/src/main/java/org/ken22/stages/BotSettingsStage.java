@@ -71,6 +71,11 @@ public class BotSettingsStage extends Stage {
         graphAlgorithmSelector.setItems(GridPathfindingType.values());
         table.add(graphAlgorithmSelector);
 
+        table.add(new Label("Weighting", skin));
+        weightingBox = new SelectBox<>(skin);
+        weightingBox.setItems(WeightingType.values());
+        table.add(weightingBox);
+
         this.backButton = new TextButton("Back", skin);
         this.backButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
@@ -154,10 +159,16 @@ public class BotSettingsStage extends Stage {
     }
 
     private void loadButtons() {
-            // make the UI reflect the loaded settings
-            localSearchSelector.setSelected(settings.localSearchType);
-            graphAlgorithmSelector.setSelected(settings.gridPathfindingType);
-            randomRestarts.setText(String.valueOf(settings.randomRestarts));
+        // make the UI reflect the loaded settings
+        graphAlgorithmSelector.setSelected(settings.gridPathfindingType);
+        weightingBox.setSelected(settings.weightingType);
+        odeSolverBox.setSelected(settings.odesolverType);
+        differentiatorBox.setSelected(settings.differentiatorType);
+        errorFunctionBox.setSelected(settings.errorFunctionType);
+        stepSizeField.setText(String.valueOf(settings.stepSize));
+        localSearchSelector.setSelected(settings.localSearchType);
+        graphAlgorithmSelector.setSelected(settings.gridPathfindingType);
+        randomRestarts.setText(String.valueOf(settings.randomRestarts));
     }
 
     @Override
