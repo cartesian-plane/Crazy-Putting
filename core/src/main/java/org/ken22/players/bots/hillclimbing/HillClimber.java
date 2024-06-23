@@ -1,6 +1,10 @@
 package org.ken22.players.bots.hillclimbing;
 
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physics.differentiators.Differentiator;
+import org.ken22.physics.differentiators.FivePointCenteredDifference;
+import org.ken22.physics.odesolvers.ODESolver;
+import org.ken22.physics.odesolvers.RK4;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
 import org.ken22.players.error.ErrorFunction;
@@ -13,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * <p>This class contains a simple steepest-descent hill-climbing, for achieving a hole-in one.</p>
+ * <p>This class contains a simple steepest-descent hill-climbing.</p>
  *
  * <p>The state space is discretized, and the best neighbours are followed.</p>
  * <p>To avoid getting stuck in a plateau, a certain amount of sideways moves are allowed.</p>
@@ -53,12 +57,18 @@ public class HillClimber implements Player {
     private final int MAX_SIDEWAYS_MOVES;
     private final int MAX_RESTARTS;
     private final GolfCourse course;
+    private final ODESolver<StateVector4> solver;
+    private final Differentiator differentiator;
+    private final double stepSize;
     private final StateVector4 initialState;
     private final ErrorFunction heuristicFunction;
     private final Evaluator evaluator;
 
     public HillClimber(GolfCourse course) {
         this.course = course;
+        this.solver = new RK4();
+        this.differentiator = new FivePointCenteredDifference();
+        this.stepSize = 0.0001;
         this.DELTA = 0.01;
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = 10;
@@ -77,13 +87,17 @@ public class HillClimber implements Player {
 
     public HillClimber(GolfCourse course, int maxRestarts, int maxSidewaysMoves) {
         this.course = course;
+        this.solver = new RK4();
+        this.differentiator = new FivePointCenteredDifference();
+        this.stepSize = 0.0001;
         this.DELTA = 0.01;
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = maxSidewaysMoves;
         this.MAX_RESTARTS = maxRestarts;
         this.heuristicFunction = new EuclideanError();
         this.heuristicFunction.init(this.course);
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
+        this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
+            this.stepSize);
         var initialX = course.ballX();
         var initialY = course.ballY();
 
@@ -94,6 +108,9 @@ public class HillClimber implements Player {
 
     public HillClimber(GolfCourse course, StateVector4 initialState) {
         this.course = course;
+        this.solver = new RK4();
+        this.differentiator = new FivePointCenteredDifference();
+        this.stepSize = 0.0001;
         this.DELTA = 0.01;
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = 10;
@@ -101,12 +118,16 @@ public class HillClimber implements Player {
         this.initialState = initialState;
         // default heuristic function
         this.heuristicFunction = new EuclideanError();
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
         this.heuristicFunction.init(this.course);
+        this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
+            this.stepSize);
     }
 
     public HillClimber(GolfCourse course, StateVector4 initialState, ErrorFunction heuristicFunction) {
         this.course = course;
+        this.solver = new RK4();
+        this.differentiator = new FivePointCenteredDifference();
+        this.stepSize = 0.0001;
         this.DELTA = 0.05;
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = 10;
@@ -115,7 +136,26 @@ public class HillClimber implements Player {
         // default heuristic function
         this.heuristicFunction = heuristicFunction;
         this.heuristicFunction.init(this.course);
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
+        this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
+            this.stepSize);
+    }
+
+    public HillClimber(double DELTA, double THRESHOLD, int MAX_SIDEWAYS_MOVES, int MAX_RESTARTS, GolfCourse course,
+                       ODESolver<StateVector4> solver, Differentiator differentiator, double stepSize,
+                       StateVector4 initialState, ErrorFunction heuristicFunction) {
+        this.DELTA = DELTA;
+        this.THRESHOLD = THRESHOLD;
+        this.MAX_SIDEWAYS_MOVES = MAX_SIDEWAYS_MOVES;
+        this.MAX_RESTARTS = MAX_RESTARTS;
+        this.course = course;
+        this.solver = solver;
+        this.differentiator = differentiator;
+        this.stepSize = stepSize;
+        this.initialState = initialState;
+        this.heuristicFunction = heuristicFunction;
+        this.heuristicFunction.init(this.course);
+        this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
+            this.stepSize);
     }
 
     @Override
@@ -293,6 +333,7 @@ public class HillClimber implements Player {
      * <ul>
      *     Reference: <i>Artificial Intelligence: A Modern Approach 3rd ed. (Chapter 4)</i>
      * </ul>
+     *
      * @param currentState the state to generate the neighbours of
      * @return {@link List} of the state's neighbours
      */
@@ -333,8 +374,8 @@ public class HillClimber implements Player {
         double[] vector = new double[2];
         Random random = new Random();
         vector[0] = random.nextDouble() * 5 * 2 - 5; // random number between -5 and 5
-        double x = Math.sqrt(25-vector[0]*vector[0]);
-        vector[1] = random.nextDouble()*2*x-x; // random number between -5 and 5
+        double x = Math.sqrt(25 - vector[0] * vector[0]);
+        vector[1] = random.nextDouble() * 2 * x - x; // random number between -5 and 5
         return vector;
 
     }

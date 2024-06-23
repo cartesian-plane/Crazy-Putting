@@ -1,7 +1,12 @@
 package org.ken22.players.bots.hillclimbing;
 
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.physics.differentiators.Differentiator;
+import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.engine.PhysicsEngine;
+import org.ken22.physics.odesolvers.ODESolver;
+import org.ken22.physics.odesolvers.RK2;
+import org.ken22.physics.odesolvers.RK4;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.error.ErrorFunction;
 
@@ -13,12 +18,27 @@ import java.util.stream.Collectors;
 @SuppressWarnings("ClassCanBeRecord")
 public final class Evaluator {
 
-    public final ErrorFunction heuristicFunction;
-    public final GolfCourse course;
+    private final ErrorFunction heuristicFunction;
+    private final ODESolver<StateVector4> solver;
+    private final Differentiator differentiator;
+    private final double stepSize;
+    private final GolfCourse course;
 
     public Evaluator(ErrorFunction heuristicFunction, GolfCourse course) {
         this.heuristicFunction = heuristicFunction;
         this.course = course;
+        this.solver = new RK4();
+        this.differentiator = new FivePointCenteredDifference();
+        this.stepSize = 0.0001;
+    }
+
+    public Evaluator(ErrorFunction heuristicFunction, GolfCourse course,  ODESolver<StateVector4> solver,
+                     Differentiator differentiator, double stepSize) {
+        this.course = course;
+        this.heuristicFunction = heuristicFunction;
+        this.solver = solver;
+        this.differentiator = differentiator;
+        this.stepSize = stepSize;
     }
 
     /**
