@@ -61,7 +61,6 @@ public final class SimulatedAnnealing implements Player {
     private final double stepSize;
     private final double allottedTime;
 
-    private final StateVector4 initialState;
     private final ErrorFunction heuristicFunction;
     private final Evaluator evaluator;
 
@@ -101,7 +100,6 @@ public final class SimulatedAnnealing implements Player {
         this.DELTA = 0.01;
         this.THRESHOLD = course.targetRadius;
         this.heuristicFunction = errorFunction;
-        this.heuristicFunction.init(this.course);
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
             this.stepSize);
 

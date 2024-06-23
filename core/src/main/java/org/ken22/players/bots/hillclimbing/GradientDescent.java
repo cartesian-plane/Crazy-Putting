@@ -67,7 +67,6 @@ public class GradientDescent implements Player {
     private final ODESolver<StateVector4> solver;
     private final Differentiator differentiator;
     private final double stepSize;
-    private final StateVector4 initialState;
     private final ErrorFunction heuristicFunction;
     private final Evaluator evaluator;
 
@@ -87,7 +86,6 @@ public class GradientDescent implements Player {
 
         // choose random speed vector to start with
         var speedVector = getRandomSpeedVector();
-        initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
     }
 
     public GradientDescent(GolfCourse course) {
@@ -107,7 +105,6 @@ public class GradientDescent implements Player {
 
         // choose random speed vector to start with
         var speedVector = getRandomSpeedVector();
-        initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
     }
 
     public GradientDescent(GolfCourse course, int maxRestarts, int maxSidewaysMoves) {
@@ -127,7 +124,6 @@ public class GradientDescent implements Player {
 
         // choose random speed vector to start with
         var speedVector = getRandomSpeedVector();
-        initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
     }
 
     public GradientDescent(GolfCourse course, StateVector4 initialState) {
@@ -139,7 +135,6 @@ public class GradientDescent implements Player {
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = 50;
         this.MAX_RESTARTS = 10;
-        this.initialState = initialState;
         // default heuristic function
         this.heuristicFunction = new EuclideanError();
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
@@ -155,7 +150,6 @@ public class GradientDescent implements Player {
         this.THRESHOLD = course.targetRadius();
         this.MAX_SIDEWAYS_MOVES = 10;
         this.MAX_RESTARTS = 10;
-        this.initialState = initialState;
         // default heuristic function
         this.heuristicFunction = heuristicFunction;
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
@@ -164,7 +158,7 @@ public class GradientDescent implements Player {
 
     public GradientDescent(double DELTA, double THRESHOLD, int MAX_SIDEWAYS_MOVES, int MAX_RESTARTS, GolfCourse course,
                            ODESolver<StateVector4> solver, Differentiator differentiator, double stepSize,
-                           StateVector4 initialState, ErrorFunction heuristicFunction, PhysicsFactory physicsFactory) {
+                           ErrorFunction heuristicFunction) {
         this.DELTA = DELTA;
         this.THRESHOLD = THRESHOLD;
         this.MAX_SIDEWAYS_MOVES = MAX_SIDEWAYS_MOVES;
@@ -173,7 +167,6 @@ public class GradientDescent implements Player {
         this.solver = solver;
         this.differentiator = differentiator;
         this.stepSize = stepSize;
-        this.initialState = initialState;
         this.heuristicFunction = heuristicFunction;
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
             this.stepSize);
@@ -199,7 +192,7 @@ public class GradientDescent implements Player {
      *
      * @return the best solution found so far (at the moment of stopping)
      */
-    private StateVector4 search(StateVector4 state) {
+    private StateVector4 search(StateVector4 initialState) {
 
         // flag that stores whether a solution was found
         // if the search stops before a solution is found, a logging message is displayed
@@ -229,7 +222,7 @@ public class GradientDescent implements Player {
                 var neighbourEvaluations = evaluator.evaluateNeighbours(neighbours);
                 var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
                 double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
-                currentDirection = checkDirection(bestNeighbour);
+                currentDirection = checkDirection(bestNeighbour, initialState);
                 System.out.println("Best neighbour value: " + bestNeighbourValue);
 
                 if(sidewaysMoves > 0) { //check if you are moving sideways or if you're moving normally
@@ -302,7 +295,7 @@ public class GradientDescent implements Player {
      *
      * @return the best solution found so far (at the moment of stopping)
      */
-    public StateVector4 search() {
+    public StateVector4 search2(StateVector4 initialState) {
 
         // flag that stores whether a solution was found
         // if the search stops before a solution is found, a logging message is displayed
@@ -503,7 +496,7 @@ public class GradientDescent implements Player {
         }
     }
 
-    private Direction checkDirection(StateVector4 bestNeighbour) {
+    private Direction checkDirection(StateVector4 bestNeighbour, StateVector4 initialState) {
         if(bestNeighbour.vx() > initialState.vx()) {
             return Direction.positiveX;
         }
