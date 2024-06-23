@@ -66,8 +66,7 @@ public class HillClimber implements Player {
 
 
     public HillClimber(double DELTA, double THRESHOLD, int MAX_SIDEWAYS_MOVES, int MAX_RESTARTS, GolfCourse course,
-                       ODESolver<StateVector4> solver, Differentiator differentiator, double stepSize,
-                       StateVector4 initialState, ErrorFunction heuristicFunction) {
+                       ODESolver<StateVector4> solver, Differentiator differentiator, double stepSize, ErrorFunction heuristicFunction) {
         this.DELTA = DELTA;
         this.THRESHOLD = THRESHOLD;
         this.MAX_SIDEWAYS_MOVES = MAX_SIDEWAYS_MOVES;
@@ -76,7 +75,10 @@ public class HillClimber implements Player {
         this.solver = solver;
         this.differentiator = differentiator;
         this.stepSize = stepSize;
-        this.initialState = initialState;
+        var randomSpeed = getRandomSpeedVector();
+        var vx = randomSpeed[0];
+        var vy = randomSpeed[1];
+        this.initialState = new StateVector4(course.ballX, course.ballY, vx, vy);
         this.heuristicFunction = heuristicFunction;
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
             this.stepSize);

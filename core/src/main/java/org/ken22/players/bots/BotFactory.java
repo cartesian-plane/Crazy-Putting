@@ -21,7 +21,9 @@ public class BotFactory {
     }
 
     public HillClimber hillClimber(GolfCourse course) {
-        return null;
+        return new HillClimber(0.01, course.targetRadius, settings.sidewaysMoves, settings.randomRestarts,
+            course, settings.odesolverType.getSolver(), settings.differentiatorType.getDifferentiator(),
+            settings.stepSize, errorFunction(course));
     }
 
     public NewtonRaphsonBot newtonRaphsonBot(GolfCourse course) {
