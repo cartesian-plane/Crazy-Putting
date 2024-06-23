@@ -24,6 +24,7 @@ import org.ken22.players.bots.HillClimbingBot;
 import org.ken22.players.bots.NewtonRaphsonBot;
 import org.ken22.players.bots.SimplePlanarApproximationBot;
 import org.ken22.players.bots.hillclimbing.HillClimber;
+import org.ken22.players.bots.hillclimbing.SimulatedAnnealing;
 import org.ken22.utils.GolfExpression;
 
 import java.util.logging.ConsoleHandler;
@@ -77,6 +78,7 @@ public class GolfScreen extends ScreenAdapter {
     private HillClimbingBot hillClimbingBot;
     private NewtonRaphsonBot newtonRaphsonBot;
     private HillClimber hillClimber;
+    private SimulatedAnnealing simulatedAnnealing;
     private HumanPlayer humanPlayer;
 
     private PhysicsFactory physicsFactory;
@@ -104,6 +106,7 @@ public class GolfScreen extends ScreenAdapter {
         hillClimbingBot = botFactory.hillClimbingBot(course);
         newtonRaphsonBot = botFactory.newtonRaphsonBot(course);
         hillClimber = botFactory.hillClimber(course);
+        simulatedAnnealing = botFactory.simulatedAnnealing(course);
         //humanPlayer = new HumanPlayer();
 
         // Set map limits
@@ -225,8 +228,7 @@ public class GolfScreen extends ScreenAdapter {
         waterBatch.render(waterInstance, environment);
         waterBatch.end();
 
-        System.out.println(engine.getState());
-
+        //System.out.println(engine.getState());
         // test input
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             engine.setState(simpleBot.play(engine.getState()));
@@ -239,6 +241,8 @@ public class GolfScreen extends ScreenAdapter {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
             engine.setState(hillClimber.play(engine.getState()));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
+            engine.setState(simulatedAnnealing.play(engine.getState()));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
             engine.setState(humanPlayer.play(engine.getState()));
         }
     }

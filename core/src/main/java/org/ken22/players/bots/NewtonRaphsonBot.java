@@ -23,7 +23,7 @@ public class NewtonRaphsonBot implements Player {
     private double hessianDet;
 
     public NewtonRaphsonBot(ErrorFunction errorFunction, double stepSize) {
-        this(errorFunction, stepSize, 100, 1e-1);
+        this(errorFunction, stepSize, 100, 1e-6);
     }
 
     public NewtonRaphsonBot(ErrorFunction errorFunction, double stepSize, double maxIterations, double tolerance) {
@@ -31,6 +31,9 @@ public class NewtonRaphsonBot implements Player {
         this.errorFunction = errorFunction;
         this.maxIterations = maxIterations;
         this.tolerance = tolerance;
+
+        //TODO: temp
+        this.stepSize = 0.2;
     }
 
     @Override
@@ -48,6 +51,10 @@ public class NewtonRaphsonBot implements Player {
                 break;
             }
         }
+        if(hessianDet > 0 && hessian[0][0] < 0)
+            System.out.println("Hessian[0][0] is negative: -> Local Maximum");
+        else if (hessianDet > 0 && hessian[0][0] > 0)
+            System.out.println("Hessian[0][0] is positive: -> Local Minimum");
 
         return currentState;
     }
@@ -55,20 +62,20 @@ public class NewtonRaphsonBot implements Player {
     private void hessianAndGradient3Point(StateVector4 currentState, ErrorFunction errorFunction, double stepSize) {
         var e00 = errorFunction.calculateError(currentState);
 
-        var e10 = errorFunction.calculateError(new StateVector4(currentState.x() + stepSize, currentState.y(), currentState.vx(), currentState.vy()));
-        var e_10 = errorFunction.calculateError(new StateVector4(currentState.x() - stepSize, currentState.y(), currentState.vx(), currentState.vy()));
-        var e01 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y() + stepSize, currentState.vx(), currentState.vy()));
-        var e0_1 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y() - stepSize, currentState.vx(), currentState.vy()));
+        var e10 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx() + stepSize, currentState.vy()));
+        var e_10 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx() - stepSize, currentState.vy()));
+        var e01 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx(),currentState.vy() + stepSize));
+        var e0_1 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx(),currentState.vy() - stepSize));
 
-        var e11 = errorFunction.calculateError(new StateVector4(currentState.x() + stepSize, currentState.y() + stepSize, currentState.vx(), currentState.vy()));
-        //var e1_1 = errorFunction.calculateError(new StateVector4(currentState.x() + stepSize, currentState.y() - stepSize, currentState.vx(), currentState.vy()));
-        //var e_11 = errorFunction.calculateError(new StateVector4(currentState.x() - stepSize, currentState.y() - stepSize, currentState.vx(), currentState.vy()));
-        var e_1_1 = errorFunction.calculateError(new StateVector4(currentState.x() - stepSize, currentState.y() + stepSize, currentState.vx(), currentState.vy()));
+        var e11 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx() + stepSize, currentState.vy() + stepSize));
+        //var e_11 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx() - stepSize, currentState.vy() + stepSize));
+        //var e1_1 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx() + stepSize, currentState.vy() - stepSize));
+        var e_1_1 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx() - stepSize, currentState.vy() - stepSize));
 
-        var e20 = errorFunction.calculateError(new StateVector4(currentState.x() + 2 * stepSize, currentState.y(), currentState.vx(), currentState.vy()));
-        var e_20 = errorFunction.calculateError(new StateVector4(currentState.x() - 2 * stepSize, currentState.y(), currentState.vx(), currentState.vy()));
-        var e02 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y() + 2 * stepSize, currentState.vx(), currentState.vy()));
-        var e0_2 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y() - 2 * stepSize, currentState.vx(), currentState.vy()));
+        var e20 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx() + 2 * stepSize, currentState.vy()));
+        var e_20 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx() - 2 * stepSize, currentState.vy()));
+        var e02 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx(), currentState.vy() + 2 * stepSize));
+        var e0_2 = errorFunction.calculateError(new StateVector4(currentState.x(), currentState.y(), currentState.vx(), currentState.vy() - 2 * stepSize));
 
         // 3 point centered differences notes:
 //        var fx10 = (e20 - e00) / (2 * stepSize);
@@ -96,5 +103,7 @@ public class NewtonRaphsonBot implements Player {
 
         gradient[0] = (e10 - e_10) / (2 * stepSize);
         gradient[1] = (e01 - e0_1) / (2 * stepSize);
+
+        System.out.println("Gradients:" + gradient[0] + "; " + gradient[1]);
     }
 }
