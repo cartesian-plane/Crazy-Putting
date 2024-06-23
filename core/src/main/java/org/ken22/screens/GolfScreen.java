@@ -15,11 +15,15 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.models.*;
-import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
-import org.ken22.players.bots.*;
+import org.ken22.players.BotFactory;
 import org.ken22.players.HumanPlayer;
+import org.ken22.players.bots.BotFactory;
+import org.ken22.players.bots.HillClimbingBot;
+import org.ken22.players.bots.NewtonRaphsonBot;
+import org.ken22.players.bots.SimplePlanarApproximationBot;
+//import org.ken22.players.bots.hillclimbing.GradientDescent;
 import org.ken22.players.bots.hillclimbing.GradientDescent;
 import org.ken22.players.bots.hillclimbing.SimulatedAnnealing;
 import org.ken22.utils.GolfExpression;
@@ -38,7 +42,6 @@ public class GolfScreen extends ScreenAdapter {
         // if you want to change logging, just change the enum type at (1) and (2)
         // https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html
         LOGGER.setLevel(Level.FINER); // (1)
-
 
         Handler consoleHandler = new ConsoleHandler();
         consoleHandler.setLevel(Level.FINE); // (2)
@@ -78,9 +81,9 @@ public class GolfScreen extends ScreenAdapter {
     private HumanPlayer humanPlayer;
     private SimulatedAnnealing simulatedAnnealing;
 
-    private PhysicsFactory physicsFactory;
     private PhysicsEngine engine;
     private PhysicsEngine.FrameRateIterator iterator;
+    private StateVector4 currentState;
 
     private GolfCourse course;
     private Expression expr;
@@ -92,12 +95,11 @@ public class GolfScreen extends ScreenAdapter {
      * This is because the show() method is only called when the screen is set as the current screen
      * in the Game class, which is not the case here.
      */
-    public GolfScreen(GolfCourse course, BotFactory botFactory, PhysicsFactory physicsFactory) {
+    public GolfScreen(GolfCourse course, BotFactory botFactory) {
         this.course = course;
         this.expr = GolfExpression.expr(course);
-
+        this.currentState = new StateVector4(course.ballX(), course.ballY(), 0, 0);
         this.botFactory = botFactory;
-        this.physicsFactory = physicsFactory;
 
         simpleBot = botFactory.planarApproximationBot(course);
         hillClimbingBot = botFactory.hillClimbingBot(course);
@@ -179,7 +181,7 @@ public class GolfScreen extends ScreenAdapter {
 
         // Render golf ball
         double height;
-        if (iterator.hasNext()){
+        if (iterator != null && iterator.hasNext()){
             StateVector4 state = iterator.next();
             LOGGER.log(Level.FINE, state.x() + " " + state.y());
             //System.out.println(state.x() + " " + state.y());
@@ -234,6 +236,7 @@ public class GolfScreen extends ScreenAdapter {
             engine.setState(simpleBot.play(engine.getState()));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
             engine.setState(hillClimbingBot.play(engine.getState()));
+            //engine.setState(hillClimber.play(engine.getState()));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
             engine.setState(newtonRaphsonBot.play(engine.getState()));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {

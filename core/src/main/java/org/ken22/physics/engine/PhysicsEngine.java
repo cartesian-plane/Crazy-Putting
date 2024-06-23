@@ -3,6 +3,8 @@ package org.ken22.physics.engine;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.obstacles.Tree;
+import org.ken22.obstacles.Wall;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.differentiation.VectorDifferentiation4;
@@ -94,8 +96,28 @@ public class PhysicsEngine {
         this.yMax = yinit < course.targetYcoord() ? course.targetYcoord() +  this.paddingSize : course.ballY() + this.paddingSize;
     }
 
-
     /// Methods
+
+    public StateVector4 getState() {
+        return trajectory.getLast();
+    }
+
+    public void setState(StateVector4 stateVector) {
+        if(stateVector == null) {
+            throw new IllegalArgumentException("State vector cannot be null");
+        }
+        if(stateVector.vx() == 0.0 && stateVector.vy() == 0.0) {
+            throw new IllegalArgumentException("State vector cannot have zero velocity");
+        }
+
+        if (MathUtils.magnitude(stateVector.vx(), stateVector.vy()) > 100) {
+            throw new IllegalArgumentException("Initial vector speed too high! (max speed = "
+                + 100 + ")"); //TODO use the max speed from settings
+        }
+
+        this.trajectory.clear();
+        this.trajectory.add(stateVector);
+    }
 
     /**
      * Checks whether the ball is at rest by looking at the last computed state vector.
@@ -188,6 +210,24 @@ public class PhysicsEngine {
         return xout && yout;
     }
 
+    private void treeCollision(StateVector4 state) {
+        for(Tree t : course.getTrees()) {
+            var magnitude = MathUtils.magnitude(state.x() - t.coordinates()[0], state.y() - t.coordinates()[1]);
+            if (magnitude <= t.radius()) { //collision
+                double[] normal = new double[] {state.x() - t.coordinates()[0] / magnitude,
+                    state.y() - t.coordinates()[1] / magnitude};
+                var dot = state.vx() * normal[0] + state.vy() * normal[1];
+                state.setVx(state.vx() - 2 * dot * normal[0]);
+                state.setVy(state.vy() - 2 * dot * normal[1]);
+                System.out.println("Tree collision");
+            }
+        }
+    }
+
+    private void wallCollision(StateVector4 state) {
+        //for (Wall w : course.walls)
+    }
+
     /**
      * Generates, appends and returns the next state vector in the trajectory according to the step size
      * Does not check whether the ball is at rest
@@ -209,7 +249,12 @@ public class PhysicsEngine {
         }
 
         StateVector4 newVector = solver.nextStep(timeStep, lastVector, differentiation);
+
+        treeCollision(newVector);
+        wallCollision(newVector);
+
         trajectory.add(newVector);
+
         return newVector;
     }
 
@@ -254,6 +299,10 @@ public class PhysicsEngine {
         this.xTarget = x;
         this.yTarget = y;
     }
+
+
+
+
 
     public FrameRateIterator iterator() {
         return new FrameRateIterator();
@@ -313,27 +362,6 @@ public class PhysicsEngine {
 
     public StepIterator stepIterator() {
         return new StepIterator();
-    }
-
-    public StateVector4 getState() {
-        return trajectory.getLast();
-    }
-
-    public void setState(StateVector4 stateVector) {
-        if(stateVector == null) {
-            throw new IllegalArgumentException("State vector cannot be null");
-        }
-        if(stateVector.vx() == 0.0 && stateVector.vy() == 0.0) {
-            throw new IllegalArgumentException("State vector cannot have zero velocity");
-        }
-
-        if (MathUtils.magnitude(stateVector.vx(), stateVector.vy()) > 100) {
-            throw new IllegalArgumentException("Initial vector speed too high! (max speed = "
-                + 100 + ")"); //TODO use the max speed from settings
-        }
-
-        this.trajectory.clear();
-        this.trajectory.add(stateVector);
     }
 
     public void writeToCSV(String path, String name) {

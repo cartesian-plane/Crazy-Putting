@@ -2,10 +2,10 @@ package org.ken22.physics.vectors;
 
 @SuppressWarnings("ClassCanBeRecord")
 public class StateVector4 {
-    private final double x;
-    private final double y;
-    private final double vx;
-    private final double vy;
+    private double x;
+    private double y;
+    private double vx;
+    private double vy;
 
     public StateVector4(double x, double y, double vx, double vy) {
         this.x = x;
@@ -26,6 +26,10 @@ public class StateVector4 {
     public double vy() {
         return vy;
     }
+    public void setX(double x) {this.x = x;}
+    public void setY(double y) {this.y = y;}
+    public void setVx(double vx) {this.vx = vx;}
+    public void setVy(double vy) {this.vy = vy;}
 
     public StateVector4 add(StateVector4 sv) {
         return new StateVector4(x + sv.x(), y + sv.y(), vx + sv.vx(), vy + sv.vy());
