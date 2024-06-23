@@ -286,7 +286,7 @@ public class GradientDescent implements Player {
                 break;
             } else { //If solution not found start using new random initial guess
                 restartCount += 1;
-                double[] randomSpeedVector = getRandomSpeedVector(visited);
+                double[] randomSpeedVector = getRandomSpeedVector();
                 // choose a new random starting point
                 currentState = new StateVector4(initialState.x(), initialState.y(), randomSpeedVector[0],
                     randomSpeedVector[1]);
@@ -375,7 +375,7 @@ public class GradientDescent implements Player {
                 break;
             } else {
                 restartCount += 1;
-                double[] randomSpeedVector = getRandomSpeedVector(visited);
+                double[] randomSpeedVector = getRandomSpeedVector();
                 visited = new StateVector4[400];
                 visitedidx = 0;
 
@@ -420,10 +420,19 @@ public class GradientDescent implements Player {
             currentState.vx(), currentState.vy() - DELTA);
 
         ArrayList<StateVector4> neighbours = new ArrayList<>();
-        neighbours.add(neighbour1);
-        neighbours.add(neighbour2);
-        neighbours.add(neighbour3);
-        neighbours.add(neighbour4);
+
+        if (neighbour1.vx() * neighbour1.vx() + neighbour1.vy() * neighbour1.vy() < 25) {
+            neighbours.add(neighbour1);
+        }
+        if (neighbour2.vx() * neighbour2.vx() + neighbour2.vy() * neighbour2.vy() < 25) {
+            neighbours.add(neighbour2);
+        }
+        if (neighbour3.vx() * neighbour3.vx() + neighbour3.vy() * neighbour3.vy() < 25) {
+            neighbours.add(neighbour3);
+        }
+        if (neighbour4.vx() * neighbour4.vx() + neighbour4.vy() * neighbour4.vy() < 25) {
+            neighbours.add(neighbour4);
+        }
 
         checkVisited(visited, neighbours, visitedidx);
 
