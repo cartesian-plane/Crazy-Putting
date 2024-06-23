@@ -51,15 +51,37 @@ public final class SimulatedAnnealing implements Player {
     private final double DELTA;
     private final double THRESHOLD;
     private final double initialTemperature;
-    private final double allottedTime;
     private final Schedule schedule;
     private final GolfCourse course;
     private final ODESolver<StateVector4> solver;
     private final Differentiator differentiator;
     private final double stepSize;
 
+    private final StateVector4 initialState;
     private final ErrorFunction heuristicFunction;
     private final Evaluator evaluator;
+
+    public SimulatedAnnealing(GolfCourse course) {
+        this.course = course;
+        this.solver = new RK4();
+        this.differentiator = new FivePointCenteredDifference();
+        this.stepSize = 0.0001;
+        this.DELTA = 0.01;
+        this.THRESHOLD = course.targetRadius;
+        this.heuristicFunction = new EuclideanError();
+        this.heuristicFunction.init(this.course);
+        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
+
+        this.initialTemperature = 100;
+        this.schedule = new LinearSchedule(initialTemperature, 0.8);
+
+        var initialX = course.ballX();
+        var initialY = course.ballY();
+
+        // choose random speed vector to start with
+        var speedVector = getRandomSpeedVector();
+        initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
+    }
 
     public SimulatedAnnealing(GolfCourse course,
                               ODESolver<StateVector4> solver,
@@ -75,6 +97,7 @@ public final class SimulatedAnnealing implements Player {
         this.DELTA = 0.01;
         this.THRESHOLD = course.targetRadius;
         this.heuristicFunction = errorFunction;
+        this.heuristicFunction.init(this.course);
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
             this.stepSize);
 
@@ -91,6 +114,7 @@ public final class SimulatedAnnealing implements Player {
         // flag that stores whether a solution was found
         // if the search stops before a solution is found, a logging message is displayed
         boolean foundSolution = false;
+        double temperature = initialTemperature;
         var current = state;
         // simulated annealing
         for (double t = 0; t < allottedTime; t += 0.1) {

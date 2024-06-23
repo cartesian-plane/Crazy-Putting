@@ -37,4 +37,18 @@ public class StateVector4 {
     public String toString() {
         return "x: " + x + ", y: " + y + ", vx: " + vx + ", vy: " + vy;
     }
+
+    public boolean equals(StateVector4 compared) {
+        return compared.x() == x && compared.y() == y && compared.vx() == vx && compared.vy() == vy;
+    }
+
+    public boolean approxEquals(StateVector4 compared, double posTolerance, double velTolerance) {
+        return Math.abs(compared.x() - x) < 0.05 && Math.abs(compared.y() - y) < 0.05 &&
+            Math.abs(compared.vx() - vx) < 0.01 && Math.abs(compared.vy() - vy) < 0.01;
+    }
+
+    public boolean sameVelocity(double[] velocities, double tolerance) {
+        return Math.abs(velocities[0] - vx) < 0.01 && Math.abs(velocities[1] - vy) < 0.01;
+    }
+
 }
