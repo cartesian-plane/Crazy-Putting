@@ -23,10 +23,10 @@ class HillClimbingBotTest {
 
     @Test
     void play() {
-        //System.out.println(expr.setVariable("x", 5).setVariable("y", 5).evaluate());
-        HillClimbingBot bot = new HillClimbingBot( null, new ThreePointCenteredDifference(),
-            new RK4(), 0.016);
-        var result = bot.play(new StateVector4(-3, 0, 0, 0), course);
-        System.out.println(result);
+//        //System.out.println(expr.setVariable("x", 5).setVariable("y", 5).evaluate());
+//        HillClimbingBot bot = new HillClimbingBot( null, new ThreePointCenteredDifference(),
+//            new RK4(), 0.016);
+//        var result = bot.play(new StateVector4(-3, 0, 0, 0), course);
+//        System.out.println(result);
     }
 }

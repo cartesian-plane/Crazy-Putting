@@ -69,6 +69,7 @@ public class AStar implements GridPathfinding {
                     currentPathTile = currentPathTile.getConnection();
                 }
 //                return reconstructPath(startNode, targetNode);
+                path.add(startNode);
                 return path;
             }
 

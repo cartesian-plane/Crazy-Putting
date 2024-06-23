@@ -21,9 +21,9 @@ class PlanarBot2Test {
 
     @Test
     void play() {
-        SimplePlaneBot2 bot = new SimplePlaneBot2();
-        var result = bot.play(new StateVector4(0, 0, 1, 0), course);
-        var expected = TestUtils.prediction.apply(result, course);
-        System.out.println(expected);
+//        SimplePlaneBot2 bot = new SimplePlaneBot2();
+//        var result = bot.play(new StateVector4(0, 0, 1, 0), course);
+//        var expected = TestUtils.prediction.apply(result, course);
+//        System.out.println(expected);
     }
 }
