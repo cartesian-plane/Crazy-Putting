@@ -37,16 +37,12 @@ public class TerrainStage extends Stage {
         super(viewport);
         this.manager = manager;
 
-
         this.mainTable = new Table();
         this.mainTable.setFillParent(true);
         this.addActor(mainTable);
 
-
         minimap = new Minimap(manager.selectedCourse, viewport);
         minimap.image.setScale(1f);
-
-
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
@@ -56,8 +52,6 @@ public class TerrainStage extends Stage {
                 manager.toMainStage();
             }
         });
-
-
 
         this.resetButton = new TextButton("Reset", skin);
         this.resetButton.addListener(new ClickListener() {
@@ -70,10 +64,11 @@ public class TerrainStage extends Stage {
             }
         });
 
-
         var radiusField = UIElementFactory.createTextField(String.valueOf(3), UIElementFactory.TextFieldType.NUMERICAL);
         var radiusLabel = new Label("Obstacle Radius:", skin);
 
+        var thicknessField = UIElementFactory.createTextField(String.valueOf(3), UIElementFactory.TextFieldType.NUMERICAL);
+        var thicknessLabel = new Label("Wall Thickness:", skin);
 
         //tree
         var treeButton = new TextButton("Add Trees", skin);
@@ -109,12 +104,12 @@ public class TerrainStage extends Stage {
         var wallButton = new TextButton("Add Walls", skin);
         wallButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                if (isValidRadius(radiusField.getText())) {
+                if (isValidThickness(thicknessField.getText())) {
                     minimapListener.setAddingTree(false);
                     minimapListener.setAddingSandPit(false);
                     minimapListener.setAddingWall(true);
                 } else {
-                    showInvalidRadiusDialog();
+                    showInvalidThicknessDialog();
                 }
             }
         });
@@ -129,6 +124,9 @@ public class TerrainStage extends Stage {
         controlTable.row();
         controlTable.add(radiusLabel).pad(5);
         controlTable.add(radiusField).width(100).pad(5);
+        controlTable.row();
+        controlTable.add(thicknessLabel).pad(5);
+        controlTable.add(thicknessField).width(100).pad(5);
         controlTable.row();
         controlTable.add(treeButton).colspan(2).pad(5).width(200).height(50);
         controlTable.row();
@@ -172,7 +170,7 @@ public class TerrainStage extends Stage {
 
         var golfCourse = manager.selectedCourse;
 
-        minimapListener = new MinimapListener(minimap, golfCourse, radiusField, coordinatesLabel);
+        minimapListener = new MinimapListener(minimap, golfCourse, radiusField, thicknessField, coordinatesLabel);
         minimap.image.addListener(minimapListener);
 
         minimap.update();
@@ -190,9 +188,6 @@ public class TerrainStage extends Stage {
         return viewport;
     }
 
-
-
-    //  radius is valid
     private boolean isValidRadius(String radiusText) {
         try {
             double radius = Double.parseDouble(radiusText);
@@ -202,7 +197,17 @@ public class TerrainStage extends Stage {
         }
     }
 
-    // dialog when the radius is invalid
+
+
+    private boolean isValidThickness(String thicknessText) {
+        try {
+            double thickness = Double.parseDouble(thicknessText);
+            return thickness > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     private void showInvalidRadiusDialog() {
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
         Dialog dialog = new Dialog("Invalid Radius", skin);
@@ -211,7 +216,18 @@ public class TerrainStage extends Stage {
         dialog.show(this);
     }
 
-    // add a legend item
+
+    private void showInvalidThicknessDialog() {
+        Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
+        Dialog dialog = new Dialog("Invalid Thickness", skin);
+        dialog.text("The thickness must be a positive number sire");
+        dialog.button("OK");
+        dialog.show(this);
+    }
+
+
+
+
     private void addLegendItem(Table legendTable, String name, Color color) {
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
         Label label = new Label(name, skin);
@@ -220,7 +236,6 @@ public class TerrainStage extends Stage {
         legendTable.add(label).left().row();
     }
 
-    // pixmap of a specific color
     private Pixmap createPixmap(Color color) {
         Pixmap pixmap = new Pixmap(20, 20, Pixmap.Format.RGBA8888);
         pixmap.setColor(color);

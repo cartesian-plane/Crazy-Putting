@@ -34,16 +34,22 @@ public class MinimapListener extends InputListener {
     private double[] wallStartPoint = null;
 
     private TextField radiusField;
+    private TextField thicknessField;
     private Label coordinatesLabel;
 
     private boolean inMinimap = false;
 
-    public MinimapListener(Minimap minimap, GolfCourse course, TextField radiusField, Label coordinatesLabel) {
+
+
+    public MinimapListener(Minimap minimap, GolfCourse course, TextField radiusField, TextField thicknessField, Label coordinatesLabel) {
         this.minimap = minimap;
         this.course = course;
         this.radiusField = radiusField;
+        this.thicknessField = thicknessField;
         this.coordinatesLabel = coordinatesLabel;
     }
+
+
 
     public void setAddingTree(boolean addingTree) {
         this.addingTree = addingTree;
@@ -74,6 +80,8 @@ public class MinimapListener extends InputListener {
         System.out.println("Clicked on minimap: " + x + ", " + y);
         System.out.println("World coord: " + unprojectedX + ", " + unprojectedY);
 
+
+        //mouse adding removing
         switch (button) {
             case Input.Buttons.LEFT -> {
                 var radius = Double.parseDouble(radiusField.getText());
@@ -81,19 +89,27 @@ public class MinimapListener extends InputListener {
                     Tree tree = new Tree(new double[]{unprojectedX, unprojectedY}, radius);
                     course.trees.add(tree);
                     System.out.println("Added tree at: " + unprojectedX + ", " + unprojectedY);
+                    System.out.println();
                 } else if (addingSandPit) {
                     SandPit sandPit = new SandPit(new double[]{unprojectedX, unprojectedY}, radius);
                     course.sandPits.add(sandPit);
                     System.out.println("Added sand pit at: " + unprojectedX + ", " + unprojectedY);
+                    System.out.println();
                 } else if (addingWall) {
                     if (wallStartPoint == null) {
                         wallStartPoint = new double[]{unprojectedX, unprojectedY};
                         System.out.println("Started wall at: " + unprojectedX + ", " + unprojectedY);
                     } else {
-                        Wall wall = new Wall(wallStartPoint, new double[]{unprojectedX, unprojectedY}, radius);
+                        if (!isValidThickness(thicknessField.getText())) {
+                            showInvalidThicknessDialog();
+                            return false;
+                        }
+                        var thickness = Double.parseDouble(thicknessField.getText());
+                        Wall wall = new Wall(wallStartPoint, new double[]{unprojectedX, unprojectedY}, thickness);
                         course.walls.add(wall);
                         wallStartPoint = null;
                         System.out.println("Added wall from " + wall.startPoint()[0] + ", " + wall.startPoint()[1] + " to " + wall.endPoint()[0] + ", " + wall.endPoint()[1]);
+                        System.out.println();
                     }
                 }
                 minimap.update();
@@ -115,6 +131,8 @@ public class MinimapListener extends InputListener {
 
         return super.touchDown(event, x, y, pointer, button);
     }
+
+
 
     @Override
     public boolean mouseMoved(InputEvent event, float x, float y) {
@@ -138,6 +156,10 @@ public class MinimapListener extends InputListener {
         inMinimap = false;
     }
 
+
+
+
+
     private boolean isValidRadius(String radiusText) {
         if (radiusText == null || radiusText.isEmpty()) {
             return false;
@@ -150,10 +172,36 @@ public class MinimapListener extends InputListener {
         }
     }
 
+
+
+    private boolean isValidThickness(String thicknessText) {
+        if (thicknessText == null || thicknessText.isEmpty()) {
+            return false;
+        }
+        try {
+            double thickness = Double.parseDouble(thicknessText);
+            return thickness > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+
+
     private void showInvalidRadiusDialog() {
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
         Dialog dialog = new Dialog("Invalid radius", skin);
-        dialog.text("the radius must be a positive number.");
+        dialog.text("The radius must be a positive number.");
+        dialog.button("OK");
+        dialog.show(minimap.image.getStage());
+    }
+
+
+
+    private void showInvalidThicknessDialog() {
+        Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
+        Dialog dialog = new Dialog("Invalid thickness", skin);
+        dialog.text("The thickness must be a positive number");
         dialog.button("OK");
         dialog.show(minimap.image.getStage());
     }

@@ -87,9 +87,7 @@ public class Minimap {
             int startY = projectY((float) wall.startPoint()[1]);
             int endX = projectX((float) wall.endPoint()[0]);
             int endY = projectY((float) wall.endPoint()[1]);
-            wallmap.setColor(Color.PINK);
-            wallmap.drawLine(startX, startY, endX, endY);
-            System.out.println("Drawing wall from (projected): " + startX + ", " + startY + " to " + endX + ", " + endY);
+            drawThickLine(wallmap, startX, startY, endX, endY, (int) wall.thickness(), Color.PINK);
         }
 
         if (minimap != null) minimap.dispose();
@@ -141,10 +139,56 @@ public class Minimap {
     }
 
     public float unprojectX(int i) {
-        return xMin + ((float) i)  / WIDTH * (xMax - xMin);
+        return xMin + ((float) i) / WIDTH * (xMax - xMin);
     }
 
     public float unprojectY(int j) {
-        return yMin + ((float) j)  / HEIGHT * (yMax - yMin);
+        return yMin + ((float) j) / HEIGHT * (yMax - yMin);
+    }
+
+
+    //messed up wall drawing
+    private void drawThickLine(Pixmap pixmap, int x1, int y1, int x2, int y2, int thickness, Color color) {
+        double angle = Math.atan2(y2 - y1, x2 - x1);
+        int halfThickness = thickness / 2;
+
+        int dx = (int) (halfThickness * Math.sin(angle));
+        int dy = (int) (halfThickness * Math.cos(angle));
+
+        int[] xPoints = {x1 - dx, x1 + dx, x2 + dx, x2 - dx};
+        int[] yPoints = {y1 + dy, y1 - dy, y2 - dy, y2 + dy};
+
+        pixmap.setColor(color);
+        fillPolygon(pixmap, xPoints, yPoints);
+    }
+
+
+    //filling with triangel
+    private void fillPolygon(Pixmap pixmap, int[] xPoints, int[] yPoints) {
+        int minX = Math.min(Math.min(xPoints[0], xPoints[1]), Math.min(xPoints[2], xPoints[3]));
+        int maxX = Math.max(Math.max(xPoints[0], xPoints[1]), Math.max(xPoints[2], xPoints[3]));
+        int minY = Math.min(Math.min(yPoints[0], yPoints[1]), Math.min(yPoints[2], yPoints[3]));
+        int maxY = Math.max(Math.max(yPoints[0], yPoints[1]), Math.max(yPoints[2], yPoints[3]));
+
+        for (int y = minY; y <= maxY; y++) {
+            for (int x = minX; x <= maxX; x++) {
+                if (isPointInPolygon(x, y, xPoints, yPoints)) {
+                    pixmap.drawPixel(x, y);
+                }
+            }
+        }
+    }
+
+
+
+    private boolean isPointInPolygon(int x, int y, int[] xPoints, int[] yPoints) {
+        boolean result = false;
+        for (int i = 0, j = xPoints.length - 1; i < xPoints.length; j = i++) {
+            if ((yPoints[i] > y) != (yPoints[j] > y) &&
+                (x < (xPoints[j] - xPoints[i]) * (y - yPoints[i]) / (yPoints[j] - yPoints[i]) + xPoints[i])) {
+                result = !result;
+            }
+        }
+        return result;
     }
 }
