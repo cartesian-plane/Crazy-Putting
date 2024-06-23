@@ -1,18 +1,13 @@
 package org.ken22.players.bots.hillclimbing;
 
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.input.settings.BotSettings;
-import org.ken22.input.settings.GeneralSettings;
 import org.ken22.physics.differentiators.Differentiator;
-import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.odesolvers.ODESolver;
-import org.ken22.physics.odesolvers.RK4;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
 import org.ken22.players.bots.LinearSchedule;
 import org.ken22.players.bots.Schedule;
 import org.ken22.players.error.ErrorFunction;
-import org.ken22.players.error.EuclideanError;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,6 +51,7 @@ public final class SimulatedAnnealing implements Player {
     private final double DELTA;
     private final double THRESHOLD;
     private final double initialTemperature;
+    private final double allottedTime;
     private final Schedule schedule;
     private final GolfCourse course;
     private final ODESolver<StateVector4> solver;
@@ -70,6 +66,7 @@ public final class SimulatedAnnealing implements Player {
                               Differentiator differentiator,
                               double stepSize,
                               double initialTemperature,
+                              double allottedTime,
                               ErrorFunction errorFunction) {
         this.course = course;
         this.solver = solver;
@@ -82,7 +79,8 @@ public final class SimulatedAnnealing implements Player {
             this.stepSize);
 
         this.initialTemperature = 100;
-        this.schedule = new LinearSchedule(initialTemperature, 0.8);
+        this.allottedTime = allottedTime;
+        this.schedule = new LinearSchedule(initialTemperature, 0.2);
     }
 
     public StateVector4 play(StateVector4 state) {
@@ -93,13 +91,14 @@ public final class SimulatedAnnealing implements Player {
         // flag that stores whether a solution was found
         // if the search stops before a solution is found, a logging message is displayed
         boolean foundSolution = false;
-        double temperature = initialTemperature;
         var current = state;
         // simulated annealing
-        for (long t = 1; t < Integer.MAX_VALUE; t++) {
-            temperature = schedule.getNewTemperature(t);
+        for (double t = 0; t < allottedTime; t += 0.1) {
+            double temperature = schedule.getNewTemperature(t);
+            System.out.println("temperature = " + temperature);
             if (temperature == 0) {
                 LOGGER.log(Level.INFO, "Temperature reached 0, returning current state");
+                System.out.println("current = " + current);
                 return current;
             }
 
@@ -130,10 +129,11 @@ public final class SimulatedAnnealing implements Player {
         if (foundSolution) {
             message = "Found solution! " + "vx: " + current.vx() + ", vy: " + current.vy();
         } else {
-            message = "Solution not found but temperature reached 0 ";
+            message = "Solution not found but allotted time ran out";
         }
         LOGGER.log(Level.INFO, message);
 
+        System.out.println("RETURNING current = " + current);
         return current;
     }
 
