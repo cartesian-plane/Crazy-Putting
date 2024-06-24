@@ -40,10 +40,28 @@ public class Minimap {
         this.course = course;
         this.expr = GolfExpression.expr(course);
 
-        this.xMin = (float) (course.ballX() < course.targetXcoord() ? course.ballX() - GolfScreen.PADDING_SIZE  : course.targetXcoord()) - GolfScreen.PADDING_SIZE;
-        this.xMax = (float) (course.ballX() > course.targetXcoord() ? course.ballX() + GolfScreen.PADDING_SIZE : course.targetXcoord()) + GolfScreen.PADDING_SIZE;
-        this.yMin = (float) (course.ballY() > course.targetYcoord() ? course.targetYcoord() - GolfScreen.PADDING_SIZE : course.ballY()) - GolfScreen.PADDING_SIZE;
-        this.yMax = (float) (course.ballY() < course.targetYcoord() ? course.targetYcoord() + GolfScreen.PADDING_SIZE: course.ballY()) + GolfScreen.PADDING_SIZE;
+        float padding = GolfScreen.PADDING_SIZE;
+
+        this.xMin = (float) Math.min(course.ballX(), course.targetXcoord()) - padding;
+        this.xMax = (float) Math.max(course.ballX(), course.targetXcoord()) + padding;
+        this.yMin = (float) Math.min(course.ballY(), course.targetYcoord()) - padding;
+        this.yMax = (float) Math.max(course.ballY(), course.targetYcoord()) + padding;
+
+
+
+        float range = (float) course.range();
+        if ((xMax - xMin) < range) {
+            float centerX = (xMin + xMax) / 2;
+            xMin = centerX - range / 2;
+            xMax = centerX + range / 2;
+        }
+
+        if ((yMax - yMin) < range) {
+            float centerY = (yMin + yMax) / 2;
+            yMin = centerY - range / 2;
+            yMax = centerY + range / 2;
+        }
+
 
         init();
     }
@@ -52,22 +70,33 @@ public class Minimap {
         terrainmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGB888);
         initHeightMap(expr);
 
-        for (int i = 0; i < WIDTH; i++) {
-            for (int j = 0; j < HEIGHT; j++) {
-                Color color;
-                    if(waterMask[i][j])
+        double min = MathUtils.min(heightMap);
+        double max = MathUtils.max(heightMap);
+
+        //flat ones
+        if (min == max) {
+            terrainmap.setColor(Color.GREEN);
+            terrainmap.fill();
+        } else {
+            for (int i = 0; i < WIDTH; i++) {
+                for (int j = 0; j < HEIGHT; j++) {
+                    Color color;
+                    if (waterMask[i][j])
                         color = Color.BLUE;
                     else
                         color = new Color(0f, (float) heightMap[i][j], 0f, 1); //takes normalized values to [0, 1]
 
-                terrainmap.setColor(color);
-                terrainmap.drawPixel(i, j);
+                    terrainmap.setColor(color);
+                    terrainmap.drawPixel(i, j);
+                }
             }
         }
 
         texture = new Texture(terrainmap);
         image = new Image(new TextureRegionDrawable(texture));
     }
+
+
 
     public void update() {
         if (treemap != null) treemap.dispose();
@@ -76,7 +105,7 @@ public class Minimap {
             int i = projectX((float) tree.coordinates()[0]);
             int j = projectY((float) tree.coordinates()[1]);
             treemap.setColor(Color.BROWN);
-            treemap.fillCircle(i, j, (int) tree.radius());
+            treemap.fillCircle(i, j, scaleToMap(tree.radius()));
         }
 
         if (sandmap != null) sandmap.dispose();
@@ -85,7 +114,7 @@ public class Minimap {
             int i = projectX((float) sandPit.coordinates()[0]);
             int j = projectY((float) sandPit.coordinates()[1]);
             sandmap.setColor(Color.WHITE);
-            sandmap.fillCircle(i, j, (int) sandPit.radius());
+            sandmap.fillCircle(i, j, scaleToMap(sandPit.radius()));
         }
 
         if (wallmap != null) wallmap.dispose();
@@ -95,7 +124,7 @@ public class Minimap {
             int startY = projectY((float) wall.startPoint()[1]);
             int endX = projectX((float) wall.endPoint()[0]);
             int endY = projectY((float) wall.endPoint()[1]);
-            drawThickLine(wallmap, startX, startY, endX, endY, (int) wall.thickness(), Color.PINK);
+            drawThickLine(wallmap, startX, startY, endX, endY, scaleToMap(wall.thickness()), Color.PINK);
         }
 
         if (minimap != null) minimap.dispose();
@@ -117,7 +146,6 @@ public class Minimap {
 
         for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
-                // Set the values before evaluating the function
                 heightFunction
                     .setVariable("x", xCoords[i])
                     .setVariable("y", yCoords[j]);
@@ -130,12 +158,19 @@ public class Minimap {
         double min = MathUtils.min(heightMap);
         double max = MathUtils.max(heightMap);
 
-        // Normalize the heightmap to [0, 1]
-        for (int i = 0; i < WIDTH; i++) {
-            for (int j = 0; j < HEIGHT; j++) {
-                heightMap[i][j] = (heightMap[i][j] - min) / (max - min);
+        if (min != max) {
+            for (int i = 0; i < WIDTH; i++) {
+                for (int j = 0; j < HEIGHT; j++) {
+                    heightMap[i][j] = (heightMap[i][j] - min) / (max - min);
+                }
             }
         }
+    }
+
+    //scaling properly
+    private int scaleToMap(double value) {
+        double scale = Math.max(xMax - xMin, yMax - yMin);
+        return (int) (value / scale * WIDTH);
     }
 
     public int projectX(float x) {
