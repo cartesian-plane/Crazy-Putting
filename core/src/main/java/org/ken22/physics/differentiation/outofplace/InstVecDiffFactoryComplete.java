@@ -45,14 +45,14 @@ public class InstVecDiffFactoryComplete implements InstVecDiffFactory {
             return new StateVector4(
                 vx,
                 vy,
-                (-(this.g/d_norm) * (df_dx/d_norm + this.kf_g * vx / (d_norm*big_term))),
-                (-(this.g/d_norm) * (df_dy/d_norm + this.kf_g * vy / (d_norm*big_term)))
+                (-(this.g/d_norm) * (df_dx/d_norm + this.kf_g * vx / (big_term))),
+                (-(this.g/d_norm) * (df_dy/d_norm + this.kf_g * vy / (big_term)))
             );
         };
     }
 
     /**
-     * Calculate velocity at current time and velocity of the next time step for low speed speed
+     * Calculate velocity at current time and velocity of the next time step for low speed
      * @return a lambda function that solves the ODE for normal speed
      */
     public InstantaneousVectorDifferentiation4 altInstantaneousVectorDifferentiation4() {
@@ -71,8 +71,8 @@ public class InstVecDiffFactoryComplete implements InstVecDiffFactory {
             return new StateVector4(
                 vx,
                 vy,
-                (-(this.g*df_dx/d_norm) * (1/d_norm + this.kf_g / (d_norm*big_term))),
-                (-(this.g*df_dy/d_norm) * (1/d_norm + this.kf_g / (d_norm*big_term)))
+                (-(this.g*df_dx/d_norm) * (1/d_norm + this.kf_g / (big_term))),
+                (-(this.g*df_dy/d_norm) * (1/d_norm + this.kf_g / (big_term)))
             );
         };
     }

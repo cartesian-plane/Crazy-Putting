@@ -22,6 +22,7 @@ public class InstantaneousVectorDifferentiationFactory implements InstVecDiffFac
         this.differentiator = differentiator;
     }
 
+    //Normal speed equations
     public InstantaneousVectorDifferentiation4 instantaneousVectorDifferentiation4() {
         return (sv) -> {
             double df_dx = xSlope(sv.x(), sv.y());
@@ -35,6 +36,8 @@ public class InstantaneousVectorDifferentiationFactory implements InstVecDiffFac
             );
         };
     }
+
+    //Low speed approximatino
     public InstantaneousVectorDifferentiation4 altInstantaneousVectorDifferentiation4() {
         return (sv) -> {
             double df_dx = xSlope(sv.x(), sv.y());

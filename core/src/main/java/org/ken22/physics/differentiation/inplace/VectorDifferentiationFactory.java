@@ -36,15 +36,14 @@ public class VectorDifferentiationFactory {
         if (complete)
             runStep = (h, sv) -> {
                 double[] der = new double[4];
-                double vx = sv.vx();
-                double vy = sv.vy();
+
                 //acceleration
-                double df_dx = xSlope(vx, vy);
-                double df_dy = ySlope(vx, vy);
+                double df_dx = xSlope(sv.x(), sv.y());
+                double df_dy = ySlope(sv.x(), sv.y());
                 double d_norm = MathUtils.magnitude(1, df_dx, df_dy);
-                double big_term = MathUtils.magnitude(vx, vy, df_dx * vx + df_dy * vy);
-                double accx = -(this.g / d_norm) * (df_dx / d_norm + this.kf_g * vx / (d_norm * big_term));
-                double accy = -(this.g / d_norm) * (df_dy / d_norm + this.kf_g * vy / (d_norm * big_term));
+                double big_term = MathUtils.magnitude(sv.vx(), sv.vx(), df_dx * sv.vx() + df_dy * sv.vy());
+                double accx = -(this.g / d_norm) * (df_dx / d_norm + this.kf_g * sv.vx() / (big_term));
+                double accy = -(this.g / d_norm) * (df_dy / d_norm + this.kf_g * sv.vy() / (big_term));
 
                 // Approximation:
                 der[0] = sv.x() + h * sv.vx();
@@ -57,10 +56,11 @@ public class VectorDifferentiationFactory {
                 df_dy = ySlope(der[0], der[1]);
                 d_norm = MathUtils.magnitude(1, df_dx, df_dy);
                 big_term = MathUtils.magnitude(df_dx * der[2] + df_dy * der[3]);
+
                 der[0] = der[2];
                 der[1] = der[3];
-                der[2] = -(this.g / d_norm) * (df_dx / d_norm + this.kf_g * der[2] / (d_norm * big_term));
-                der[3] = -(this.g / d_norm) * (df_dy / d_norm + this.kf_g * der[3] / (d_norm * big_term));
+                der[2] = -(this.g / d_norm) * (df_dx / d_norm + this.kf_g * der[2] / (big_term));
+                der[3] = -(this.g / d_norm) * (df_dy / d_norm + this.kf_g * der[3] / (big_term));
 
                 return der;
             };
@@ -101,16 +101,14 @@ public class VectorDifferentiationFactory {
                 runStep = (h, sv) -> {
                     double[] der = new double[4];
 
-                    double vx = sv.vx();
-                    double vy = sv.vy();
-                    double df_dx = xSlope(vx, vy);
-                    double df_dy = ySlope(vx, vy);
+                    double df_dx = xSlope(sv.x(), sv.y());
+                    double df_dy = ySlope(sv.x(), sv.y());
                     double d_norm = MathUtils.magnitude(1, df_dx, df_dy);
                     // approximation not from booklet vx, vy -> dh_dx, dh_dy and vx^2, vy^2 -> 0
                     double big_term = MathUtils.magnitude(df_dy * df_dx + df_dy * df_dy);
                     //acceleration
-                    double accx = -(this.g * df_dx / d_norm) * (1/d_norm + this.kf_g / (d_norm * big_term));
-                    double accy = -(this.g * df_dy / d_norm) * (1/d_norm + this.kf_g / (d_norm * big_term));
+                    double accx = -(this.g * df_dx / d_norm) * (1/d_norm + this.kf_g / (big_term));
+                    double accy = -(this.g * df_dy / d_norm) * (1/d_norm + this.kf_g / (big_term));
 
                     // Approximation:
                     der[0] = sv.x() + h * sv.vx();
@@ -123,14 +121,15 @@ public class VectorDifferentiationFactory {
                     df_dy = ySlope(der[0], der[1]);
                     d_norm = MathUtils.magnitude(1, df_dx, df_dy);
                     big_term = MathUtils.magnitude(df_dy * df_dx + df_dy * df_dy);
+
                     der[0] = der[2];
                     der[1] = der[3];
-                    der[2] = -(this.g * df_dx / d_norm) * (1/d_norm + this.kf_g / (d_norm * big_term));
-                    der[3] = -(this.g * df_dy / d_norm) * (1/d_norm + this.kf_g / (d_norm * big_term));
+                    der[2] = -(this.g * df_dx / d_norm) * (1/d_norm + this.kf_g / (big_term));
+                    der[3] = -(this.g * df_dy / d_norm) * (1/d_norm + this.kf_g / (big_term));
 
                     return der;
                 };
-        else
+            else
             runStep = (h, sv) -> {
                 double[] der = new double[4];
 
@@ -138,8 +137,8 @@ public class VectorDifferentiationFactory {
                 double df_dy = ySlope(sv.x(), sv.y());
                 double d_norm = MathUtils.magnitude(df_dx, df_dy);
                 //acceleration
-                double accx = -course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * df_dx / d_norm);
-                double accy = -course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * df_dy / d_norm);
+                double accx = -course.gravitationalConstant() * df_dx * (1 + course.kineticFrictionGrass() / d_norm);
+                double accy = -course.gravitationalConstant() * df_dy * (1 + course.kineticFrictionGrass() / d_norm);
 
                 // approximation
                 der[0] = sv.x() + h * sv.vx();
@@ -153,8 +152,8 @@ public class VectorDifferentiationFactory {
                 d_norm = MathUtils.magnitude(df_dx, df_dy);
                 der[0] = der[2];
                 der[1] = der[3];
-                der[2] = -course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * df_dx / d_norm);
-                der[3] = -course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * df_dy / d_norm);
+                der[2] = -course.gravitationalConstant() * df_dx * ( 1 + course.kineticFrictionGrass() / d_norm);
+                der[3] = -course.gravitationalConstant() * df_dy * ( 1 + course.kineticFrictionGrass() / d_norm);
 
                 return der;
             };
