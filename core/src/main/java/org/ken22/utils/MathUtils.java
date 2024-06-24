@@ -113,4 +113,26 @@ public class MathUtils {
         //noinspection SuspiciousNameCombination
         return differentiator.differentiate(h, yCoord, fy);
     }
+
+    // credit to https://stackoverflow.com/questions/217578/how-can-i-determine-whether-a-2d-point-is-within-a-polygon
+    // and to chatgpt for using the crossproduct idea
+    public static boolean pointInQuadrilateral(double px, double py, double qx1, double qy1, double qx2, double qy2, double qx3, double qy3, double qx4, double qy4) {
+        return sameSide(px, py, qx1, qy1, qx2, qy2, qx3, qy3) &&
+            sameSide(px, py, qx2, qy2, qx3, qy3, qx4, qy4) &&
+            sameSide(px, py, qx3, qy3, qx4, qy4, qx1, qy1) &&
+            sameSide(px, py, qx4, qy4, qx1, qy1, qx2, qy2);
+    }
+
+    public static boolean sameSide(double px1, double py1, double px2, double py2, double lx1, double ly1, double lx2, double ly2) {
+        double dx1 = px1 - lx1;
+        double dy1 = py1 - ly1;
+        double dx2 = px2 - lx1;
+        double dy2 = py2 - ly1;
+
+        // Cross product
+        double c1 = dx1 * dy2 - dx2 * dy1;
+        double c2 = dx2 * dy2 - dx2 * dy1;
+
+        return c1 * c2 >= 0;
+    }
 }

@@ -224,7 +224,37 @@ public class PhysicsEngine {
     }
 
     private void wallCollision(StateVector4 state) {
-        //for (Wall w : course.walls)
+        for (Wall w : course.walls) {
+            //find qorners of the wall
+            //(y2 - y1)/(x2 - x1) = -ox/oy
+            //the coordinates of the vector perpendicular to the wall
+            var ox = -(w.endPoint()[1] - w.startPoint()[1]) * w.thickness(); //thickness is from the center
+            var oy = (w.endPoint()[0] - w.startPoint()[0]) * w.thickness();
+
+            var x1 = w.startPoint()[0] + ox; var y1 = w.startPoint()[1] + oy;
+            var x2 = w.startPoint()[0] - ox; var y2 = w.startPoint()[1] - oy;
+            var x3 = w.endPoint()[0] - ox; var y3 = w.endPoint()[1] - oy;
+            var x4 = w.endPoint()[0] + ox; var y4 = w.endPoint()[1] + oy;
+
+            //enclosing rectangle borders, for optimization
+            var xMax = w.startPoint()[0] > w.endPoint()[0] ? x1: x4;
+            var xMin = w.startPoint()[0] < w.endPoint()[0] ? x2: x3;
+            var yMax = w.startPoint()[1] > w.endPoint()[1] ? y1: y4;
+            var yMin = w.startPoint()[1] < w.endPoint()[1] ? y2: y3;
+
+            if( !(state.x() > xMax || state.x() < xMin || state.y() > yMax || state.y() < yMin) && //quick check
+                MathUtils.pointInQuadrilateral(state.x(), state.y(), x1, y1, x2, y2, x3, y3, x4, y4)) { //full check
+                //TODO: Recheck
+                double[] normal = new double[] {state.x() - w.startPoint()[0], state.y() - w.startPoint()[1]};
+                var magnitude = MathUtils.magnitude(normal[0], normal[1]);
+                normal[0] /= magnitude;
+                normal[1] /= magnitude;
+                var dot = state.vx() * normal[0] + state.vy() * normal[1];
+                state.setVx(state.vx() - 2 * dot * normal[0]);
+                state.setVy(state.vy() - 2 * dot * normal[1]);
+                System.out.println("Wall collision");
+            }
+        }
     }
 
     /**

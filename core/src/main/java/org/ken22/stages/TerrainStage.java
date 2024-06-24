@@ -64,10 +64,10 @@ public class TerrainStage extends Stage {
             }
         });
 
-        var radiusField = UIElementFactory.createTextField(String.valueOf(3), UIElementFactory.TextFieldType.NUMERICAL);
+        var radiusField = UIElementFactory.createTextField(String.valueOf(0.1), UIElementFactory.TextFieldType.NUMERICAL);
         var radiusLabel = new Label("Obstacle Radius:", skin);
 
-        var thicknessField = UIElementFactory.createTextField(String.valueOf(3), UIElementFactory.TextFieldType.NUMERICAL);
+        var thicknessField = UIElementFactory.createTextField(String.valueOf(0.1), UIElementFactory.TextFieldType.NUMERICAL);
         var thicknessLabel = new Label("Wall Thickness:", skin);
 
         //tree

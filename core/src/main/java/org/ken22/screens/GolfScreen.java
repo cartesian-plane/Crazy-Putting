@@ -16,6 +16,7 @@ import net.objecthunter.exp4j.Expression;
 import org.ken22.game.GameLoop;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.models.*;
+import org.ken22.obstacles.Tree;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.bots.BotFactory;
@@ -25,6 +26,7 @@ import org.ken22.players.bots.hillclimbing.GradientDescent;
 import org.ken22.players.bots.hillclimbing.SimulatedAnnealing;
 import org.ken22.utils.GolfExpression;
 
+import java.util.ArrayList;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -61,6 +63,13 @@ public class GolfScreen extends ScreenAdapter {
     private MeshPartBuilder waterMeshPartBuilder;
     private ModelInstance waterInstance;
     private ModelBatch waterBatch;
+
+    private ArrayList<ModelInstance> treeInstances;
+    private ModelBatch treeBatch;
+    private ModelBatch treeShadowBatch;
+    private ArrayList<ModelInstance> treeCrownInstances;
+    private ModelBatch treeCrownBatch;
+    private ModelBatch treeCrownShadowBatch;
 
     private ModelInstance golfBallInstance;
     private ModelBatch golfBallBatch;
@@ -138,6 +147,27 @@ public class GolfScreen extends ScreenAdapter {
         waterInstance = waterModel.getWaterInstance();
         waterBatch = waterModel.getWaterBatch();
 
+        // Create tree models
+        treeInstances = new ArrayList<>();
+        treeBatch = new ModelBatch();
+        treeShadowBatch = new ModelBatch(new DepthShaderProvider());
+        treeCrownInstances = new ArrayList<>();
+        treeCrownBatch = new ModelBatch();
+        treeCrownShadowBatch = new ModelBatch(new DepthShaderProvider());
+        for (Tree t : course.trees) {
+            TreeModel treeModel = new TreeModel((float) t.radius());
+            var treeInstance = treeModel.getTreeInstance();
+            var treeBaseHeight = (float) expr
+                .setVariable("x", t.coordinates()[0])
+                .setVariable("y", t.coordinates()[1])
+                .evaluate();
+            treeInstance.transform.setTranslation((float) t.coordinates()[0], treeBaseHeight, (float) t.coordinates()[1]);
+            treeInstances.add(treeInstance);
+            var treeCrownInstance = treeModel.getCrownInstance();
+            treeCrownInstance.transform.setTranslation((float) t.coordinates()[0], treeBaseHeight + treeModel.getHeight(), (float) t.coordinates()[1]);
+            treeCrownInstances.add(treeCrownInstance);
+        }
+
         // Create golf ball model
         GolfBallModel golfBallModel = new GolfBallModel();
         golfBallInstance = golfBallModel.getModelInstance();
@@ -146,7 +176,7 @@ public class GolfScreen extends ScreenAdapter {
         golfBallShadowBatch = new ModelBatch(new DepthShaderProvider());
 
         // Create target model
-        TargetModel targetModel = new TargetModel((float) course.targetRadius());
+        TargetModel targetModel = new TargetModel((float) course.targetRadius()+0.15f); // magic number to render properly
         cylinderInstance = targetModel.getCylinderInstance();
         poleInstance = targetModel.getPoleInstance();
         targetBatch = new ModelBatch();
@@ -202,6 +232,7 @@ public class GolfScreen extends ScreenAdapter {
             golfBallInstance.transform.setTranslation((float) currentState.x(), (float) height, (float) currentState.y());
         }
 
+        // Render golf ball
         golfBallShadowBatch.begin(camera);
         golfBallShadowBatch.render(golfBallInstance);
         golfBallShadowBatch.end();
@@ -214,6 +245,22 @@ public class GolfScreen extends ScreenAdapter {
         targetBatch.render(cylinderInstance, environment);
         targetBatch.render(poleInstance, environment);
         targetBatch.end();
+
+        // render trees
+        for(int i = 0; i < treeInstances.size(); i++) {
+            treeShadowBatch.begin(camera);
+            treeShadowBatch.render(treeInstances.get(i), environment);
+            treeShadowBatch.end();
+            treeBatch.begin(camera);
+            treeBatch.render(treeInstances.get(i), environment);
+            treeBatch.end();
+            treeCrownShadowBatch.begin(camera);
+            treeCrownShadowBatch.render(treeCrownInstances.get(i), environment);
+            treeCrownShadowBatch.end();
+            treeCrownBatch.begin(camera);
+            treeCrownBatch.render(treeCrownInstances.get(i), environment);
+            treeCrownBatch.end();
+        }
 
         // Render shadows
         for(int i = 0; i < shadowBatches.length; i++)
@@ -257,12 +304,12 @@ public class GolfScreen extends ScreenAdapter {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
             System.out.println(engine.getState());
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
             iterator = null;
             gameLoop.revertToLastValidState();
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+            gameLoop.restartCourse();
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             manager.toMainStage();
         }
     }
