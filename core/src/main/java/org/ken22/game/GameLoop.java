@@ -76,4 +76,9 @@ public class GameLoop {
         screen.setCurrentState(startState);
         physicsEngine = new PhysicsEngine(course, startState);
     }
+
+    public void printState() {
+        System.out.println("Ball position: " + physicsEngine.getState().x() + " " + physicsEngine.getState().y());
+        System.out.println("Ball velocity: " + physicsEngine.getState().vx() + " " + physicsEngine.getState().vy());
+    }
 }

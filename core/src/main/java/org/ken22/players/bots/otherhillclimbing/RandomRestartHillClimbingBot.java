@@ -12,10 +12,10 @@ import org.ken22.utils.MathUtils;
 public class RandomRestartHillClimbingBot implements Player {
     private int maxIterations = 100;
     private int maxrestarts = 25;
-    private double errorThreshold = 0.15;
+    private double errorThreshold = 0.05;
     private double convergenceThreshold = 0.001;
     private boolean converged = false;
-    private double restartRadius = 2.0;
+    private double restartRadius = 5.0;
 
     private GolfCourse course;
     private double stepSize;
@@ -47,11 +47,13 @@ public class RandomRestartHillClimbingBot implements Player {
         for (int i = 0; i < maxrestarts; i++) {
             if (errorFunction.calculateError(bestState) < errorThreshold) {
                 break;
-            }
+            };
+            // uniform distribution in a circle around the best state
             var theta = 2 * Math.PI * Math.random();
             var r = Math.sqrt(Math.random() * restartRadius);
             currentState = new StateVector4(state.x(), state.y(), r * Math.cos(theta), r * Math.sin(theta));
             hillClimb();
+            System.out.println("Restart " + i + " with error " + errorFunction.calculateError(currentState));
             if (errorFunction.calculateError(currentState) < errorFunction.calculateError(bestState)) {
                 bestState = currentState;
             }
@@ -67,6 +69,7 @@ public class RandomRestartHillClimbingBot implements Player {
                 break;
             }
             if (converged) {
+                converged = false;
                 break;
             }
         }

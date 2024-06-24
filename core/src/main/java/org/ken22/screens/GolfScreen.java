@@ -99,7 +99,6 @@ public class GolfScreen extends ScreenAdapter {
 
     private GameLoop gameLoop;
 
-    private PhysicsEngine engine;
     private PhysicsEngine.FrameRateIterator iterator;
     private StateVector4 currentState;
 
@@ -208,10 +207,6 @@ public class GolfScreen extends ScreenAdapter {
         controller = new FirstPersonCameraController(camera);
         Gdx.input.setInputProcessor(controller);
         controller.update();
-
-        //test physics
-        engine = new PhysicsEngine(course);
-        iterator = engine.iterator();
     }
 
     @Override
@@ -317,7 +312,7 @@ public class GolfScreen extends ScreenAdapter {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
-            System.out.println(engine.getState());
+            gameLoop.printState();
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
             iterator = null;
             gameLoop.revertToLastValidState();

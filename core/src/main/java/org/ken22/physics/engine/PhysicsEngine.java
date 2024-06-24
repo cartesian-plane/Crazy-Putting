@@ -4,6 +4,7 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.Tree;
+import org.ken22.obstacles.Wall;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.differentiation.VectorDifferentiation4;
