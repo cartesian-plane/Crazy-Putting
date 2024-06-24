@@ -148,7 +148,7 @@ public class GolfScreen extends ScreenAdapter {
         environment.add(new DirectionalLight().set(0.4f, 0.4f, 0.4f, 1f, -1f, 1f));
 
         // create terrain model
-        TerrainModel terrainModel= new TerrainModel(expr, xMin, xMax, yMin, yMax);
+        TerrainModel terrainModel = new TerrainModel(expr, xMin, xMax, yMin, yMax, course.getSandPits());
         modelBatches = terrainModel.getModelBatches();
         shadowBatches = terrainModel.getShadowBatches();
         terrainInstances = terrainModel.getTerrainInstances();

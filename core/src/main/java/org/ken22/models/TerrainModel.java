@@ -2,6 +2,7 @@ package org.ken22.models;
 
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -11,31 +12,43 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import net.objecthunter.exp4j.Expression;
+import org.ken22.obstacles.SandPit;
+import java.util.List;
+
 
 public class TerrainModel {
-    private static float MESH_RESOLUTION = 0.2f;
-    private static float BATCH_SIZE = 8;
-    private float xMin, xMax, yMin, yMax;
+    private static final float MESH_RESOLUTION = 0.2f; //MESH SIZE CHANGE FOR PERFORMANCE
+    private static final float BATCH_SIZE = 8;
+    private final float xMin, xMax, yMin, yMax;
 
     private Model terrainModel;
 
-    private ModelBuilder[][] modelBuilders;
-    private MeshPartBuilder[][] meshPartBuilders;
-    private MeshPartBuilder[][] altMeshPartBuilders;
-    private ModelInstance[][] terrainInstances;
-    private ModelBatch[][] modelBatches;
 
-    private ModelBatch[][] shadowBatches;
 
-    private Expression expr;
+    private final ModelBuilder[][] modelBuilders;
+    private final MeshPartBuilder[][] meshPartBuilders;
+    private final MeshPartBuilder[][] altMeshPartBuilders;
+    private final ModelInstance[][] terrainInstances;
+    private final ModelBatch[][] modelBatches;
+    private final ModelBatch[][] shadowBatches;
+
+
+
+    private final Expression expr;
+    private final List<SandPit> sandPits;
 
     /**
      * Due to a vertex limit in the ModelBuilder class, the terrain is divided into multiple batches.
      *
      */
-    public TerrainModel(Expression expr, float xMin, float xMax, float yMin, float yMax) {
 
-        this.expr =  expr;
+    public TerrainModel(Expression expr, float xMin, float xMax, float yMin, float yMax, List<SandPit> sandPits) {
+        this.expr = expr;
+        this.xMin = xMin;
+        this.xMax = xMax;
+        this.yMin = yMin;
+        this.yMax = yMax;
+        this.sandPits = sandPits;
 
         modelBatches = new ModelBatch[(int) Math.ceil((xMax - xMin) / BATCH_SIZE)][(int) Math.ceil((yMax - yMin) / BATCH_SIZE)];
         for(int i = 0; i < modelBatches.length; i++) {
@@ -80,16 +93,35 @@ public class TerrainModel {
                         Vector3 p3 = new Vector3(x1, y10, z0);
                         Vector3 p4 = new Vector3(x1, y11, z1);
 
-                        MeshPartBuilder mpb = modelBuilders[bi][bj].part("terrain", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, Materials.grassMaterial);
+                        Material material = isSand(x0, z0) || isSand(x1, z0) || isSand(x0, z1) || isSand(x1, z1) ? Materials.sandMaterial : Materials.grassMaterial;
+                        MeshPartBuilder mpb = modelBuilders[bi][bj].part("terrain", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, material);
                         mpb.triangle(p1, p2, p3);
 
-                        MeshPartBuilder mpb2 = modelBuilders[bi][bj].part("terrain_b", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, Materials.altGrassMaterial);
+                        Material altMaterial = isSand(x0, z0) || isSand(x1, z0) || isSand(x0, z1) || isSand(x1, z1) ? Materials.sandMaterial : Materials.altGrassMaterial;
+                        MeshPartBuilder mpb2 = modelBuilders[bi][bj].part("terrain_b", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, altMaterial);
                         mpb2.triangle(p3, p2, p4);
                     }
                 terrainModel = modelBuilders[bi][bj].end();
                 terrainInstances[bi][bj] = new ModelInstance(terrainModel);
             }
     }
+
+
+    //check for sand
+    private boolean isSand(float x, float y) {
+        for (SandPit sandPit : sandPits) {
+            double[] coordinates = sandPit.coordinates();
+            float dx = (float) (x - coordinates[0]);
+            float dy = (float) (y - coordinates[1]);
+            float distance = (float) Math.sqrt(dx * dx + dy * dy);
+            if (distance <= sandPit.radius()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
     public ModelInstance[][] getTerrainInstances() {
         return terrainInstances;
