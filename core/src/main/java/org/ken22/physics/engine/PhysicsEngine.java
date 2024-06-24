@@ -296,6 +296,8 @@ public class PhysicsEngine {
      * @return {@link StateVector4} the final prediction
      */
     public StateVector4 solve() {
+        StateVector4 currentState = trajectory.getLast();
+
         while (!isAtRest()) {
             nextStep();
         }
