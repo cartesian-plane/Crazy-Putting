@@ -10,8 +10,12 @@ public final class GeometricCooling implements Schedule {
     }
 
     @Override
-    public double getNewTemperature(double t) {
-        double T = Math.pow(alpha, t) * initialTemperature;
-        return Math.max(T, 0);
+    public double getNewTemperature(int k) {
+        double T = Math.pow(alpha, k) * initialTemperature;
+        if (T < 0.0001) {
+            return 0;
+        } else {
+            return T;
+        }
     }
 }

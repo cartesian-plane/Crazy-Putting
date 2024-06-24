@@ -86,9 +86,7 @@ public class PhysicsEngine {
         this.timeStep = timeStep;
         this.differentiator = differentiator;
         this.solver = solver;
-        this.expr = new ExpressionBuilder(course.courseProfile())
-            .variables("x", "y")
-            .build();
+        this.expr = course.expression;
         this.vectorDifferentiationFactory = new VectorDifferentiationFactory(timeStep, expr, course, differentiator, completePhysics);
         trajectory.add(initialStateVector);
         this.inPlaceVectorDifferentiationFactory = new org.ken22.physics.differentiation.inplace.VectorDifferentiationFactory(timeStep, expr, course, differentiator, completePhysics);

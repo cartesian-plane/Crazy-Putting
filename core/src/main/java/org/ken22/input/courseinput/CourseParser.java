@@ -23,9 +23,7 @@ public class CourseParser {
             this.course = objectMapper.readValue(jsonFile, GolfCourse.class);
             System.out.println(this.course.name());
             this.terrain = course.courseProfile();
-            this.expression = new ExpressionBuilder(terrain)
-                .variables("x", "y")
-                .build();
+            this.expression = course.expression;
         } catch (
             IOException e) {
             e.printStackTrace();

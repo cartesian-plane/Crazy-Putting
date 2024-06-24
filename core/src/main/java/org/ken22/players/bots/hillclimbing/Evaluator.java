@@ -33,6 +33,7 @@ public final class Evaluator {
      * @return Map of {@code (neighbour, h-value)} pairs
      */
     public Map<StateVector4, Double> evaluateNeighbours(List<StateVector4> neighbours) {
+        System.out.println("neighbours = " + neighbours);
         return neighbours.parallelStream()
             .collect(Collectors.toMap(
                 Function.identity(),

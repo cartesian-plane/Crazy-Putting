@@ -2,16 +2,16 @@ package org.ken22.players.bots;
 
 public class LogarithmicCooling implements Schedule{
     private final double initialTemperature;
-    private final double alpha;
+    private final double c;
 
 
-    public LogarithmicCooling(double initialTemperature, double alpha) {
+    public LogarithmicCooling(double initialTemperature, double c) {
         this.initialTemperature = initialTemperature;
-        this.alpha = alpha;
+        this.c = c;
     }
 
     @Override
-    public double getNewTemperature(double t) {
-        return ((alpha * initialTemperature) / Math.log(1 + t));
+    public double getNewTemperature(int k) {
+        return (c / Math.log(1 + k));
     }
 }

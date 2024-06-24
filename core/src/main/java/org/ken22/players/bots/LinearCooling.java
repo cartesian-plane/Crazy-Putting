@@ -30,8 +30,9 @@ public class LinearCooling implements Schedule {
      * </ul>
      */
     @Override
-    public double getNewTemperature(double t) {
-        double T = initialTemperature - alpha * t;
+    public double getNewTemperature(int k) {
+        // k is the iteration number
+        double T = initialTemperature - alpha * k;
         return Math.max(T, 0);
     }
 }

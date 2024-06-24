@@ -7,5 +7,5 @@ public interface Schedule {
      * @param t the current time
      * @return the new temperature
      */
-    double getNewTemperature(double t);
+    double getNewTemperature(int k);
 }

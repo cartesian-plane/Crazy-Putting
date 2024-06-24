@@ -45,7 +45,7 @@ public class GolfScreen extends ScreenAdapter {
         // the default level is INFO
         // if you want to change logging, just change the enum type at (1) and (2)
         // https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html
-        LOGGER.setLevel(Level.FINER); // (1)
+        LOGGER.setLevel(Level.WARNING); // (1)
 
         Handler consoleHandler = new ConsoleHandler();
         consoleHandler.setLevel(Level.FINE); // (2)

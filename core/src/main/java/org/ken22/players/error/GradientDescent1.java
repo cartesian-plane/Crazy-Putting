@@ -23,9 +23,7 @@ public class GradientDescent1 implements ErrorFunction {
         double x_t = course.targetXcoord();
         double y_t = course.targetYcoord();
         String terrain = course.courseProfile();
-        Expression expr = new ExpressionBuilder(terrain)
-            .variables("x", "y")
-            .build();
+        Expression expr = course.expression;
         double z_t = expr.setVariable("x", x_t)
             .setVariable("y", y_t)
             .evaluate();
