@@ -6,7 +6,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.engine.PhysicsEngine;
-import org.ken22.physics.odesolvers.RK4;
+import org.ken22.physics.odesolvers.outofplace.RK4;
 import org.ken22.physics.vectors.StateVector4;
 
 import java.io.File;

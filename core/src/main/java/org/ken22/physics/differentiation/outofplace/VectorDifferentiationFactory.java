@@ -28,9 +28,9 @@ public class VectorDifferentiationFactory {
     public VectorDifferentiation4 normalSpeedVectorDifferentiation4() {
         InstantaneousVectorDifferentiation4 instDiff = instDiffFact.instantaneousVectorDifferentiation4();
         return (h1, sv) -> {
-            StateVector4 dsv = instDiff.apply(sv);
-            StateVector4 svh = sv.add(dsv.multiply(h1));
-            StateVector4 dsvh = instDiff.apply(svh);
+            StateVector4 dsv = instDiff.apply(sv); //derivative of sv
+            StateVector4 svh = sv.add(dsv.multiply(h1)); //approximation of sv at t + h
+            StateVector4 dsvh = instDiff.apply(svh); //derivative of approximation
             return dsvh;
         };
     }

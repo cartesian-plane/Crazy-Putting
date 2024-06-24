@@ -3,6 +3,7 @@ package org.ken22.input.settings;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.ken22.physics.odesolvers.outofplace.ODESolver;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -11,7 +12,7 @@ import java.nio.file.Paths;
 
 /**
  * Simple class to store the settings chosen by the user.
- * <p>Due to serializing limitations, the {@link org.ken22.physics.odesolvers.ODESolver} and
+ * <p>Due to serializing limitations, the {@link ODESolver} and
  * {@link org.ken22.physics.differentiators.Differentiator} are stored as strings, and need to be handled somewhere
  * else in the code.</p>
  */

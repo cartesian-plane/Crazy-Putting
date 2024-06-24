@@ -1,9 +1,9 @@
 package org.ken22.input.settings;
 
-import org.ken22.physics.odesolvers.Euler;
-import org.ken22.physics.odesolvers.ODESolver;
-import org.ken22.physics.odesolvers.RK2;
-import org.ken22.physics.odesolvers.RK4;
+import org.ken22.physics.odesolvers.outofplace.Euler;
+import org.ken22.physics.odesolvers.outofplace.ODESolver;
+import org.ken22.physics.odesolvers.outofplace.RK2;
+import org.ken22.physics.odesolvers.outofplace.RK4;
 
 public enum ODESolverType {
     RK4("Runge-Kutta 4") {
