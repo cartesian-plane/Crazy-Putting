@@ -153,6 +153,8 @@ public class TerrainStage extends Stage {
         // Legend
         Table legendTable = new Table();
         legendTable.add(new Label("Legend:", skin)).left().row();
+        addLegendItem(legendTable, "Starting position", Color.PURPLE);
+        addLegendItem(legendTable, "Target", Color.RED);
         addLegendItem(legendTable, "Tree", Color.BROWN);
         addLegendItem(legendTable, "Sand Pit", Color.WHITE);
         addLegendItem(legendTable, "Wall", Color.PINK);

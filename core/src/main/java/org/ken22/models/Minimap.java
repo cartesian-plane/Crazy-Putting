@@ -15,7 +15,6 @@ import org.ken22.utils.GolfExpression;
 import org.ken22.utils.MathUtils;
 import org.ken22.obstacles.Wall;
 
-
 public class Minimap {
     private static final int WIDTH = 512;
     private static final int HEIGHT = 512;
@@ -47,8 +46,6 @@ public class Minimap {
         this.yMin = (float) Math.min(course.ballY(), course.targetYcoord()) - padding;
         this.yMax = (float) Math.max(course.ballY(), course.targetYcoord()) + padding;
 
-
-
         float range = (float) course.range();
         if ((xMax - xMin) < range) {
             float centerX = (xMin + xMax) / 2;
@@ -62,7 +59,6 @@ public class Minimap {
             yMax = centerY + range / 2;
         }
 
-
         init();
     }
 
@@ -73,7 +69,6 @@ public class Minimap {
         double min = MathUtils.min(heightMap);
         double max = MathUtils.max(heightMap);
 
-        //flat ones
         if (min == max) {
             terrainmap.setColor(Color.GREEN);
             terrainmap.fill();
@@ -92,11 +87,23 @@ public class Minimap {
             }
         }
 
+        // tart position
+        int startX = projectX((float) course.ballX());
+        int startY = projectY((float) course.ballY());
+        terrainmap.setColor(Color.PURPLE);
+        terrainmap.fillCircle(startX, startY, 5);
+
+        // target position
+        int targetX = projectX((float) course.targetXcoord());
+        int targetY = projectY((float) course.targetYcoord());
+        terrainmap.setColor(Color.RED);
+        terrainmap.fillCircle(targetX, targetY, 5);
+
+
+
         texture = new Texture(terrainmap);
         image = new Image(new TextureRegionDrawable(texture));
     }
-
-
 
     public void update() {
         if (treemap != null) treemap.dispose();
@@ -138,8 +145,6 @@ public class Minimap {
         image.setDrawable(new TextureRegionDrawable(texture));
     }
 
-
-    //creating base map height
     private void initHeightMap(Expression heightFunction) {
         double[] xCoords = MathUtils.linspace(xMin, xMax, WIDTH);
         double[] yCoords = MathUtils.linspace(yMin, yMax, HEIGHT);
@@ -167,7 +172,6 @@ public class Minimap {
         }
     }
 
-    //scaling properly
     private int scaleToMap(double value) {
         double scale = Math.max(xMax - xMin, yMax - yMin);
         return (int) (value / scale * WIDTH);
@@ -189,8 +193,6 @@ public class Minimap {
         return yMin + ((float) j) / HEIGHT * (yMax - yMin);
     }
 
-
-    //messed up wall drawing
     private void drawThickLine(Pixmap pixmap, int x1, int y1, int x2, int y2, int thickness, Color color) {
         double angle = Math.atan2(y2 - y1, x2 - x1);
         int halfThickness = thickness / 2;
@@ -205,8 +207,6 @@ public class Minimap {
         fillPolygon(pixmap, xPoints, yPoints);
     }
 
-
-    //filling with triangel
     private void fillPolygon(Pixmap pixmap, int[] xPoints, int[] yPoints) {
         int minX = Math.min(Math.min(xPoints[0], xPoints[1]), Math.min(xPoints[2], xPoints[3]));
         int maxX = Math.max(Math.max(xPoints[0], xPoints[1]), Math.max(xPoints[2], xPoints[3]));
@@ -221,8 +221,6 @@ public class Minimap {
             }
         }
     }
-
-
 
     private boolean isPointInPolygon(int x, int y, int[] xPoints, int[] yPoints) {
         boolean result = false;
