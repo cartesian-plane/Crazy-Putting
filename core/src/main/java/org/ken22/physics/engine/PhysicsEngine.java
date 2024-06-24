@@ -4,7 +4,6 @@ import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.Tree;
-import org.ken22.obstacles.Wall;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.differentiation.VectorDifferentiation4;
@@ -77,9 +76,9 @@ public class PhysicsEngine {
             throw new IllegalArgumentException("Initial vector speed too high! (max speed = "
                 + 100 + ")"); //TODO: use the max speed from settings
         }
-        this.xTarget = course.targetXcoord();
-        this.yTarget = course.targetYcoord();
         this.course = course;
+        this.xTarget = this.course.targetXcoord();
+        this.yTarget = this.course.targetYcoord();
         this.initialStateVector = initialStateVector;
         this.timeStep = timeStep;
         this.differentiator = differentiator;

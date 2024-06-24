@@ -3,16 +3,18 @@ package org.ken22.ai;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.function.Executable;
+import org.ken22.input.settings.DifferentiatorType;
+import org.ken22.input.settings.GeneralSettings;
+import org.ken22.input.settings.ODESolverType;
 import org.ken22.obstacles.SandPit;
 import org.ken22.obstacles.Tree;
+import org.ken22.physics.PhysicsFactory;
 import org.ken22.players.bots.hillclimbing.GradientDescent;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.error.ErrorFunction;
-import org.ken22.players.error.EuclAndVelError;
-import org.ken22.players.error.EuclideanError;
 import org.ken22.players.error.GradientDescent2;
 import org.ken22.utils.MathUtils;
 
@@ -24,9 +26,8 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 @Tags ({
-    @Tag("Gradient Descent")
+    @Tag("GradientDescent")
     })
 public class HillClimberTest {
 
@@ -239,6 +240,7 @@ public class HillClimberTest {
 
 
 
+
     /******************************************************************************************************************
 
      Helper methods
@@ -257,12 +259,8 @@ public class HillClimberTest {
         double x = course.ballX();
         double y = course.ballY();
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
-        System.out.println("Starting vector: " + initialState);
-        GradientDescent climber = new GradientDescent(course, initialState, new EuclAndVelError());
-        System.out.println("Terrain equation: z=" + course.courseProfile());
-        System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
+        GradientDescent climber = new GradientDescent(course, createPhysicsFactory());
         StateVector4 solution = climber.play(initialState);
-        System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution, true);
         engine.solve();
         engine.writeToCSV("core/src/test/resources/ai/hillclimber/statistical/solutions", "Flat Plane");
@@ -277,13 +275,8 @@ public class HillClimberTest {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
-        System.out.println("Starting vector: " + initialState);
-        GradientDescent climber = new GradientDescent(course, initialState, new EuclAndVelError());
-        System.out.println("Terrain equation: z=" + course.courseProfile());
-        System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
-        System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
+        GradientDescent climber = new GradientDescent(course, createPhysicsFactory());
         StateVector4 solution = climber.play(initialState);
-        System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution, true);
         engine.solve();
         engine.writeToCSV("core/src/test/resources/ai/hillclimber/statistical/solutions", "Flat Plane");
@@ -298,13 +291,8 @@ public class HillClimberTest {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
-        System.out.println("Starting vector: " + initialState);
-        GradientDescent climber = new GradientDescent(course, initialState, heur);
-        System.out.println("Terrain equation: z=" + course.courseProfile());
-        System.out.println("Heuristic: " + heur);
-        System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
+        GradientDescent climber = new GradientDescent(course, createPhysicsFactory(), heur);
         StateVector4 solution = climber.play(initialState);
-        System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution, true);
         engine.solve();
         engine.writeToCSV("core/src/test/resources/ai/hillclimber/statistical/solutions", "Flat Plane");
@@ -315,19 +303,27 @@ public class HillClimberTest {
         );
     }
 
+    public PhysicsFactory createPhysicsFactory() {
+        return new PhysicsFactory(new GeneralSettings(ODESolverType.RK4, 0.0001,
+            DifferentiatorType.FIVE_POINT_CENTERED, true, true));
+    }
+
+    public PhysicsFactory createPhysicsFactory(ODESolverType solverType, double stepSize,
+                                               DifferentiatorType differ, boolean simplePhysics, boolean allowPlaying) {
+        return new PhysicsFactory(new GeneralSettings(solverType, stepSize, differ, simplePhysics, allowPlaying));
+    }
+
+    public PhysicsFactory createPhysicsFactory(boolean simplePhysics) {
+        return new PhysicsFactory(new GeneralSettings(ODESolverType.RK4, 0.0001,
+            DifferentiatorType.FIVE_POINT_CENTERED, simplePhysics, true));
+    }
+
     public void testManual(String terrain) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
-
         StateVector4 initialState = generateInitialVector(course.ballX(), course.ballY(), gen);
-        System.out.println("Terrain equation: z=" + course.courseProfile());
-        System.out.println("Starting vector: " + initialState);
-        System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
-
-        GradientDescent climber = new GradientDescent(course, initialState, new EuclideanError());
-        System.out.println("Heuristic: " + Heuristic.EUCLIDIAN2D);
+        GradientDescent climber = new GradientDescent(course, createPhysicsFactory());
         StateVector4 solution = climber.play(initialState);
-        System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
         engine.solve();
         engine.writeToCSV("core/src/test/resources/ai/hillclimber/statistical/solutions", "Flat Plane");
@@ -341,16 +337,9 @@ public class HillClimberTest {
     public void testManual(String terrain, ErrorFunction heur) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
-
         StateVector4 initialState = generateInitialVector(course.ballX(), course.ballY(), gen);
-        System.out.println("Terrain equation: z=" + course.courseProfile());
-        System.out.println("Starting vector: " + initialState);
-        System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
-
-        GradientDescent climber = new GradientDescent(course, initialState, heur);
-        System.out.println("Heuristic: " + heur);
+        GradientDescent climber = new GradientDescent(course, createPhysicsFactory(), heur);
         StateVector4 solution = climber.play(initialState);
-        System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
         engine.solve();
         engine.writeToCSV("core/src/test/resources/ai/hillclimber/statistical/solutions", "Flat Plane");
@@ -367,13 +356,8 @@ public class HillClimberTest {
         double x = gen.nextDouble()*20-10;
         double y = gen.nextDouble()*20-10;
         StateVector4 initialState = generateInitialVector(x, y, gen);
-        System.out.println("Starting vector: " + initialState);
-        System.out.println("Target: " + course.targetXcoord() + ", " + course.targetYcoord());
-        GradientDescent climber = new GradientDescent(course, initialState, new EuclAndVelError());
-        System.out.println("Searching for solution " + name);
-        System.out.println("Terrain: " + course.courseProfile());
+        GradientDescent climber = new GradientDescent(course, createPhysicsFactory());
         StateVector4 solution = climber.play(initialState);
-        System.out.println("Solution: " + solution);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
         engine.solve();
         engine.writeToCSV("core/src/test/resources/ai/hillclimber/statistical/solutions", ""+name);
@@ -402,7 +386,6 @@ public class HillClimberTest {
     }
 
     public StateVector4 generateInitialVector(double x, double y, Random gen) {
-
         double vx = gen.nextDouble()*10-5;
         double vymax = Math.sqrt(25-vx*vx);
         double vy = gen.nextDouble()*2*vymax-vymax-0.05; //GradientDescent delta, to prevent the delta from overshooting

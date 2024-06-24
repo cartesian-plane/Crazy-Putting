@@ -54,4 +54,15 @@ public class GeneralSettings {
         }
 
     }
+
+    public GeneralSettings() {
+    }
+
+    public GeneralSettings(ODESolverType odeSolverType, double stepSize, DifferentiatorType differentiatorType, boolean useSimplifiedPhysics, boolean allowPlaying) {
+        this.solverType = odeSolverType;
+        this.stepSize = stepSize;
+        this.differentiatorType = differentiatorType;
+        this.useSimplifiedPhysics = useSimplifiedPhysics;
+        this.allowPlaying = allowPlaying;
+    }
 }

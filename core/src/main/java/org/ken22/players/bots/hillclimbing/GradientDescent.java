@@ -2,6 +2,9 @@ package org.ken22.players.bots.hillclimbing;
 
 import org.ken22.ai.Heuristic;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.input.settings.DifferentiatorType;
+import org.ken22.input.settings.GeneralSettings;
+import org.ken22.input.settings.ODESolverType;
 import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
@@ -11,6 +14,7 @@ import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
 import org.ken22.players.error.ErrorFunction;
 import org.ken22.players.error.EuclideanError;
+import org.ken22.players.error.GradientDescent2;
 
 import java.util.*;
 import java.util.function.Function;
@@ -71,96 +75,26 @@ public class GradientDescent implements Player {
     private final double stepSize;
     private final ErrorFunction heuristicFunction;
     private final Evaluator evaluator;
+    private GeneralSettings settings;
 
-    public GradientDescent(ErrorFunction errorFunction, GolfCourse course) {
-        this.course = course;
-        this.solver = new RK4();
-        this.differentiator = new FivePointCenteredDifference();
-        this.stepSize = 0.0001;
-        this.DELTA = 0.01;
-        this.THRESHOLD = course.targetRadius();
-        this.MAX_SIDEWAYS_MOVES = 10;
-        this.MAX_RESTARTS = 10;
-        this.heuristicFunction = errorFunction;
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
-        var initialX = course.ballX();
-        var initialY = course.ballY();
-
-        // choose random speed vector to start with
-        var speedVector = getRandomSpeedVector();
+    public GradientDescent(GolfCourse course, PhysicsFactory factory) {
+        this(0.01, course.targetRadius(),  10, 10, course, new RK4(),
+            new FivePointCenteredDifference(), 0.0001, new GradientDescent2(), factory);
     }
 
-    public GradientDescent(GolfCourse course) {
-        this.course = course;
-        this.solver = new RK4();
-        this.differentiator = new FivePointCenteredDifference();
-        this.stepSize = 0.0001;
-        this.DELTA = 0.01;
-        this.THRESHOLD = course.targetRadius();
-        this.MAX_SIDEWAYS_MOVES = 10;
-        this.MAX_RESTARTS = 10;
-        var errorFunction = new EuclideanError();
-        this.heuristicFunction = errorFunction;
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
-        var initialX = course.ballX();
-        var initialY = course.ballY();
-
-        // choose random speed vector to start with
-        var speedVector = getRandomSpeedVector();
+    public GradientDescent(GolfCourse course, PhysicsFactory factory, ErrorFunction errorFunction) {
+        this(0.01, course.targetRadius(),  10, 10, course, new RK4(),
+            new FivePointCenteredDifference(), 0.0001, errorFunction, factory);
     }
 
-    public GradientDescent(GolfCourse course, int maxRestarts, int maxSidewaysMoves) {
-        this.course = course;
-        this.solver = new RK4();
-        this.differentiator = new FivePointCenteredDifference();
-        this.stepSize = 0.0001;
-        this.DELTA = 0.01;
-        this.THRESHOLD = course.targetRadius();
-        this.MAX_SIDEWAYS_MOVES = maxSidewaysMoves;
-        this.MAX_RESTARTS = maxRestarts;
-        this.heuristicFunction = new EuclideanError();
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
-            this.stepSize);
-        var initialX = course.ballX();
-        var initialY = course.ballY();
-
-        // choose random speed vector to start with
-        var speedVector = getRandomSpeedVector();
-    }
-
-    public GradientDescent(GolfCourse course, StateVector4 initialState) {
-        this.course = course;
-        this.solver = new RK4();
-        this.differentiator = new FivePointCenteredDifference();
-        this.stepSize = 0.0001;
-        this.DELTA = 0.01;
-        this.THRESHOLD = course.targetRadius();
-        this.MAX_SIDEWAYS_MOVES = 50;
-        this.MAX_RESTARTS = 10;
-        // default heuristic function
-        this.heuristicFunction = new EuclideanError();
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
-            this.stepSize);
-    }
-
-    public GradientDescent(GolfCourse course, StateVector4 initialState, ErrorFunction heuristicFunction) {
-        this.course = course;
-        this.solver = new RK4();
-        this.differentiator = new FivePointCenteredDifference();
-        this.stepSize = 0.0001;
-        this.DELTA = 0.05;
-        this.THRESHOLD = course.targetRadius();
-        this.MAX_SIDEWAYS_MOVES = 10;
-        this.MAX_RESTARTS = 10;
-        // default heuristic function
-        this.heuristicFunction = heuristicFunction;
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
-            this.stepSize);
+    public GradientDescent(GolfCourse course, PhysicsFactory factory, int maxRestarts, int maxSidewaysMoves) {
+        this(0.01, course.targetRadius(),  maxSidewaysMoves, maxRestarts, course, new RK4(),
+            new FivePointCenteredDifference(), 0.0001, new GradientDescent2(), factory);
     }
 
     public GradientDescent(double DELTA, double THRESHOLD, int MAX_SIDEWAYS_MOVES, int MAX_RESTARTS, GolfCourse course,
                            ODESolver<StateVector4> solver, Differentiator differentiator, double stepSize,
-                           ErrorFunction heuristicFunction) {
+                           ErrorFunction heuristicFunction, PhysicsFactory physicsFactory) {
         this.DELTA = DELTA;
         this.THRESHOLD = THRESHOLD;
         this.MAX_SIDEWAYS_MOVES = MAX_SIDEWAYS_MOVES;
@@ -170,6 +104,7 @@ public class GradientDescent implements Player {
         this.differentiator = differentiator;
         this.stepSize = stepSize;
         this.heuristicFunction = heuristicFunction;
+        this.heuristicFunction.init(course, physicsFactory);
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
             this.stepSize);
     }
@@ -207,7 +142,6 @@ public class GradientDescent implements Player {
         //Initialise current state
         var currentState = initialState;
         var currentStateValue = evaluator.evaluateState(initialState);
-        System.out.println("Current state value: " + currentStateValue);
 
         //Add initial state to neighborus
         visited[visitedidx] = currentState;
@@ -220,7 +154,6 @@ public class GradientDescent implements Player {
 
             //Keep track of sideways moves
             int sidewaysMoves = 0;
-            System.out.println("Restart count: " + restartCount);
 
             //Reference point (local minimum) from when you started making sideways moves
             var referenceStatePoint = currentState;
@@ -232,10 +165,12 @@ public class GradientDescent implements Player {
             while (sidewaysMoves < MAX_SIDEWAYS_MOVES) {
 
                 var neighbours = generateNeighbours(currentState, visited, visitedidx);
+                if (neighbours.isEmpty()) {
+                    break;
+                }
                 var neighbourEvaluations = evaluator.evaluateNeighbours(neighbours);
                 var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
                 double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
-                System.out.println("Best neighbour value: " + bestNeighbourValue);
 
                 if(sidewaysMoves > 0) { // previous move was a sideways move (escaping local minimum)
                     if(bestNeighbourValue <= referenceStateValue) { //escaped local minimum
@@ -260,13 +195,11 @@ public class GradientDescent implements Player {
                         currentState = moveSideways(currentState, currentDirection);;
                         visited[visitedidx] = currentState;
                         sidewaysMoves++;
-                        System.out.println("Improvement? false");
                     }
                     else { // not local minimum
                         currentState = bestNeighbour;
                         currentStateValue = bestNeighbourValue;
                         visited[visitedidx] = currentState;
-                        System.out.println("Improvement? true");
                     }
                 }
 
@@ -330,13 +263,10 @@ public class GradientDescent implements Player {
         while (restartCount <= MAX_RESTARTS) {
 
             int sidewaysMoves = 0;
-            System.out.println("Restart count: " + restartCount);
 
             while (sidewaysMoves < MAX_SIDEWAYS_MOVES) {
-                System.out.println("Sideways move: " + sidewaysMoves);
 
                 double currentStateValue = evaluator.evaluateState(currentState);
-                System.out.println("Current state value: " + currentStateValue);
 
                 var neighbours = generateNeighbours(currentState, visited, visitedidx);
 //                for(StateVector4 neighbour : neighbours) {
@@ -348,14 +278,11 @@ public class GradientDescent implements Player {
                 var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
 
                 double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
-                System.out.println("Best neighbour value: " + bestNeighbourValue);
 
                 if (bestNeighbourValue <= currentStateValue) {
                     sidewaysMoves = 0;
-                    System.out.println("Improvement? true");
                 } else {
                     sidewaysMoves += 1;
-                    System.out.println("Improvement? false");
                 }
 
                 previousState = currentState;
@@ -439,7 +366,6 @@ public class GradientDescent implements Player {
         return neighbours;
     }
 
-
     /**
      * <p>Evaluates each neighbour by the cost function h.</p>
      *
@@ -497,7 +423,6 @@ public class GradientDescent implements Player {
             }
         }
         return vector;
-
     }
 
     /**
@@ -533,7 +458,6 @@ public class GradientDescent implements Player {
                 }
             }
         }
-
         neighbours.removeAll(toRemove);
     }
 
