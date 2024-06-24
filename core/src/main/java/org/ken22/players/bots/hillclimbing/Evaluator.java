@@ -17,26 +17,15 @@ import java.util.stream.Collectors;
 public final class Evaluator {
 
     private final ErrorFunction heuristicFunction;
-    private final ODESolver<StateVector4> solver;
-    private final Differentiator differentiator;
-    private final double stepSize;
-    private final GolfCourse course;
 
     public Evaluator(ErrorFunction heuristicFunction, GolfCourse course) {
+        System.out.println("Course in Evaluator constructor: " + course);
         this.heuristicFunction = heuristicFunction;
-        this.course = course;
-        this.solver = new RK4();
-        this.differentiator = new FivePointCenteredDifference();
-        this.stepSize = 0.0001;
     }
 
     public Evaluator(ErrorFunction heuristicFunction, GolfCourse course,  ODESolver<StateVector4> solver,
                      Differentiator differentiator, double stepSize) {
-        this.course = course;
         this.heuristicFunction = heuristicFunction;
-        this.solver = solver;
-        this.differentiator = differentiator;
-        this.stepSize = stepSize;
     }
 
     /**

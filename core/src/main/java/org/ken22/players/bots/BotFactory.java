@@ -29,7 +29,7 @@ public class BotFactory {
     public GradientDescent gradientDescent(GolfCourse course) {
         return new GradientDescent(0.01, course.targetRadius, settings.sidewaysMoves, settings.randomRestarts,
             course, settings.odesolverType.getSolver(), settings.differentiatorType.getDifferentiator(),
-            settings.stepSize, errorFunction(course));
+            settings.stepSize, errorFunction(course), physicsFactory);
     }
 
     public SimulatedAnnealing simulatedAnnealing(GolfCourse course)  {

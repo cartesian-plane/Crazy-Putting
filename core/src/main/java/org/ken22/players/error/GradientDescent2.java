@@ -10,14 +10,17 @@ import org.ken22.utils.MathUtils;
 
 public class GradientDescent2 implements ErrorFunction {
 
-    GolfCourse course;
+    private GolfCourse course;
+    private PhysicsFactory physicsFactory;
 
     public void init(GolfCourse course, PhysicsFactory physicsFactory) {
         this.course = course;
+        this.physicsFactory = physicsFactory;
     }
 
     public double calculateError(StateVector4 state) {
-        var engine = new PhysicsEngine(course, state);
+
+        var engine = new PhysicsEngine(this.course, state);
         StateVector4 closest = state;
         double d_min = Double.POSITIVE_INFINITY;
         double x_t = course.targetXcoord();
@@ -29,8 +32,6 @@ public class GradientDescent2 implements ErrorFunction {
         double z_t = expr.setVariable("x", x_t)
             .setVariable("y", y_t)
             .evaluate();
-
-        System.out.println("Target coordinates: (" + x_t + ", " + y_t + ", " + z_t + ")");
 
         while (!engine.isAtRest()) {
             StateVector4 vec = engine.nextStep();
@@ -58,7 +59,6 @@ public class GradientDescent2 implements ErrorFunction {
         double d_i = MathUtils.magnitude(x_t-x_i, y_t-y_i, z_t-z_i);
         double v_i = MathUtils.magnitude(vx_i, vy_i);
 
-        System.out.println("Initial state: (" + x_i + ", " + y_i + ", " + z_i + ")");
 
         double x_c = closest.x();
         double y_c = closest.y();
@@ -73,11 +73,8 @@ public class GradientDescent2 implements ErrorFunction {
         double d_f = MathUtils.magnitude(x_f-x_t, y_f-y_t, z_f-z_t);
         double v_f = MathUtils.magnitude(vx_f, vy_f);
 
-        System.out.println("Final state: (" + x_f + ", " + y_f + ", " + z_f + ")");
-        System.out.println("Final velocities: (" + vx_f + ", " + vy_f + ")");
-
-        double d_total = MathUtils.magnitude(x_f-x_i, y_f-y_i, z_f-z_i);
-        double vscale = v_i/5;
+//        double d_total = MathUtils.magnitude(x_f-x_i, y_f-y_i, z_f-z_i);
+        double vscale = v_i/5.0;
         double a = d_i-course.targetRadius();
 
 //        double efficiency = (d_i-d_f)/d_total;
