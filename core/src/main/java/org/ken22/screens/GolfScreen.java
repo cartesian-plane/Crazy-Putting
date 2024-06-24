@@ -16,7 +16,7 @@ import net.objecthunter.exp4j.Expression;
 import org.ken22.game.GameLoop;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.models.*;
-import org.ken22.obstacles.Tree;
+import org.ken22.obstacles.*;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.bots.BotFactory;
@@ -75,6 +75,9 @@ public class GolfScreen extends ScreenAdapter {
     private ArrayList<ModelInstance> treeCrownInstances;
     private ModelBatch treeCrownBatch;
     private ModelBatch treeCrownShadowBatch;
+
+    private ArrayList<ModelInstance> wallInstances;
+    private ModelBatch wallBatch;
 
     private ModelInstance golfBallInstance;
     private ModelBatch golfBallBatch;
@@ -176,6 +179,16 @@ public class GolfScreen extends ScreenAdapter {
             treeCrownInstances.add(treeCrownInstance);
         }
 
+        // Create wall models
+        wallInstances = new ArrayList<>();
+        wallBatch = new ModelBatch();
+        for (Wall w : course.walls) {
+            WallModel wallModel = new WallModel(w);
+            wallInstances.add(wallModel.getWallInstance());
+        }
+
+
+
         // Create golf ball model
         GolfBallModel golfBallModel = new GolfBallModel();
         golfBallInstance = golfBallModel.getModelInstance();
@@ -250,21 +263,33 @@ public class GolfScreen extends ScreenAdapter {
         targetBatch.render(poleInstance, environment);
         targetBatch.end();
 
-        // render trees
-        for(int i = 0; i < treeInstances.size(); i++) {
+        // Render trees
+        for (int i = 0; i < treeInstances.size(); i++) {
             treeShadowBatch.begin(camera);
             treeShadowBatch.render(treeInstances.get(i), environment);
             treeShadowBatch.end();
+
             treeBatch.begin(camera);
             treeBatch.render(treeInstances.get(i), environment);
             treeBatch.end();
+
             treeCrownShadowBatch.begin(camera);
             treeCrownShadowBatch.render(treeCrownInstances.get(i), environment);
             treeCrownShadowBatch.end();
+
             treeCrownBatch.begin(camera);
             treeCrownBatch.render(treeCrownInstances.get(i), environment);
             treeCrownBatch.end();
         }
+
+        // Render walls
+        wallBatch.begin(camera);
+        for (ModelInstance wallInstance : wallInstances) {
+            wallBatch.render(wallInstance, environment);
+        }
+        wallBatch.end();
+
+
 
         // Render shadows
         for(int i = 0; i < shadowBatches.length; i++)
