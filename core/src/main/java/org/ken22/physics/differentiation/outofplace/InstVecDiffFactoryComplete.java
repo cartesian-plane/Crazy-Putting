@@ -35,8 +35,10 @@ public class InstVecDiffFactoryComplete implements InstVecDiffFactory {
         return (sv) -> {
             double vx = sv.vx();
             double vy = sv.vy();
-            double df_dx = xSlope(vx, vy);
-            double df_dy = ySlope(vx, vy);
+            double x = sv.x();
+            double y = sv.y();
+            double df_dx = xSlope(x, y);
+            double df_dy = ySlope(x, y);
             double d_norm = MathUtils.magnitude(1, df_dx, df_dy);
             double big_term = MathUtils.magnitude(vx, vy, df_dx*vx+df_dy*vy );
 
@@ -55,10 +57,12 @@ public class InstVecDiffFactoryComplete implements InstVecDiffFactory {
      */
     public InstantaneousVectorDifferentiation4 altInstantaneousVectorDifferentiation4() {
         return (sv) -> {
+            double x = sv.x();
+            double y = sv.y();
             double vx = sv.vx();
             double vy = sv.vy();
-            double df_dx = xSlope(vx, vy);
-            double df_dy = ySlope(vx, vy);
+            double df_dx = xSlope(x, y);
+            double df_dy = ySlope(x, y);
             double d_norm = MathUtils.magnitude(1, df_dx, df_dy);
 
             // approximation not from booklet vx, vy -> dh_dx, dh_dy and vx^2, vy^2 -> 0

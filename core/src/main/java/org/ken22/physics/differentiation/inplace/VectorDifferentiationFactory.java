@@ -36,7 +36,6 @@ public class VectorDifferentiationFactory {
         if (complete)
             runStep = (h, sv) -> {
                 double[] der = new double[4];
-
                 double vx = sv.vx();
                 double vy = sv.vy();
                 //acceleration
