@@ -1,6 +1,4 @@
-package org.ken22.physics.odesolvers;
-
-import org.ken22.physics.vectors.StateVector4;
+package org.ken22.physics.odesolvers.outofplace;
 
 import java.util.function.BiFunction;
 

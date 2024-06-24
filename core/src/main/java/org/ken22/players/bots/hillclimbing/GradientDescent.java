@@ -1,19 +1,15 @@
 package org.ken22.players.bots.hillclimbing;
 
-import org.ken22.ai.Heuristic;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.input.settings.DifferentiatorType;
 import org.ken22.input.settings.GeneralSettings;
-import org.ken22.input.settings.ODESolverType;
 import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
-import org.ken22.physics.odesolvers.ODESolver;
-import org.ken22.physics.odesolvers.RK4;
+import org.ken22.physics.odesolvers.outofplace.ODESolver;
+import org.ken22.physics.odesolvers.outofplace.RK4;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
 import org.ken22.players.error.ErrorFunction;
-import org.ken22.players.error.EuclideanError;
 import org.ken22.players.error.GradientDescent2;
 
 import java.util.*;

@@ -24,6 +24,11 @@ import org.ken22.players.HumanPlayer;
 import org.ken22.players.bots.*;
 import org.ken22.players.bots.hillclimbing.GradientDescent;
 import org.ken22.players.bots.hillclimbing.SimulatedAnnealing;
+import org.ken22.players.bots.otherhillclimbing.HillClimbingBot;
+import org.ken22.players.bots.otherhillclimbing.LineHillClimbingBot;
+import org.ken22.players.bots.otherhillclimbing.RandomRestartHillClimbingBot;
+import org.ken22.players.bots.simplebots.InitialGuessBot;
+import org.ken22.players.bots.simplebots.SimplePlanarApproximationBot;
 import org.ken22.utils.GolfExpression;
 
 import java.util.ArrayList;
@@ -84,7 +89,9 @@ public class GolfScreen extends ScreenAdapter {
     private BotFactory botFactory;
     private InitialGuessBot initialGuessBot;
     private SimplePlanarApproximationBot simpleBot;
-    private BasicHillClimbingBot hillClimbingBot;
+    private HillClimbingBot hillClimbingBot;
+    private LineHillClimbingBot lineHillClimbingBot;
+    private RandomRestartHillClimbingBot randomRestartHillClimbingBot;
     private NewtonRaphsonBot newtonRaphsonBot;
     private GradientDescent gradientDescent;
     private HumanPlayer humanPlayer;
@@ -92,7 +99,6 @@ public class GolfScreen extends ScreenAdapter {
 
     private GameLoop gameLoop;
 
-    private PhysicsEngine engine;
     private PhysicsEngine.FrameRateIterator iterator;
     private StateVector4 currentState;
 
@@ -118,6 +124,8 @@ public class GolfScreen extends ScreenAdapter {
         initialGuessBot = botFactory.initialGuessBot(course);
         simpleBot = botFactory.planarApproximationBot(course);
         hillClimbingBot = botFactory.hillClimbingBot(course, initialGuessBot);
+        lineHillClimbingBot = botFactory.lineHillClimbingBot(course, initialGuessBot);
+        randomRestartHillClimbingBot = botFactory.randomRestartHillClimbingBot(course, initialGuessBot);
         gradientDescent = botFactory.gradientDescent(course);
         newtonRaphsonBot = botFactory.newtonRaphsonBot(course, initialGuessBot);
         simulatedAnnealing = botFactory.simulatedAnnealing(course);
@@ -199,10 +207,6 @@ public class GolfScreen extends ScreenAdapter {
         controller = new FirstPersonCameraController(camera);
         Gdx.input.setInputProcessor(controller);
         controller.update();
-
-        //test physics
-        engine = new PhysicsEngine(course);
-        iterator = engine.iterator();
     }
 
     @Override
@@ -300,10 +304,15 @@ public class GolfScreen extends ScreenAdapter {
             gameLoop.shootBall(simulatedAnnealing.play(currentState));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
             gameLoop.shootBall(humanPlayer.play(currentState));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
+            gameLoop.shootBall(lineHillClimbingBot.play(currentState));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
+            gameLoop.shootBall(randomRestartHillClimbingBot.play(currentState));
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
-            System.out.println(engine.getState());
+            gameLoop.printState();
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
             iterator = null;
             gameLoop.revertToLastValidState();

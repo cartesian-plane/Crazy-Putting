@@ -1,4 +1,4 @@
-package org.ken22.players.bots;
+package org.ken22.players.bots.otherhillclimbing;
 
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.vectors.StateVector4;
@@ -9,11 +9,13 @@ import org.ken22.utils.MathUtils;
 /**
  * Basic gradient descent hill climbing bot with no sideway moves.
  */
-public class BasicHillClimbingBot implements Player {
-    private int maxIterations = 500;
-    private double errorThreshold = 0.15;
+public class RandomRestartHillClimbingBot implements Player {
+    private int maxIterations = 100;
+    private int maxrestarts = 25;
+    private double errorThreshold = 0.05;
     private double convergenceThreshold = 0.001;
     private boolean converged = false;
+    private double restartRadius = 5.0;
 
     private GolfCourse course;
     private double stepSize;
@@ -22,34 +24,55 @@ public class BasicHillClimbingBot implements Player {
     private ErrorFunction errorFunction;
 
     private StateVector4 currentState;
+    private StateVector4 bestState;
     private double[] gradient = new double[2];
 
-    public BasicHillClimbingBot(Player initialGuessBot, GolfCourse course, ErrorFunction errorFunction, double stepSize) {
+    public RandomRestartHillClimbingBot(Player initialGuessBot, GolfCourse course, ErrorFunction errorFunction, double stepSize) {
         this.initialGuessBot = initialGuessBot;
         this.course = course;
         this.errorFunction = errorFunction;
-        this.stepSize = 0.05; //stepSize;
+        this.stepSize = 0.1; //stepSize;
     }
 
     @Override
     public StateVector4 play(StateVector4 state) {
-        if(initialGuessBot != null) {
-            currentState = initialGuessBot.play(state);
-        } else {
-            currentState = state;
+        if (initialGuessBot != null)
+            state = initialGuessBot.play(state);
+
+        // initial guess iteration
+        currentState = state;
+        hillClimb();
+        bestState = currentState;
+
+        for (int i = 0; i < maxrestarts; i++) {
+            if (errorFunction.calculateError(bestState) < errorThreshold) {
+                break;
+            };
+            // uniform distribution in a circle around the best state
+            var theta = 2 * Math.PI * Math.random();
+            var r = Math.sqrt(Math.random() * restartRadius);
+            currentState = new StateVector4(state.x(), state.y(), r * Math.cos(theta), r * Math.sin(theta));
+            hillClimb();
+            System.out.println("Restart " + i + " with error " + errorFunction.calculateError(currentState));
+            if (errorFunction.calculateError(currentState) < errorFunction.calculateError(bestState)) {
+                bestState = currentState;
+            }
         }
 
+        return bestState;
+    }
+
+    private void hillClimb() {
         for (int i = 0; i < maxIterations; i++) {
             climb();
             if (errorFunction.calculateError(currentState) < errorThreshold) {
                 break;
             }
             if (converged) {
+                converged = false;
                 break;
             }
         }
-
-        return currentState;
     }
 
     private void climb() {
@@ -76,11 +99,11 @@ public class BasicHillClimbingBot implements Player {
 
         var alpha = stepSize;
         var currentError = errorFunction.calculateError(currentState);
-        var tempState = new StateVector4(currentState.x(), currentState.y(), currentState.vx() - alpha*gradient[0], currentState.vy() - alpha*gradient[1]);
+        var tempState = new StateVector4(currentState.x(), currentState.y(), currentState.vx() - alpha * gradient[0], currentState.vy() - alpha * gradient[1]);
         var newError = errorFunction.calculateError(tempState);
         while (newError > currentError) {
             alpha /= 2;
-            tempState = new StateVector4(currentState.x(), currentState.y(), currentState.vx() - alpha*gradient[0], currentState.vy() - alpha*gradient[1]);
+            tempState = new StateVector4(currentState.x(), currentState.y(), currentState.vx() - alpha * gradient[0], currentState.vy() - alpha * gradient[1]);
             newError = errorFunction.calculateError(tempState);
         }
         currentState = tempState;

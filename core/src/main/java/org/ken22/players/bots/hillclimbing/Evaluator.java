@@ -2,9 +2,7 @@ package org.ken22.players.bots.hillclimbing;
 
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.differentiators.Differentiator;
-import org.ken22.physics.differentiators.FivePointCenteredDifference;
-import org.ken22.physics.odesolvers.ODESolver;
-import org.ken22.physics.odesolvers.RK4;
+import org.ken22.physics.odesolvers.outofplace.ODESolver;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.error.ErrorFunction;
 

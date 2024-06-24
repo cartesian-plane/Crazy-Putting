@@ -7,10 +7,10 @@ import org.ken22.obstacles.Tree;
 import org.ken22.obstacles.Wall;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
-import org.ken22.physics.differentiation.VectorDifferentiation4;
-import org.ken22.physics.differentiation.VectorDifferentiationFactory;
-import org.ken22.physics.odesolvers.ODESolver;
-import org.ken22.physics.odesolvers.RK4;
+import org.ken22.physics.differentiation.outofplace.VectorDifferentiation4;
+import org.ken22.physics.differentiation.outofplace.VectorDifferentiationFactory;
+import org.ken22.physics.odesolvers.outofplace.ODESolver;
+import org.ken22.physics.odesolvers.outofplace.RK4;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.utils.MathUtils;
 

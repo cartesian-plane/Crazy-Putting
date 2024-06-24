@@ -1,4 +1,4 @@
-package org.ken22.physics.differentiation;
+package org.ken22.physics.differentiation.outofplace;
 
 import org.ken22.physics.vectors.StateVector4;
 

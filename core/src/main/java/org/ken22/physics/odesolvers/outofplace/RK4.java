@@ -1,4 +1,4 @@
-package org.ken22.physics.odesolvers;
+package org.ken22.physics.odesolvers.outofplace;
 
 import org.ken22.physics.vectors.StateVector4;
 

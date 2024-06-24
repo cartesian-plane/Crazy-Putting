@@ -1,4 +1,4 @@
-package org.ken22.players.bots;
+package org.ken22.players.bots.simplebots;
 
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
@@ -6,7 +6,7 @@ import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
 import org.ken22.utils.GolfExpression;
 
-public class SimplePlanarApproximationBot implements Player {
+public class SimplePlaneBot2  implements Player {
 
     StateVector4 initState;
     StateVector4 targetState;
@@ -14,7 +14,7 @@ public class SimplePlanarApproximationBot implements Player {
     GolfCourse course;
     Expression expr;
 
-    public SimplePlanarApproximationBot(GolfCourse course) {
+    public SimplePlaneBot2(GolfCourse course) {
         this.course = course;
         this.expr = GolfExpression.expr(course);
     }
@@ -33,22 +33,26 @@ public class SimplePlanarApproximationBot implements Player {
         var dx = targetState.x() - initState.x();
         var dy = targetState.y() - initState.y();
         var dz = targetHeight - currentHeight;
+        var dz_dx = dz/dx;
+        var dz_dy = dz/dy;
+        var g = course.gravitationalConstant();
+        var kf = course.kineticFrictionGrass();
+        var coef1 = Math.sqrt((2*kf)/Math.sqrt(2+dz_dx*dz_dx+dz_dy*dz_dy));
+        var coef2 = g/(pyth(dz_dx,dz_dy,1));
 
-        //v0^2 = v1^2 + 2*a*d
-        //a = -g*sin(alpha)
-        var sinA = dz / Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-        var cosA = Math.sqrt(1 - Math.pow(sinA, 2));
+        //var vel_z = coef1*coef2*Math.sqrt(dz*(dz_dx+dz_dy));
+        var vel_x = coef1*coef2*Math.sqrt(dx);
+        var vel_y = coef1*coef2*Math.sqrt(dy);
 
-        var dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2) + Math.pow(dz, 2));
-        var v0p = Math.sqrt(2 * course.kineticFrictionGrass()*course.gravitationalConstant()*cosA * dist);
-        var v0 = v0p * cosA;
+        return new StateVector4(initState.x(), initState.y(), vel_x, vel_y);
+    }
 
-        //vx/vy = dx/dy; vx^2 + vy^2 = v0^2
-        //vx = vy * dx/dy; v0^2 = vx^2 + (vx * dx/dy)^2; v0^2 = (1 + (dx/dy)^2) * vx^2; vx = v0 / sqrt(1 + (dx/dy)^2)
-        var vx = v0 / Math.sqrt(1 + Math.pow(dx/dy, 2));
-        var vy = vx * dx/dy;
-
-        return new StateVector4(initState.x(), initState.y(), vx, vy);
+    private static double pyth(double... nums) {
+        double sum = 0;
+        for(double num : nums) {
+            sum += Math.pow(num, 2);
+        }
+        return Math.sqrt(sum);
     }
 
 }
