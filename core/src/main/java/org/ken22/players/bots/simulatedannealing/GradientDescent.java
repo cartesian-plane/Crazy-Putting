@@ -1,4 +1,4 @@
-package org.ken22.players.bots.hillclimbing;
+package org.ken22.players.bots.simulatedannealing;
 
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.input.settings.GeneralSettings;

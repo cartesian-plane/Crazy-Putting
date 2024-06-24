@@ -9,6 +9,6 @@ public class SlopeWeighing implements Weighting {
             return Double.MAX_VALUE;
         // since the distance between neighbors is the same, we can just return the difference in z values
         // always positive, so that it works with A*
-        return Math.max(node1.z - node2.z, 0);
+        return Math.max(node2.z - node1.z, 0);
     }
 }

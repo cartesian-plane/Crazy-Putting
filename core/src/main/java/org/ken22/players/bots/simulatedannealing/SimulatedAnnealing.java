@@ -1,4 +1,4 @@
-package org.ken22.players.bots.hillclimbing;
+package org.ken22.players.bots.simulatedannealing;
 
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.differentiators.Differentiator;
@@ -8,9 +8,6 @@ import org.ken22.physics.odesolvers.outofplace.RK4;
 import org.ken22.physics.utils.PhysicsUtils;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
-import org.ken22.players.bots.GeometricCooling;
-import org.ken22.players.bots.LinearCooling;
-import org.ken22.players.bots.LogarithmicCooling;
 import org.ken22.players.bots.Schedule;
 import org.ken22.players.error.ErrorFunction;
 import org.ken22.players.error.EuclideanError;

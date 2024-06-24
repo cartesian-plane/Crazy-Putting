@@ -1,4 +1,6 @@
-package org.ken22.players.bots;
+package org.ken22.players.bots.simulatedannealing;
+
+import org.ken22.players.bots.Schedule;
 
 public final class GeometricCooling implements Schedule {
     private final double initialTemperature;

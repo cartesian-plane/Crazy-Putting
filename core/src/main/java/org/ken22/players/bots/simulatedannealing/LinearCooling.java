@@ -1,4 +1,6 @@
-package org.ken22.players.bots;
+package org.ken22.players.bots.simulatedannealing;
+
+import org.ken22.players.bots.Schedule;
 
 @SuppressWarnings("ClassCanBeRecord")
 public class LinearCooling implements Schedule {

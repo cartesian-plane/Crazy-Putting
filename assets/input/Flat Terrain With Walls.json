@@ -16,5 +16,17 @@
   "ballYcoord" : 0.0,
   "trees" : [ ],
   "sandPits" : [ ],
-  "walls" : [ ]
+  "walls" : [
+      {
+        "endPoint": [
+            1.0,
+            0.0
+        ],
+        "startPoint": [
+            0.0,
+            1.0
+        ],
+        "thickness": 0.2
+      }
+  ]
 }

@@ -9,7 +9,7 @@ import org.ken22.input.settings.ODESolverType;
 import org.ken22.obstacles.SandPit;
 import org.ken22.obstacles.Tree;
 import org.ken22.physics.PhysicsFactory;
-import org.ken22.players.bots.hillclimbing.GradientDescent;
+import org.ken22.players.bots.simulatedannealing.GradientDescent;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.engine.PhysicsEngine;

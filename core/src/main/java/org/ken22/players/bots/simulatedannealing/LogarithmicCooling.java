@@ -1,6 +1,8 @@
-package org.ken22.players.bots;
+package org.ken22.players.bots.simulatedannealing;
 
-public class LogarithmicCooling implements Schedule{
+import org.ken22.players.bots.Schedule;
+
+public class LogarithmicCooling implements Schedule {
     private final double initialTemperature;
     private final double c;
 
