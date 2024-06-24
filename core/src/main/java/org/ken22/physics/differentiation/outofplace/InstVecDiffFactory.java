@@ -1,4 +1,4 @@
-package org.ken22.physics.differentiation;
+package org.ken22.physics.differentiation.outofplace;
 
 public interface InstVecDiffFactory {
     InstantaneousVectorDifferentiation4 altInstantaneousVectorDifferentiation4();

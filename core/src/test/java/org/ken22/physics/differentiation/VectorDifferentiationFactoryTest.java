@@ -6,6 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.TestUtils;
+import org.ken22.physics.differentiation.outofplace.InstantaneousVectorDifferentiation4;
+import org.ken22.physics.differentiation.outofplace.InstantaneousVectorDifferentiationFactory;
+import org.ken22.physics.differentiation.outofplace.VectorDifferentiation4;
+import org.ken22.physics.differentiation.outofplace.VectorDifferentiationFactory;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.vectors.StateVector4;
 

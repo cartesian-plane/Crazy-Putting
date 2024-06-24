@@ -1,4 +1,4 @@
-package org.ken22.physics.differentiation;
+package org.ken22.physics.differentiation.outofplace;
 
 import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
