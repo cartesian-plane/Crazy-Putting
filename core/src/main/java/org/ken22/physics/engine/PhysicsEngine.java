@@ -5,6 +5,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.Tree;
 import org.ken22.obstacles.Wall;
+import org.ken22.physics.differentiation.inplace.InPlaceVectorDifferentiation4;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.differentiation.outofplace.VectorDifferentiation4;
@@ -36,10 +37,12 @@ public class PhysicsEngine {
     private final ODESolver<StateVector4> solver;
     private final Differentiator differentiator;
 
+    private final org.ken22.physics.differentiation.inplace.VectorDifferentiationFactory inPlaceVectorDifferentiationFactory;
+    private final org.ken22.physics.odesolvers.inplace.ODESolver<StateVector4> inPlaceSolver;
+
     private ArrayList<StateVector4> trajectory = new ArrayList<>();
     private StateVector4 initialStateVector;
     private final double timeStep; // Default time step
-
 
     /// Constructors
     public PhysicsEngine(GolfCourse course) {
@@ -88,6 +91,8 @@ public class PhysicsEngine {
             .build();
         this.vectorDifferentiationFactory = new VectorDifferentiationFactory(timeStep, expr, course, differentiator, completePhysics);
         trajectory.add(initialStateVector);
+        this.inPlaceVectorDifferentiationFactory = new org.ken22.physics.differentiation.inplace.VectorDifferentiationFactory(timeStep, expr, course, differentiator, completePhysics);
+        this.inPlaceSolver = new org.ken22.physics.odesolvers.inplace.RK4();
 
         this.xMin = xinit > course.targetXcoord() ? course.targetXcoord() - this.paddingSize : course.ballX() - this.paddingSize;
         this.xMax = xinit < course.targetXcoord() ? course.targetXcoord() +  this.paddingSize : course.ballX() + this.paddingSize;
@@ -299,38 +304,22 @@ public class PhysicsEngine {
         StateVector4 currentState = trajectory.getLast();
 
         while (!isAtRest()) {
-            nextStep();
+            InPlaceVectorDifferentiation4 inPlaceDifferentiation;
+            // Decide which equations to use for updating the acceleration
+            if (MathUtils.magnitude(currentState.vx(), currentState.vy()) < STOPPING_THRESHOLD) {
+                inPlaceDifferentiation = inPlaceVectorDifferentiationFactory.lowSpeedVectorDifferentiation4();
+            } else {
+                inPlaceDifferentiation = inPlaceVectorDifferentiationFactory.normalSpeedVectorDifferentiation4();
+            }
+
+            inPlaceSolver.nextStep(timeStep, currentState, inPlaceDifferentiation);
+
+            treeCollision(currentState);
+            wallCollision(currentState);
         }
-        return trajectory.getLast();
-    }
 
-    public void shoot(double vx, double vy) {
-        StateVector4 lastVector = trajectory.getLast();
-        StateVector4 newVector = new StateVector4(lastVector.x(), lastVector.y(), vx, vy);
-        trajectory = new ArrayList<StateVector4>();
-        trajectory.add(newVector);
-        this.solve();
+        return currentState;
     }
-
-    public void fromStart(double vx, double vy) {
-        StateVector4 newVector = new StateVector4(this.xinit,this.yinit, 0, 0);
-        trajectory = new ArrayList<StateVector4>();
-        trajectory.add(newVector);
-    }
-
-    public void newStart(double x, double y) {
-        StateVector4 newVector = new StateVector4(x,y, 0, 0);
-        trajectory = new ArrayList<StateVector4>();
-        trajectory.add(newVector);
-        this.xinit = x;
-        this.yinit = y;
-    }
-
-    public void setTargetCoords(double x, double y) {
-        this.xTarget = x;
-        this.yTarget = y;
-    }
-
 
     public FrameRateIterator iterator() {
         return new FrameRateIterator();

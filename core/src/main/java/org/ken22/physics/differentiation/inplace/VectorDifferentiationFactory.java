@@ -16,9 +16,10 @@ public class VectorDifferentiationFactory {
     private GolfCourse course;
     private Expression expr;
 
-    double g;
-    double kf_g;
-    double sf_g;
+    private InPlaceVectorDifferentiation4 normalComplete;
+    private InPlaceVectorDifferentiation4 lowComplete;
+    private InPlaceVectorDifferentiation4 normalSimple;
+    private InPlaceVectorDifferentiation4 lowSimple;
 
     public VectorDifferentiationFactory(double h, Expression expr, GolfCourse course, Differentiator differentiator, boolean completePhysics) {
         this.h = h;
@@ -26,15 +27,13 @@ public class VectorDifferentiationFactory {
         this.course = course;
         this.differentiator = differentiator;
         this.complete = completePhysics;
-        this.g = course.gravitationalConstant();
-        this.kf_g = course.kineticFrictionGrass();
-        this.sf_g = course.staticFrictionGrass();
-    }
 
-    public InPlaceVectorDifferentiation4 normalSpeedVectorDifferentiation4() {
-        InPlaceVectorDifferentiation4 runStep;
-        if (complete)
-            runStep = (h, sv) -> {
+        this.normalComplete = new InPlaceVectorDifferentiation4() {
+            private double g = course.gravitationalConstant();
+            private double kf_g = course.kineticFrictionGrass();
+
+            @Override
+            public double[] apply(Double h, StateVector4 sv) {
                 double[] der = new double[4];
 
                 //acceleration
@@ -63,9 +62,51 @@ public class VectorDifferentiationFactory {
                 der[3] = -(this.g / d_norm) * (df_dy / d_norm + this.kf_g * der[3] / (big_term));
 
                 return der;
-            };
-        else
-            runStep = (h, sv) -> {
+            }
+        };
+
+        this.lowComplete = new InPlaceVectorDifferentiation4() {
+            private double g = course.gravitationalConstant();
+            private double kf_g = course.kineticFrictionGrass();
+
+            @Override
+            public double[] apply(Double h, StateVector4 sv) {
+                double[] der = new double[4];
+
+                double vx = sv.vx();
+                double vy = sv.vy();
+                double df_dx = xSlope(vx, vy);
+                double df_dy = ySlope(vx, vy);
+                double d_norm = MathUtils.magnitude(1, df_dx, df_dy);
+                // approximation not from booklet vx, vy -> dh_dx, dh_dy and vx^2, vy^2 -> 0
+                double big_term = MathUtils.magnitude(df_dy * df_dx + df_dy * df_dy);
+                //acceleration
+                double accx = -(this.g * df_dx / d_norm) * (1/d_norm + this.kf_g / (d_norm * big_term));
+                double accy = -(this.g * df_dy / d_norm) * (1/d_norm + this.kf_g / (d_norm * big_term));
+
+                // Approximation:
+                der[0] = sv.x() + h * sv.vx();
+                der[1] = sv.y() + h * sv.vy();
+                der[2] = sv.vx() + h * accx;
+                der[3] = sv.vy() + h * accy;
+
+                // Derivative:
+                df_dx = xSlope(der[0], der[1]);
+                df_dy = ySlope(der[0], der[1]);
+                d_norm = MathUtils.magnitude(1, df_dx, df_dy);
+                big_term = MathUtils.magnitude(df_dy * df_dx + df_dy * df_dy);
+                der[0] = der[2];
+                der[1] = der[3];
+                der[2] = -(this.g * df_dx / d_norm) * (1/d_norm + this.kf_g / (d_norm * big_term));
+                der[3] = -(this.g * df_dy / d_norm) * (1/d_norm + this.kf_g / (d_norm * big_term));
+
+                return der;
+            }
+        };
+
+        this.normalSimple = new InPlaceVectorDifferentiation4() {
+            @Override
+            public double[] apply(Double h, StateVector4 sv) {
                 double[] der = new double[4];
 
                 double df_dx = xSlope(sv.x(), sv.y());
@@ -84,53 +125,19 @@ public class VectorDifferentiationFactory {
                 // Derivative:
                 der[0] = der[2];
                 der[1] = der[3];
-                df_dx = xSlope(der[0], der[0]);
-                df_dy = ySlope(der[0], der[0]);
+                df_dx = xSlope(der[0], der[1]);
+                df_dy = ySlope(der[0], der[1]);
                 v_norm = MathUtils.magnitude(der[2], der[3]);
                 der[2] = -course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * der[2] / v_norm);
                 der[3] = -course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * der[3] / v_norm);
 
                 return der;
-            };
-        return runStep;
-    }
+            }
+        };
 
-    public InPlaceVectorDifferentiation4 lowSpeedVectorDifferentiation4() {
-            InPlaceVectorDifferentiation4 runStep;
-            if (complete)
-                runStep = (h, sv) -> {
-                    double[] der = new double[4];
-
-                    double df_dx = xSlope(sv.x(), sv.y());
-                    double df_dy = ySlope(sv.x(), sv.y());
-                    double d_norm = MathUtils.magnitude(1, df_dx, df_dy);
-                    // approximation not from booklet vx, vy -> dh_dx, dh_dy and vx^2, vy^2 -> 0
-                    double big_term = MathUtils.magnitude(df_dy * df_dx + df_dy * df_dy);
-                    //acceleration
-                    double accx = -(this.g * df_dx / d_norm) * (1/d_norm + this.kf_g / (big_term));
-                    double accy = -(this.g * df_dy / d_norm) * (1/d_norm + this.kf_g / (big_term));
-
-                    // Approximation:
-                    der[0] = sv.x() + h * sv.vx();
-                    der[1] = sv.y() + h * sv.vy();
-                    der[2] = sv.vx() + h * accx;
-                    der[3] = sv.vy() + h * accy;
-
-                    // Derivative:
-                    df_dx = xSlope(der[0], der[1]);
-                    df_dy = ySlope(der[0], der[1]);
-                    d_norm = MathUtils.magnitude(1, df_dx, df_dy);
-                    big_term = MathUtils.magnitude(df_dy * df_dx + df_dy * df_dy);
-
-                    der[0] = der[2];
-                    der[1] = der[3];
-                    der[2] = -(this.g * df_dx / d_norm) * (1/d_norm + this.kf_g / (big_term));
-                    der[3] = -(this.g * df_dy / d_norm) * (1/d_norm + this.kf_g / (big_term));
-
-                    return der;
-                };
-            else
-            runStep = (h, sv) -> {
+        this.lowSimple = new InPlaceVectorDifferentiation4() {
+            @Override
+            public double[] apply(Double h, StateVector4 sv) {
                 double[] der = new double[4];
 
                 double df_dx = xSlope(sv.x(), sv.y());
@@ -156,17 +163,23 @@ public class VectorDifferentiationFactory {
                 der[3] = -course.gravitationalConstant() * df_dy * ( 1 + course.kineticFrictionGrass() / d_norm);
 
                 return der;
-            };
-        return runStep;
+            }
+        };
     }
 
-    // Final Vector
-//    return (h1, sv) -> {
-//        StateVector4 dsv = instDiff.apply(sv);
-//        StateVector4 svh = sv.add(dsv.multiply(h1));
-//        StateVector4 dsvh = instDiff.apply(svh);
-//        return dsvh;
-//    };
+    public InPlaceVectorDifferentiation4 normalSpeedVectorDifferentiation4() {
+        if (complete)
+            return normalComplete;
+        else
+            return normalSimple;
+    }
+
+    public InPlaceVectorDifferentiation4 lowSpeedVectorDifferentiation4() {
+        if (complete)
+            return lowComplete;
+        else
+            return lowSimple;
+    }
 
     public double xSlope(double x, double y) {
         return MathUtils.xSlope(x, y, h, expr, differentiator);
