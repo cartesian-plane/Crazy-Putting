@@ -87,8 +87,8 @@ public class VectorDifferentiationFactory {
                 df_dx = xSlope(der[0], der[0]);
                 df_dy = ySlope(der[0], der[0]);
                 v_norm = MathUtils.magnitude(der[2], der[3]);
-                der[3] = -course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * der[2] / v_norm);
-                der[4] = -course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * der[3] / v_norm);
+                der[2] = -course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * der[2] / v_norm);
+                der[3] = -course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * der[3] / v_norm);
 
                 return der;
             };
