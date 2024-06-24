@@ -26,10 +26,35 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * <p> Every test has a tag that specifies each of the following parameters, in this exact order:</p>
+ * <ul>
+ *     <li>Physics equations:
+ *         {@link org.ken22.physics.differentiation.InstantaneousVectorDifferentiationFactory} (simple),
+ *         {@link org.ken22.physics.differentiation.InstVecDiffFactoryComplete} (complete)
+ *     </li>
+ *     <li>Solver: RK4 {@link org.ken22.physics.odesolvers.RK4}</li>
+ *     <li>Terrain:
+ *         Flat, incline, exponential (single hill/trough), sinusoid (many hills/troughs)
+ *         {@link org.ken22.utils.MathUtils}
+ *     </li>
+ *     <li>Heuristic:
+ *         Euclidian2D {@link org.ken22.players.error.EuclideanError} (x and y distance),
+ *         EuclAndVelError {@link org.ken22.players.error.EuclAndVelError} (x and y distance and velocity error),
+ *         Heuristic2 {@link GradientDescent2} (custom heuristic)
+ *     </li>
+ *     <li>Initial guess: good guess, random guess</li>
+ * </ul>
+ * <p>Other controlled parameters (that were not tested for) include:</p>
+ * <ul>
+ *     <li>Differentiation: default 5 point centred difference {@link org.ken22.physics.differentiators.FivePointCenteredDifference}</li>
+ *     <li>Friction coefficients: default 0.1 kinetic, 0.05 static</li>
+ * </ul>
+ */
 @Tags ({
     @Tag("GradientDescent")
     })
-public class HillClimberTest {
+public class GradientDescentTest {
 
     /******************************************************************************************************************
 
@@ -45,7 +70,7 @@ public class HillClimberTest {
 
      *****************************************************************************************************************/
 
-    @DisplayName("Setup testing for handpicked tests")
+    @DisplayName("Setup testing for statistical tests")
     @BeforeAll
     public static void setupStatisticalTesting() {
         File statisticalJSONs = new File("src/test/resources/ai/hillclimber/statistical/jsons");
@@ -133,12 +158,12 @@ public class HillClimberTest {
      *****************************************************************************************************************/
 
     @Test
-    @Tag("FlatPlane")
-    @Tag("GoodInitialGuess")
-    @Tag("Euclidian2D")
-    @Tag("SimplePhysics")
+    @Tag("SimplePhys")
     @Tag("RK4")
-    @Tag("5PointDifference")
+    @Tag("FlatPlane")
+    @Tag("Euclidian2D")
+    @Tag("GoodInitialGuess")
+    @Tag("SimplePhysics")
     @DisplayName("Flat plane, good initial velocity, Euclidian 2")
     void flatPlaneGoodInitGuess() {
         Random gen  = new Random();
@@ -152,12 +177,12 @@ public class HillClimberTest {
     }
 
     @Test
-    @Tag("FlatPlane")
-    @Tag("RandomInitialGuess")
-    @Tag("Euclidian2D")
-    @Tag("SimplePhysics")
+    @Tag("SimplePhys")
     @Tag("RK4")
-    @Tag("5PointDifference")
+    @Tag("FlatPlane")
+    @Tag("Euclidian2D")
+    @Tag("RandomInitialGuess")
+    @Tag("SimplePhysics")
     @DisplayName("Flat plane, random initial guess, Euclidian 2")
     void flatPlaneEuclidian2D() {
         Random gen = new Random();
@@ -165,12 +190,12 @@ public class HillClimberTest {
     }
 
     @Test
-    @Tag("FlatPlane")
-    @Tag("RandomInitialGuess")
-    @Tag("Heuristic1")
-    @Tag("SimplePhysics")
+    @Tag("SimplePhys")
     @Tag("RK4")
-    @Tag("5PointDifference")
+    @Tag("FlatPlane")
+    @Tag("Heuristic1")
+    @Tag("RandomInitialGuess")
+    @Tag("SimplePhysics")
     @DisplayName("Flat plane, good initial velocity, Heuristic1")
     void flatPlaneGoodInitGuessHeuristic1() {
         Random gen  = new Random();
@@ -184,23 +209,24 @@ public class HillClimberTest {
     }
 
     @Test
-    @Tag("FlatPlane")
-    @Tag("RandomInitialGuess")
-    @Tag("Heuristic2")
-    @Tag("SimplePhysics")
+    @Tag("SimplePhys")
     @Tag("RK4")
-    @Tag("5PointDifference")
+    @Tag("FlatPlane")
+    @Tag("Heuristic2")
+    @Tag("RandomInitialGuess")
+    @Tag("SimplePhysics")
     @DisplayName("Flat plane, random initial guess, Heuristic2")
     void flatPlaneRandomInitGuessHeuristic1() {
         testManual(MathUtils.courses[3], new GradientDescent2());
     }
 
     @Test
+    @Tag("SimplePhys")
+    @Tag("RK4")
     @Tag("Statistical")
+    @Tag("Heuristic2")
     @Tag("RandomInitialGuess")
     @Tag("SimplePhysics")
-    @Tag("RK4")
-    @Tag("5PointDifference")
     @DisplayName("Statistical tests")
     void allStatisticalTests() {
 

@@ -55,8 +55,7 @@ public class GeneralSettings {
 
     }
 
-    public GeneralSettings() {
-    }
+    public GeneralSettings() {}
 
     public GeneralSettings(ODESolverType odeSolverType, double stepSize, DifferentiatorType differentiatorType, boolean useSimplifiedPhysics, boolean allowPlaying) {
         this.solverType = odeSolverType;

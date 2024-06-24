@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
  *
  *
  *
+ *
  * <p><b>Note: </b></p>
  * <ul>
  *     Reference: <i>Artificial Intelligence: A Modern Approach 3rd ed. (Chapter 4)</i>
@@ -113,7 +114,6 @@ public class GradientDescent implements Player {
     public StateVector4 play(StateVector4 state) {
         return search(state);
     }
-
 
     /**
      * <p>Performs steepest-descent hill-climbing with sideways moves, to find a hole-in-one solution.</p>

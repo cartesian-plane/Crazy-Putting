@@ -6,6 +6,7 @@ import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
 
 public class PhysicsFactory {
+
     private GeneralSettings settings;
 
     public PhysicsFactory(GeneralSettings settings) {
@@ -22,4 +23,5 @@ public class PhysicsFactory {
         PhysicsEngine engine = physicsEngine(course, initialState);
         return engine.solve();
    }
+
 }
