@@ -144,8 +144,15 @@ public class VectorDifferentiationFactory {
                 double df_dy = ySlope(sv.x(), sv.y());
                 double d_norm = MathUtils.magnitude(df_dx, df_dy);
                 //acceleration
-                double accx = -course.gravitationalConstant() * df_dx * (1 + course.kineticFrictionGrass() / d_norm);
-                double accy = -course.gravitationalConstant() * df_dy * (1 + course.kineticFrictionGrass() / d_norm);
+                double accx;
+                double accy;
+                if (d_norm == 0) {
+                    accx = 0;
+                    accy = 0;
+                } else {
+                    accx = -course.gravitationalConstant() * df_dx * (1 + course.kineticFrictionGrass() / d_norm);
+                    accy = -course.gravitationalConstant() * df_dy * (1 + course.kineticFrictionGrass() / d_norm);
+                }
 
                 // approximation
                 der[0] = sv.x() + h * sv.vx();
@@ -159,8 +166,13 @@ public class VectorDifferentiationFactory {
                 d_norm = MathUtils.magnitude(df_dx, df_dy);
                 der[0] = der[2];
                 der[1] = der[3];
-                der[2] = -course.gravitationalConstant() * df_dx * ( 1 + course.kineticFrictionGrass() / d_norm);
-                der[3] = -course.gravitationalConstant() * df_dy * ( 1 + course.kineticFrictionGrass() / d_norm);
+                if (d_norm == 0) {
+                    der[2] = 0;
+                    der[3] = 0;
+                } else {
+                    der[2] = -course.gravitationalConstant() * df_dx * ( 1 + course.kineticFrictionGrass() / d_norm);
+                    der[3] = -course.gravitationalConstant() * df_dy * ( 1 + course.kineticFrictionGrass() / d_norm);
+                }
 
                 return der;
             }

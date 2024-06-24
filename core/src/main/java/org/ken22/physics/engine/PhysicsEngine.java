@@ -140,13 +140,13 @@ public class PhysicsEngine {
     public boolean isAtRest() {
         StateVector4 lastVector = trajectory.getLast();
 
-//        if (underwater()) {
-//            //System.out.println("Underwater");
-//            return true;
-//        } else if(outOfBounds()) {
-//            //System.out.println("Out of bounds");
-//            return true;
-//        }
+        if (underwater()) {
+            //System.out.println("Underwater");
+            return true;
+        } else if(outOfBounds()) {
+            //System.out.println("Out of bounds");
+            return true;
+        }
 
         double x = lastVector.x();
         double y = lastVector.y();
@@ -301,24 +301,29 @@ public class PhysicsEngine {
      * @return {@link StateVector4} the final prediction
      */
     public StateVector4 solve() {
-        StateVector4 currentState = trajectory.getLast();
-
         while (!isAtRest()) {
-            InPlaceVectorDifferentiation4 inPlaceDifferentiation;
-            // Decide which equations to use for updating the acceleration
-            if (MathUtils.magnitude(currentState.vx(), currentState.vy()) < STOPPING_THRESHOLD) {
-                inPlaceDifferentiation = inPlaceVectorDifferentiationFactory.lowSpeedVectorDifferentiation4();
-            } else {
-                inPlaceDifferentiation = inPlaceVectorDifferentiationFactory.normalSpeedVectorDifferentiation4();
-            }
-
-            inPlaceSolver.nextStep(timeStep, currentState, inPlaceDifferentiation);
-
-            treeCollision(currentState);
-            wallCollision(currentState);
+            nextStep();
         }
-
-        return currentState;
+        return trajectory.getLast();
+//        StateVector4 currentState =
+//            new StateVector4(trajectory.getLast().x(), trajectory.getLast().y(), trajectory.getLast().vx(), trajectory.getLast().vy());
+//
+//        while (!isAtRest()) {
+//            InPlaceVectorDifferentiation4 inPlaceDifferentiation;
+//            // Decide which equations to use for updating the acceleration
+//            if (MathUtils.magnitude(currentState.vx(), currentState.vy()) < STOPPING_THRESHOLD) {
+//                inPlaceDifferentiation = inPlaceVectorDifferentiationFactory.lowSpeedVectorDifferentiation4();
+//            } else {
+//                inPlaceDifferentiation = inPlaceVectorDifferentiationFactory.normalSpeedVectorDifferentiation4();
+//            }
+//
+//            inPlaceSolver.nextStep(timeStep, currentState, inPlaceDifferentiation);
+//
+//            treeCollision(currentState);
+//            wallCollision(currentState);
+//        }
+//
+//        return currentState;
     }
 
     public FrameRateIterator iterator() {
