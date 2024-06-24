@@ -13,7 +13,6 @@ import org.ken22.physics.odesolvers.outofplace.ODESolver;
 import org.ken22.physics.odesolvers.outofplace.RK4;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.utils.MathUtils;
-//import org.ken22.screens.GolfScreen;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -73,7 +72,7 @@ public class PhysicsEngine {
         this.yinit = initialStateVector.y();
         double vx = initialStateVector.vx();
         double vy = initialStateVector.vy();
-        if (MathUtils.magnitude(vx, vy) > 100) {
+        if (MathUtils.magnitude(vx, vy) > 5) {
             throw new IllegalArgumentException("Initial vector speed too high! (max speed = "
                 + 100 + ")"); //TODO: use the max speed from settings
         }
@@ -136,13 +135,13 @@ public class PhysicsEngine {
     public boolean isAtRest() {
         StateVector4 lastVector = trajectory.getLast();
 
-        if (underwater()) {
-            //System.out.println("Underwater");
-            return true;
-        } else if(outOfBounds()) {
-            //System.out.println("Out of bounds");
-            return true;
-        }
+//        if (underwater()) {
+//            //System.out.println("Underwater");
+//            return true;
+//        } else if(outOfBounds()) {
+//            //System.out.println("Out of bounds");
+//            return true;
+//        }
 
         double x = lastVector.x();
         double y = lastVector.y();
@@ -238,10 +237,10 @@ public class PhysicsEngine {
             var x4 = w.endPoint()[0] + ox; var y4 = w.endPoint()[1] + oy;
 
             //enclosing rectangle borders, for optimization
-            var xMax = w.startPoint()[0] > w.endPoint()[0] ? x1: x4;
-            var xMin = w.startPoint()[0] < w.endPoint()[0] ? x2: x3;
-            var yMax = w.startPoint()[1] > w.endPoint()[1] ? y1: y4;
-            var yMin = w.startPoint()[1] < w.endPoint()[1] ? y2: y3;
+            var xMax = w.startPoint()[0] > w.endPoint()[0] ? x1 : x4;
+            var xMin = w.startPoint()[0] < w.endPoint()[0] ? x2 : x3;
+            var yMax = w.startPoint()[1] > w.endPoint()[1] ? y1 : y4;
+            var yMin = w.startPoint()[1] < w.endPoint()[1] ? y2 : y3;
 
             if( !(state.x() > xMax || state.x() < xMin || state.y() > yMax || state.y() < yMin) && //quick check
                 MathUtils.pointInQuadrilateral(state.x(), state.y(), x1, y1, x2, y2, x3, y3, x4, y4)) { //full check
@@ -329,9 +328,6 @@ public class PhysicsEngine {
         this.xTarget = x;
         this.yTarget = y;
     }
-
-
-
 
 
     public FrameRateIterator iterator() {
