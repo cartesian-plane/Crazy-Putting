@@ -1,4 +1,4 @@
-package org.ken22.players.bots;
+package org.ken22.players.bots.simplebots;
 
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.vectors.StateVector4;

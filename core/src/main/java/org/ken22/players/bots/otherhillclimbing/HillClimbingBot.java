@@ -1,15 +1,14 @@
-package org.ken22.players.bots;
+package org.ken22.players.bots.otherhillclimbing;
 
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
 import org.ken22.players.error.ErrorFunction;
-import org.ken22.utils.MathUtils;
 
 /**
  * Basic gradient descent hill climbing bot with no sideway moves.
  */
-public class BasicHillClimbingBot implements Player {
+public class HillClimbingBot implements Player {
     private int maxIterations = 500;
     private double errorThreshold = 0.15;
     private double convergenceThreshold = 0.001;
@@ -24,7 +23,7 @@ public class BasicHillClimbingBot implements Player {
     private StateVector4 currentState;
     private double[] gradient = new double[2];
 
-    public BasicHillClimbingBot(Player initialGuessBot, GolfCourse course, ErrorFunction errorFunction, double stepSize) {
+    public HillClimbingBot(Player initialGuessBot, GolfCourse course, ErrorFunction errorFunction, double stepSize) {
         this.initialGuessBot = initialGuessBot;
         this.course = course;
         this.errorFunction = errorFunction;
@@ -60,34 +59,6 @@ public class BasicHillClimbingBot implements Player {
 
         gradient[0] = (e10 - e_10) / (2 * stepSize);
         gradient[1] = (e01 - e0_1) / (2 * stepSize);
-
-        // gradient-descent // x = x - stepsize * gradient
-//        var alpha = stepSize;
-//        var currentError = errorFunction.calculateError(currentState);
-//        currentState.setVx(currentState.vx() - alpha*gradient[0]);
-//        currentState.setVy(currentState.vy() - alpha*gradient[1]);
-//        var newError = errorFunction.calculateError(currentState);
-//        while (newError < currentError) {
-//            currentError = newError; alpha *= 2;
-//            currentState.setVx(currentState.vx() - alpha*gradient[0]);
-//            currentState.setVy(currentState.vy() - alpha*gradient[1]);
-//            newError = errorFunction.calculateError(currentState);
-//        }
-
-        var alpha = stepSize;
-        var currentError = errorFunction.calculateError(currentState);
-        var tempState = new StateVector4(currentState.x(), currentState.y(), currentState.vx() - alpha*gradient[0], currentState.vy() - alpha*gradient[1]);
-        var newError = errorFunction.calculateError(tempState);
-        while (newError > currentError) {
-            alpha /= 2;
-            tempState = new StateVector4(currentState.x(), currentState.y(), currentState.vx() - alpha*gradient[0], currentState.vy() - alpha*gradient[1]);
-            newError = errorFunction.calculateError(tempState);
-        }
-        currentState = tempState;
-
-        if (MathUtils.magnitude(alpha * gradient[0], alpha * gradient[1]) < convergenceThreshold) {
-            converged = true;
-        }
 
         System.out.println("Gradient: " + gradient[0] + " " + gradient[1]);
         System.out.println("Current velocity: " + currentState.vx() + " " + currentState.vy() + "; Error: " + errorFunction.calculateError(currentState));

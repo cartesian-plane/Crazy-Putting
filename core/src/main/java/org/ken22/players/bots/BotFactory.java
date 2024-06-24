@@ -6,6 +6,11 @@ import org.ken22.physics.PhysicsFactory;
 import org.ken22.players.Player;
 import org.ken22.players.bots.hillclimbing.GradientDescent;
 import org.ken22.players.bots.hillclimbing.SimulatedAnnealing;
+import org.ken22.players.bots.otherhillclimbing.HillClimbingBot;
+import org.ken22.players.bots.otherhillclimbing.LineHillClimbingBot;
+import org.ken22.players.bots.otherhillclimbing.RandomRestartHillClimbingBot;
+import org.ken22.players.bots.simplebots.InitialGuessBot;
+import org.ken22.players.bots.simplebots.SimplePlanarApproximationBot;
 import org.ken22.players.error.ErrorFunction;
 
 public class BotFactory {
@@ -17,8 +22,8 @@ public class BotFactory {
         this.physicsFactory = physicsFactory;
     }
 
-    public BasicHillClimbingBot hillClimbingBot(GolfCourse course, Player initialGuessBot) {
-        return new BasicHillClimbingBot(initialGuessBot, course, errorFunction(course), settings.stepSize);
+    public HillClimbingBot hillClimbingBot(GolfCourse course, Player initialGuessBot) {
+        return new HillClimbingBot(initialGuessBot, course, errorFunction(course), settings.stepSize);
     }
 
     public GradientDescent gradientDescent(GolfCourse course) {
@@ -44,10 +49,18 @@ public class BotFactory {
         return new InitialGuessBot(course);
     }
 
-    private ErrorFunction errorFunction(GolfCourse course) {
+    public ErrorFunction errorFunction(GolfCourse course) {
         ErrorFunction errorFunction = settings.errorFunctionType
             .getErrorFunction(course, physicsFactory, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting());
         errorFunction.init(course, physicsFactory);
         return errorFunction;
+    }
+
+    public RandomRestartHillClimbingBot randomRestartHillClimbingBot(GolfCourse course, InitialGuessBot initialGuessBot) {
+        return new RandomRestartHillClimbingBot(initialGuessBot, course, errorFunction(course), settings.stepSize);
+    }
+
+    public LineHillClimbingBot lineHillClimbingBot(GolfCourse course, InitialGuessBot initialGuessBot) {
+        return new LineHillClimbingBot(initialGuessBot, course, errorFunction(course), settings.stepSize);
     }
 }
