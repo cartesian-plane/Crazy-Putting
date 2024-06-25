@@ -8,7 +8,7 @@ public class FollowingCameraController implements InputProcessor {
 
     private Camera camera;
     private float previousX, previousY;
-    private float rotationSpeed = 3f;
+    private float rotationSpeed = 0.5f;
 
     public FollowingCameraController(Camera camera) {
         this.camera = camera;
@@ -28,8 +28,11 @@ public class FollowingCameraController implements InputProcessor {
         float deltaX = previousX - screenX;
         float deltaY = previousY - screenY;
 
-        camera.direction.x += deltaX * rotationSpeed;
-        camera.direction.y += deltaY * rotationSpeed;
+        Vector3 direction = camera.direction.cpy();
+        Vector3 up = camera.up.cpy();
+
+        camera.direction.rotate(up, deltaX * rotationSpeed);
+        camera.direction.rotate(direction.crs(up), deltaY * rotationSpeed);
 
         previousX = screenX;
         previousY = screenY;

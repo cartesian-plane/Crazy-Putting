@@ -354,7 +354,8 @@ public class PhysicsEngine {
      */
     public class FrameRateIterator implements Iterator<StateVector4> {
         private static final int FRAME_RATE = 30;
-        private final int kPerFrame = (int) ((1.0 / FRAME_RATE) / timeStep);
+        private static final double SPEED = 0.7;
+        private final int kPerFrame = (int) ((SPEED / FRAME_RATE) / timeStep);
         private int index = 0; //Iterator must keep reference to the current element/index
 
         @Override

@@ -117,6 +117,8 @@ public class GolfScreen extends ScreenAdapter {
     private InputProcessor followingController;
     private boolean following;
 
+    private Camera currentCamera;
+
     /**
      * Everything in GolfScreen is initialized here, rather than in the show() method.
      * This is because the show() method is only called when the screen is set as the current screen
@@ -241,6 +243,8 @@ public class GolfScreen extends ScreenAdapter {
 
         Gdx.input.setInputProcessor(controller);
         controller.update();
+
+        currentCamera = camera;
     }
 
     @Override
@@ -248,16 +252,6 @@ public class GolfScreen extends ScreenAdapter {
         // Clear the screen
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
-        if(!humanPlayerDialogOpen) {
-            // Update the camera
-            if(!following) {
-                controller.update();
-                camera.update();
-            } else {
-                followingCamera.update();
-                //followingController.update();
-            }
 
             // Render golf ball
             double height;
@@ -276,41 +270,59 @@ public class GolfScreen extends ScreenAdapter {
                 golfBallInstance.transform.setTranslation((float) currentState.x(), (float) height, (float) currentState.y());
             }
 
+        if(!humanPlayerDialogOpen) {
+            // Update the camera
+            if(!following) {
+                controller.update();
+                camera.update();
+            } else {
+                double terrainLevel = expr
+                    .setVariable("x", currentState.x())
+                    .setVariable("y", currentState.y())
+                    .evaluate();
+                followingCamera.position.set(
+                    (float) currentState.x(),
+                    (float) terrainLevel + 0.5f,
+                    (float) currentState.y());
+                //followingCamera.lookAt((float) currentState.x(), (float) terrainLevel, (float) currentState.y());
+                followingCamera.update();
+            }
+
             // Render golf ball
-            golfBallShadowBatch.begin(camera);
+            golfBallShadowBatch.begin(currentCamera);
             golfBallShadowBatch.render(golfBallInstance);
             golfBallShadowBatch.end();
-            golfBallBatch.begin(camera);
+            golfBallBatch.begin(currentCamera);
             golfBallBatch.render(golfBallInstance, environment);
             golfBallBatch.end();
 
             // Render target
-            targetBatch.begin(camera);
+            targetBatch.begin(currentCamera);
             targetBatch.render(cylinderInstance, environment);
             targetBatch.render(poleInstance, environment);
             targetBatch.end();
 
             // Render trees
             for (int i = 0; i < treeInstances.size(); i++) {
-                treeShadowBatch.begin(camera);
+                treeShadowBatch.begin(currentCamera);
                 treeShadowBatch.render(treeInstances.get(i), environment);
                 treeShadowBatch.end();
 
-                treeBatch.begin(camera);
+                treeBatch.begin(currentCamera);
                 treeBatch.render(treeInstances.get(i), environment);
                 treeBatch.end();
 
-                treeCrownShadowBatch.begin(camera);
+                treeCrownShadowBatch.begin(currentCamera);
                 treeCrownShadowBatch.render(treeCrownInstances.get(i), environment);
                 treeCrownShadowBatch.end();
 
-                treeCrownBatch.begin(camera);
+                treeCrownBatch.begin(currentCamera);
                 treeCrownBatch.render(treeCrownInstances.get(i), environment);
                 treeCrownBatch.end();
             }
 
             // Render walls
-            wallBatch.begin(camera);
+            wallBatch.begin(currentCamera);
             for (ModelInstance wallInstance : wallInstances) {
                 wallBatch.render(wallInstance, environment);
             }
@@ -321,7 +333,7 @@ public class GolfScreen extends ScreenAdapter {
             // Render shadows
             for(int i = 0; i < shadowBatches.length; i++)
                 for(int j = 0; j < shadowBatches[0].length; j++) {
-                    shadowBatches[i][j].begin(camera);
+                    shadowBatches[i][j].begin(currentCamera);
                     shadowBatches[i][j].render(terrainInstances[i][j]);
                     shadowBatches[i][j].end();
                 }
@@ -329,13 +341,13 @@ public class GolfScreen extends ScreenAdapter {
             // Render terrain
             for(int i = 0; i < modelBatches.length; i++)
                 for(int j = 0; j < modelBatches[0].length; j++) {
-                    modelBatches[i][j].begin(camera);
+                    modelBatches[i][j].begin(currentCamera);
                     modelBatches[i][j].render(terrainInstances[i][j], environment);
                     modelBatches[i][j].end();
                 }
 
             // Render water
-            waterBatch.begin(camera);
+            waterBatch.begin(currentCamera);
             waterBatch.render(waterInstance, environment);
             waterBatch.end();
 
@@ -384,10 +396,12 @@ public class GolfScreen extends ScreenAdapter {
         if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
             following = !following;
             if(following) {
-                viewport.setCamera(followingCamera);
+                currentCamera = followingCamera;
+                viewport.setCamera(currentCamera);
                 Gdx.input.setInputProcessor(followingController);
             } else {
-                viewport.setCamera(camera);
+                currentCamera = camera;
+                viewport.setCamera(currentCamera);
                 Gdx.input.setInputProcessor(controller);
             }
         }
@@ -395,7 +409,7 @@ public class GolfScreen extends ScreenAdapter {
          if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             manager.toMainStage();
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
-            System.out.println("Camera Position: ("+ "x:" + camera.position.x + ", " + "y:" + camera.position.y + ", " + "z:" + camera.position.z + ")");
+            System.out.println("Camera Position: ("+ "x:" + camera.position.x + ", " + "y:" + currentCamera.position.y + ", " + "z:" + currentCamera.position.z + ")");
         }
     }
 
