@@ -15,6 +15,30 @@ public class InstantaneousVectorDifferentiationFactory implements InstVecDiffFac
     private GolfCourse course;
     private Expression expr;
 
+    private InstantaneousVectorDifferentiation4 normalSpeed = (sv) -> {
+        double df_dx = xSlope(sv.x(), sv.y());
+        double df_dy = ySlope(sv.x(), sv.y());
+        double v_norm = MathUtils.magnitude(sv.vx(), sv.vy());
+        return new StateVector4(
+            sv.vx(),
+            sv.vy(),
+            (-course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * sv.vx() / v_norm)),
+            (-course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * sv.vy() / v_norm))
+        );
+    };
+
+    private InstantaneousVectorDifferentiation4 lowSpeed = (sv) -> {
+        double df_dx = xSlope(sv.x(), sv.y());
+        double df_dy = ySlope(sv.x(), sv.y());
+        double d_norm = MathUtils.magnitude(df_dx, df_dy);
+        return new StateVector4(
+            sv.vx(),
+            sv.vy(),
+            (-course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * df_dx / d_norm)),
+            (-course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * df_dy / d_norm))
+        );
+    };
+
     public InstantaneousVectorDifferentiationFactory(double h, Expression expr, GolfCourse course, Differentiator differentiator) {
         this.h = h;
         this.expr = expr;
@@ -24,32 +48,12 @@ public class InstantaneousVectorDifferentiationFactory implements InstVecDiffFac
 
     //Normal speed equations
     public InstantaneousVectorDifferentiation4 instantaneousVectorDifferentiation4() {
-        return (sv) -> {
-            double df_dx = xSlope(sv.x(), sv.y());
-            double df_dy = ySlope(sv.x(), sv.y());
-            double v_norm = MathUtils.magnitude(sv.vx(), sv.vy());
-            return new StateVector4(
-                sv.vx(),
-                sv.vy(),
-                (-course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * sv.vx() / v_norm)),
-                (-course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * sv.vy() / v_norm))
-            );
-        };
+        return normalSpeed;
     }
 
     //Low speed approximatino
     public InstantaneousVectorDifferentiation4 altInstantaneousVectorDifferentiation4() {
-        return (sv) -> {
-            double df_dx = xSlope(sv.x(), sv.y());
-            double df_dy = ySlope(sv.x(), sv.y());
-            double d_norm = MathUtils.magnitude(df_dx, df_dy);
-            return new StateVector4(
-                sv.vx(),
-                sv.vy(),
-                (-course.gravitationalConstant() * (df_dx + course.kineticFrictionGrass() * df_dx / d_norm)),
-                (-course.gravitationalConstant() * (df_dy + course.kineticFrictionGrass() * df_dy / d_norm))
-            );
-        };
+        return lowSpeed;
     }
 
     public double xSlope(double x, double y) {

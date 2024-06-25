@@ -14,6 +14,9 @@ public class VectorDifferentiationFactory {
 
     InstVecDiffFactory instDiffFact;
 
+    private VectorDifferentiation4 normalSpeed;
+    private VectorDifferentiation4 lowSpeed;
+
     public VectorDifferentiationFactory(double h, Expression expr, GolfCourse course, Differentiator differentiator, boolean completePhysics) {
         this.h = h;
         this.expr = expr;
@@ -23,26 +26,36 @@ public class VectorDifferentiationFactory {
         } else {
             instDiffFact = new InstantaneousVectorDifferentiationFactory(h, expr, course, differentiator);
         }
+
+        this.normalSpeed = new VectorDifferentiation4() {
+            private InstantaneousVectorDifferentiation4 instDiff = instDiffFact.instantaneousVectorDifferentiation4();
+            @Override
+            public StateVector4 apply(Double h1, StateVector4 sv) {
+                StateVector4 dsv = instDiff.apply(sv); //derivative of sv
+                StateVector4 svh = sv.add(dsv.multiply(h1)); //approximation of sv at t + h
+                StateVector4 dsvh = instDiff.apply(svh); //derivative of approximation
+                return dsvh;
+            }
+        };
+
+        this.lowSpeed = new VectorDifferentiation4() {
+            private InstantaneousVectorDifferentiation4 instDiff = instDiffFact.altInstantaneousVectorDifferentiation4();
+            @Override
+            public StateVector4 apply(Double h1, StateVector4 sv) {
+                StateVector4 dsv = instDiff.apply(sv);
+                StateVector4 svh = sv.add(dsv.multiply(h1));
+                StateVector4 dsvh = instDiff.apply(svh);
+                return dsvh;
+            }
+        };
     }
 
     public VectorDifferentiation4 normalSpeedVectorDifferentiation4() {
-        InstantaneousVectorDifferentiation4 instDiff = instDiffFact.instantaneousVectorDifferentiation4();
-        return (h1, sv) -> {
-            StateVector4 dsv = instDiff.apply(sv); //derivative of sv
-            StateVector4 svh = sv.add(dsv.multiply(h1)); //approximation of sv at t + h
-            StateVector4 dsvh = instDiff.apply(svh); //derivative of approximation
-            return dsvh;
-        };
+        return normalSpeed;
     }
 
     public VectorDifferentiation4 lowSpeedVectorDifferentiation4() {
-        InstantaneousVectorDifferentiation4 instDiff = instDiffFact.altInstantaneousVectorDifferentiation4();
-        return (h1, sv) -> {
-            StateVector4 dsv = instDiff.apply(sv);
-            StateVector4 svh = sv.add(dsv.multiply(h1));
-            StateVector4 dsvh = instDiff.apply(svh);
-            return dsvh;
-        };
+        return lowSpeed;
     }
 
     public double xSlope(double x, double y) {
