@@ -67,7 +67,6 @@ public class InstVecDiffFactoryComplete implements InstVecDiffFactory {
 
             // approximation not from booklet vx, vy -> dh_dx, dh_dy and vx^2, vy^2 -> 0
             double big_term = MathUtils.magnitude(df_dy*df_dx+df_dy*df_dy );
-
             return new StateVector4(
                 vx,
                 vy,

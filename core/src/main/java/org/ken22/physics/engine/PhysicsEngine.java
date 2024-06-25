@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 public class PhysicsEngine {
 
+    private static final double BOUNCE_CONSTANT = 0.6;
     public static final double MAX_SCORE_SPEED = 0.3;
     private static final double paddingSize = 2.5;
     private static final double DEFAULT_TIME_STEP = 0.0001;
@@ -221,8 +222,8 @@ public class PhysicsEngine {
 
                 double[] unit_normal = new double[] {(state.x() - t.coordinates()[0]) / distance,
                     (state.y() - t.coordinates()[1]) / distance};
-                double newvx = unit_normal[0]*0.6*MathUtils.magnitude(state.vx(), state.vy());
-                double newvy = unit_normal[1]*0.6*MathUtils.magnitude(state.vx(), state.vy());
+                double newvx = unit_normal[0]*BOUNCE_CONSTANT*MathUtils.magnitude(state.vx(), state.vy());
+                double newvy = unit_normal[1]*BOUNCE_CONSTANT*MathUtils.magnitude(state.vx(), state.vy());
                 state.setVx(newvx);
                 state.setVy(newvy);
                 System.out.println("Tree collision");
@@ -252,6 +253,15 @@ public class PhysicsEngine {
             if( !(state.x() > xMax || state.x() < xMin || state.y() > yMax || state.y() < yMin) && //quick check
                 MathUtils.pointInQuadrilateral(state.x(), state.y(), x1, y1, x2, y2, x3, y3, x4, y4)) { //full check
                 //TODO: Recheck
+
+                // New collision logic
+//                double[] temp = MathUtils.reflectedVector2D(w.endPoint()[0], w.endPoint()[1], w.startPoint()[0], w.startPoint()[1], state.vx(), state.vy());
+//                double v = MathUtils.magnitude(state.vx(), state.vy());
+//                double[] reflected_velocities  = MathUtils.multiply(temp, 0.8*v);
+//                state.setVx(reflected_velocities[0]);
+//                state.setVy(reflected_velocities[1]);
+
+
                 double[] normal = new double[] {state.x() - w.startPoint()[0], state.y() - w.startPoint()[1]};
                 var magnitude = MathUtils.magnitude(normal[0], normal[1]);
                 normal[0] /= magnitude;

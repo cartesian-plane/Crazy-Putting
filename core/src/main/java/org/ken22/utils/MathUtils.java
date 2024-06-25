@@ -156,7 +156,43 @@ public class MathUtils {
         return c1 * c2 >= 0;
     }
 
-    public static double cross2D(StateVector4 vec1, StateVector4 vec2) {
-        return vec1.x() * vec2.y() - vec1.y() * vec2.x();
+    public static double[] unitNormal2D(double x1, double y1, double x2, double y2) {
+        // Direction vector of the line segment
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+
+        // Normal vector (perpendicular to the direction vector)
+        double nx = -dy;
+        double ny = dx;
+
+        // Normalize the normal vector
+        double length = Math.sqrt(nx * nx + ny * ny);
+        double[] unitNormal = { nx / length, ny / length };
+
+        return unitNormal;
     }
+
+    public static double dot2D(double x1, double y1, double x2, double y2) {
+        return x1 * x2 + y1 * y2;
+    }
+
+    // Method to normalize a vector
+    public static double[] normalize(double x, double y) {
+        double length = Math.sqrt(x * x + y * y);
+        return new double[]{x / length, y / length};
+    }
+
+    // Method to multiply a vector by a scalar
+    public static double[] multiply(double[] vector, double scalar) {
+        return new double[]{vector[0] * scalar, vector[1] * scalar};
+    }
+
+    public static double[] reflectedVector2D(double x1, double y1, double x2, double y2, double vx, double vy) {
+        double[] unitNormal = unitNormal2D(x1, y1, x2, y2);
+        double dot = dot2D(vx, vy, unitNormal[0], unitNormal[1]);
+        double[] reflected = {vx - 2 * dot * unitNormal[0], vy - 2 * dot * unitNormal[1]};
+        double[] normalizedReflected = normalize(reflected[0], reflected[1]);
+        return normalizedReflected;
+    }
+
 }
