@@ -1,0 +1,2 @@
+This is where the injected classes will be written at runtime.
+The .gitkeep is just to make sure the directory doesn't get removed by git when pushing to remote.
