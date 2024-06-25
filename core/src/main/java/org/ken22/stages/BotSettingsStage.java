@@ -9,11 +9,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.settings.*;
-import org.ken22.input.odeinput.GridPathfindingType;
+import org.ken22.input.settings.GridPathfindingType;
 import org.ken22.screens.ScreenManager;
 import org.ken22.utils.userinput.UIElementFactory;
 
-import javax.swing.text.View;
 import java.io.File;
 import java.io.IOException;
 

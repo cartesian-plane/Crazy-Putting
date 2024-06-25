@@ -3,7 +3,6 @@ package org.ken22.input.settings;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.ken22.input.odeinput.GridPathfindingType;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
