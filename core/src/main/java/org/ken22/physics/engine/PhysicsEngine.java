@@ -261,13 +261,13 @@ public class PhysicsEngine {
                 state.setVy(reflected_velocities[1]);
 
 
-                double[] normal = new double[] {state.x() - w.startPoint()[0], state.y() - w.startPoint()[1]};
-                var magnitude = MathUtils.magnitude(normal[0], normal[1]);
-                normal[0] /= magnitude;
-                normal[1] /= magnitude;
-                var dot = state.vx() * normal[0] + state.vy() * normal[1];
-                state.setVx(state.vx() - 2 * dot * normal[0]);
-                state.setVy(state.vy() - 2 * dot * normal[1]);
+//                double[] normal = new double[] {state.x() - w.startPoint()[0], state.y() - w.startPoint()[1]};
+//                var magnitude = MathUtils.magnitude(normal[0], normal[1]);
+//                normal[0] /= magnitude;
+//                normal[1] /= magnitude;
+//                var dot = state.vx() * normal[0] + state.vy() * normal[1];
+//                state.setVx(state.vx() - 2 * dot * normal[0]);
+//                state.setVy(state.vy() - 2 * dot * normal[1]);
                 System.out.println("Wall collision");
             }
         }
