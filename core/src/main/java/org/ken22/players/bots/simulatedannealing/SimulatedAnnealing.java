@@ -58,6 +58,8 @@ public final class SimulatedAnnealing implements Player {
     private final double initialTemperature;
     private final Schedule schedule;
     private final GolfCourse course;
+    private double ballX;
+    private double bally;
     private final ODESolver<StateVector4> solver;
     private final Differentiator differentiator;
     private final double stepSize;
@@ -69,6 +71,8 @@ public final class SimulatedAnnealing implements Player {
 
     public SimulatedAnnealing(GolfCourse course) {
         this.course = course;
+        this.ballX = course.ballX;
+        this.bally = course.ballY;
         this.solver = new RK4();
         this.differentiator = new FivePointCenteredDifference();
         this.stepSize = 0.0001;
@@ -97,6 +101,8 @@ public final class SimulatedAnnealing implements Player {
                               ErrorFunction errorFunction) {
         LOGGER.log(Level.FINE, "Initializing simulated annealing");
         this.course = course;
+        this.ballX = course.ballX;
+        this.bally = course.ballY;
         this.solver = solver;
         this.differentiator = differentiator;
         this.stepSize = stepSize;
@@ -115,8 +121,8 @@ public final class SimulatedAnnealing implements Player {
 
     public StateVector4 play(StateVector4 state) {
         // update the ball's position, so the bot is aware of the new position (if applicable)
-        course.ballX = state.x;
-        course.ballY = state.y;
+        ballX = state.x;
+        bally = state.y;
         return search(state);
     }
 
@@ -245,7 +251,7 @@ public final class SimulatedAnnealing implements Player {
         for (double vx : vx_s) {
             for (double vy: vy_s) {
                 if (PhysicsUtils.magnitude(vx, vy) < 5.0) {
-                    randomVectors.add(new StateVector4(course.ballX, course.ballY, vx, vy));
+                    randomVectors.add(new StateVector4(ballX, bally, vx, vy));
                 }
             }
         }
