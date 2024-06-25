@@ -186,7 +186,7 @@ public class GolfScreen extends ScreenAdapter {
         wallInstances = new ArrayList<>();
         wallBatch = new ModelBatch();
         for (Wall w : course.walls) {
-            WallModel wallModel = new WallModel(w);
+            WallModel wallModel = new WallModel(w, expr);
             wallInstances.add(wallModel.getWallInstance());
         }
 

@@ -5,14 +5,15 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import net.objecthunter.exp4j.Expression;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import org.ken22.obstacles.Wall;
 
 public class WallModel {
     private ModelInstance wallInstance;
 
-    public WallModel(Wall wall) {
+    public WallModel(Wall wall, Expression terrainExpression) {
         ModelBuilder modelBuilder = new ModelBuilder();
 
         float startX = (float) wall.startPoint()[0];
@@ -21,11 +22,14 @@ public class WallModel {
         float endY = (float) wall.endPoint()[1];
         float thickness = (float) wall.thickness();
 
-        //length of the wall
-        float length = (float) Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+        // terrain height at the start and end points of the wall
+        float startHeight = (float) terrainExpression.setVariable("x", startX).setVariable("y", startY).evaluate();
+        float endHeight = (float) terrainExpression.setVariable("x", endX).setVariable("y", endY).evaluate();
+        float wallHeight = 0.5f; // height of the wall
 
-        //the wall HEIGHT IS HERE
-        Model wallModel = modelBuilder.createBox(length, 0.5f, thickness,
+        // Create the wall model
+        float length = (float) Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+        Model wallModel = modelBuilder.createBox(length, wallHeight, thickness,
             new Material(ColorAttribute.createDiffuse(Color.GRAY)),
             VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
@@ -35,9 +39,9 @@ public class WallModel {
         float angle = (float) Math.toDegrees(Math.atan2(endY - startY, endX - startX));
         float centerX = (startX + endX) / 2;
         float centerY = (startY + endY) / 2;
+        float centerHeight = (startHeight + endHeight) / 2;
 
-        //setting the position and rotation
-        wallInstance.transform.setToTranslation(centerX, 0.5f, centerY);
+        wallInstance.transform.setToTranslation(centerX, centerHeight, centerY);
         wallInstance.transform.rotate(0, 1, 0, -angle);
 
     }
