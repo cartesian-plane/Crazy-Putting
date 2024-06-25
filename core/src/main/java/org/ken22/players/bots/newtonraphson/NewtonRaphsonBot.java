@@ -1,8 +1,5 @@
-package org.ken22.players.bots;
+package org.ken22.players.bots.newtonraphson;
 
-import net.objecthunter.exp4j.Expression;
-import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
 import org.ken22.players.error.ErrorFunction;
@@ -18,6 +15,7 @@ public class NewtonRaphsonBot implements Player {
     private ErrorFunction errorFunction;
     private double maxIterations;
     private double tolerance;
+    private double errorThreshold = 0.05;
 
     private double[][] hessian = new double[2][2];
     private double[] gradient = new double[2];
@@ -53,7 +51,7 @@ public class NewtonRaphsonBot implements Player {
             currentState = new StateVector4(currentState.x(), currentState.y(), currentState.vx() - delta[0], currentState.vy() - delta[1]);
             if(MathUtils.magnitude(delta) < tolerance) { // Converged
                 break;
-            } else if (errorFunction.calculateError(currentState) < 0.1) {
+            } else if (errorFunction.calculateError(currentState) < errorThreshold) {
                 break;
             }
         }

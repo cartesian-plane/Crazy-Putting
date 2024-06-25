@@ -21,7 +21,8 @@ import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.bots.BotFactory;
 import org.ken22.players.HumanPlayer;
-import org.ken22.players.bots.*;
+import org.ken22.players.bots.newtonraphson.BasicNewtonRaphsonBot;
+import org.ken22.players.bots.newtonraphson.NewtonRaphsonBot;
 import org.ken22.players.bots.simulatedannealing.GradientDescent;
 import org.ken22.players.bots.simulatedannealing.SimulatedAnnealing;
 import org.ken22.players.bots.hillclimbing.HillClimbingBot;
@@ -99,6 +100,7 @@ public class GolfScreen extends ScreenAdapter {
     private GradientDescent gradientDescent;
     private HumanPlayer humanPlayer;
     private SimulatedAnnealing simulatedAnnealing;
+    private BasicNewtonRaphsonBot basicNewtonRaphsonBot;
 
     private GameLoop gameLoop;
 
@@ -131,6 +133,7 @@ public class GolfScreen extends ScreenAdapter {
         randomRestartHillClimbingBot = botFactory.randomRestartHillClimbingBot(course, initialGuessBot);
         gradientDescent = botFactory.gradientDescent(course);
         newtonRaphsonBot = botFactory.newtonRaphsonBot(course, initialGuessBot);
+        basicNewtonRaphsonBot = botFactory.basicNewtonRaphsonBot(course, initialGuessBot);
         simulatedAnnealing = botFactory.simulatedAnnealing(course);
         //humanPlayer = new HumanPlayer();
 
@@ -334,6 +337,7 @@ public class GolfScreen extends ScreenAdapter {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
             gameLoop.shootBall(randomRestartHillClimbingBot.play(currentState));
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
+            gameLoop.shootBall(basicNewtonRaphsonBot.play(currentState));
         }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
