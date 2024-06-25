@@ -380,21 +380,21 @@ public class GolfScreen extends ScreenAdapter {
 
     public void printHelpMessage() {
         System.out.println("Shortcuts: ");
-        System.out.println("Simple Bot: NUM_");
         System.out.println("Initial Guess Bot: SPACE");
-        System.out.println("Hill Climbing Bot: NUM_");
-        System.out.println("Simple Bot: NUM_2");
-        System.out.println("Hill Climbing Bot: NUM_4");
+        System.out.println("Simple Bot: NUM_1");
+        System.out.println("Hill Climbing Bot: NUM_2");
+//        System.out.println("Simple Bot: NUM_2");
+//        System.out.println("Hill Climbing Bot: NUM_4");
         System.out.println("Gradient Descent: NUM_3");
-        System.out.println("Newton Raphson Bot:  NUM_");
-        System.out.println("Gradient Descent: NUM_6");
-        System.out.println("Simulated Annealing: NUM_");
-        System.out.println("Newton Raphson Bot: NUM_8");
-        System.out.println("Human Player: NUM_");
-        System.out.println("Simulated Annealing: NUM_10");
-        System.out.println("Line Hill Climbing Bot: NUM_");
-        System.out.println("Random Restart Hill Climbing Bot: NUM_");
-        System.out.println("Line Hill Climbing Bot: NUM_14");
-        System.out.println("Basic Newton Raphson Bot: NUM_");
+        System.out.println("Newton Raphson Bot:  NUM_4");
+//        System.out.println("Gradient Descent: NUM_6");
+        System.out.println("Simulated Annealing: NUM_5");
+//        System.out.println("Newton Raphson Bot: NUM_8");
+        System.out.println("Human Player: NUM_6");
+//        System.out.println("Simulated Annealing: NUM_10");
+        System.out.println("Line Hill Climbing Bot: NUM_7");
+        System.out.println("Random Restart Hill Climbing Bot: NUM_8");
+//        System.out.println("Line Hill Climbing Bot: NUM_14");
+        System.out.println("Basic Newton Raphson Bot: NUM_9");
     }
 }

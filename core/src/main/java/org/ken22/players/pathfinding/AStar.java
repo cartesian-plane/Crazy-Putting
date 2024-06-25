@@ -52,6 +52,7 @@ public class AStar implements GridPathfinding {
         HashSet<Node> processed = new HashSet<>();
 
         while (!toSearch.isEmpty()) {
+
             // get the best node (by the comparator)
             var current = toSearch.poll();
 
