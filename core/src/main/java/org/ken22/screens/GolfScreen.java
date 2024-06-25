@@ -1,8 +1,6 @@
 package org.ken22.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -10,6 +8,8 @@ import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
@@ -30,6 +30,7 @@ import org.ken22.players.bots.hillclimbing.LineHillClimbingBot;
 import org.ken22.players.bots.hillclimbing.RandomRestartHillClimbingBot;
 import org.ken22.players.bots.simplebots.InitialGuessBot;
 import org.ken22.players.bots.simplebots.SimplePlanarApproximationBot;
+import org.ken22.stages.HumanPlayerDialogStage;
 
 import java.util.ArrayList;
 import java.util.logging.ConsoleHandler;
@@ -109,7 +110,12 @@ public class GolfScreen extends ScreenAdapter {
     private GolfCourse course;
     private Expression expr;
 
+    private HumanPlayerDialogStage humanPlayerDialogStage;
+    boolean humanPlayerDialogOpen = false;
 
+    private Camera followingCamera;
+    private InputProcessor followingController;
+    private boolean following;
 
     /**
      * Everything in GolfScreen is initialized here, rather than in the show() method.
@@ -124,6 +130,7 @@ public class GolfScreen extends ScreenAdapter {
         this.botFactory = botFactory;
         this.gameLoop = gameLoop;
         gameLoop.setGolfScreen(this);
+        this.humanPlayerDialogStage = new HumanPlayerDialogStage(this);
 
         printHelpMessage();
         initialGuessBot = botFactory.initialGuessBot(course);
@@ -218,9 +225,20 @@ public class GolfScreen extends ScreenAdapter {
         camera.update();
         // Create a viewport
         viewport = new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
-
         // Initialize the FirstPersonCameraController
         controller = new FirstPersonCameraController(camera);
+
+        //Initialize the following camera
+        followingCamera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        followingCamera.position.set((float)course.ballX(), 0f, (float)course.ballY());
+        followingCamera.lookAt(1f, 0f, 1f);
+        followingCamera.near = 0.1f;
+        followingCamera.far = 300f;
+        followingCamera.update();
+        //Create a viewport
+        followingController = new FollowingCameraController(followingCamera);
+        following = false;
+
         Gdx.input.setInputProcessor(controller);
         controller.update();
     }
@@ -231,123 +249,150 @@ public class GolfScreen extends ScreenAdapter {
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        // Update the camera
-        controller.update();
-        camera.update();
+        if(!humanPlayerDialogOpen) {
+            // Update the camera
+            if(!following) {
+                controller.update();
+                camera.update();
+            } else {
+                followingCamera.update();
+                //followingController.update();
+            }
 
-        // Render golf ball
-        double height;
-        if (iterator != null && iterator.hasNext()){
-            currentState = iterator.next();
-            LOGGER.log(Level.FINE, currentState.x() + " " + currentState.y());
-            //System.out.println(state.x() + " " + state.y());
-            height = 0.05 + expr.setVariable("x", currentState.x()).setVariable("y", currentState.y()).evaluate();
-            golfBallInstance.transform.setTranslation((float) currentState.x(), (float) height, (float) currentState.y());
-        } else if (iterator != null) {
-            currentState = iterator.last();
-            iterator = null;
+            // Render golf ball
+            double height;
+            if (iterator != null && iterator.hasNext()){
+                currentState = iterator.next();
+                LOGGER.log(Level.FINE, currentState.x() + " " + currentState.y());
+                //System.out.println(state.x() + " " + state.y());
+                height = 0.05 + expr.setVariable("x", currentState.x()).setVariable("y", currentState.y()).evaluate();
+                golfBallInstance.transform.setTranslation((float) currentState.x(), (float) height, (float) currentState.y());
+            } else if (iterator != null) {
+                currentState = iterator.last();
+                iterator = null;
+            } else {
+                gameLoop.renditionFinished();
+                height = 0.05 + expr.setVariable("x", currentState.x()).setVariable("y", currentState.y()).evaluate();
+                golfBallInstance.transform.setTranslation((float) currentState.x(), (float) height, (float) currentState.y());
+            }
+
+            // Render golf ball
+            golfBallShadowBatch.begin(camera);
+            golfBallShadowBatch.render(golfBallInstance);
+            golfBallShadowBatch.end();
+            golfBallBatch.begin(camera);
+            golfBallBatch.render(golfBallInstance, environment);
+            golfBallBatch.end();
+
+            // Render target
+            targetBatch.begin(camera);
+            targetBatch.render(cylinderInstance, environment);
+            targetBatch.render(poleInstance, environment);
+            targetBatch.end();
+
+            // Render trees
+            for (int i = 0; i < treeInstances.size(); i++) {
+                treeShadowBatch.begin(camera);
+                treeShadowBatch.render(treeInstances.get(i), environment);
+                treeShadowBatch.end();
+
+                treeBatch.begin(camera);
+                treeBatch.render(treeInstances.get(i), environment);
+                treeBatch.end();
+
+                treeCrownShadowBatch.begin(camera);
+                treeCrownShadowBatch.render(treeCrownInstances.get(i), environment);
+                treeCrownShadowBatch.end();
+
+                treeCrownBatch.begin(camera);
+                treeCrownBatch.render(treeCrownInstances.get(i), environment);
+                treeCrownBatch.end();
+            }
+
+            // Render walls
+            wallBatch.begin(camera);
+            for (ModelInstance wallInstance : wallInstances) {
+                wallBatch.render(wallInstance, environment);
+            }
+            wallBatch.end();
+
+
+
+            // Render shadows
+            for(int i = 0; i < shadowBatches.length; i++)
+                for(int j = 0; j < shadowBatches[0].length; j++) {
+                    shadowBatches[i][j].begin(camera);
+                    shadowBatches[i][j].render(terrainInstances[i][j]);
+                    shadowBatches[i][j].end();
+                }
+
+            // Render terrain
+            for(int i = 0; i < modelBatches.length; i++)
+                for(int j = 0; j < modelBatches[0].length; j++) {
+                    modelBatches[i][j].begin(camera);
+                    modelBatches[i][j].render(terrainInstances[i][j], environment);
+                    modelBatches[i][j].end();
+                }
+
+            // Render water
+            waterBatch.begin(camera);
+            waterBatch.render(waterInstance, environment);
+            waterBatch.end();
+
+            //System.out.println(engine.getState());
+
+            // test input
+            if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+                this.humanPlayerDialogOpen = true;
+                Gdx.input.setInputProcessor(humanPlayerDialogStage);
+            }
+
+            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                gameLoop.shootBall(initialGuessBot.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+                gameLoop.shootBall(simpleBot.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+                gameLoop.shootBall(hillClimbingBot.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+                gameLoop.shootBall(gradientDescent.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
+                gameLoop.shootBall(newtonRaphsonBot.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
+                gameLoop.shootBall(simulatedAnnealing.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+                gameLoop.shootBall(humanPlayer.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
+                gameLoop.shootBall(lineHillClimbingBot.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
+                gameLoop.shootBall(randomRestartHillClimbingBot.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
+                gameLoop.shootBall(basicNewtonRaphsonBot.play(currentState));
+            }
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
+                gameLoop.printState();
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+                iterator = null;
+                gameLoop.revertToLastValidState();
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+                gameLoop.restartCourse();
+            }
         } else {
-            gameLoop.renditionFinished();
-            height = 0.05 + expr.setVariable("x", currentState.x()).setVariable("y", currentState.y()).evaluate();
-            golfBallInstance.transform.setTranslation((float) currentState.x(), (float) height, (float) currentState.y());
+            humanPlayerDialogStage.act();
+            humanPlayerDialogStage.draw();
         }
-
-        // Render golf ball
-        golfBallShadowBatch.begin(camera);
-        golfBallShadowBatch.render(golfBallInstance);
-        golfBallShadowBatch.end();
-        golfBallBatch.begin(camera);
-        golfBallBatch.render(golfBallInstance, environment);
-        golfBallBatch.end();
-
-        // Render target
-        targetBatch.begin(camera);
-        targetBatch.render(cylinderInstance, environment);
-        targetBatch.render(poleInstance, environment);
-        targetBatch.end();
-
-        // Render trees
-        for (int i = 0; i < treeInstances.size(); i++) {
-            treeShadowBatch.begin(camera);
-            treeShadowBatch.render(treeInstances.get(i), environment);
-            treeShadowBatch.end();
-
-            treeBatch.begin(camera);
-            treeBatch.render(treeInstances.get(i), environment);
-            treeBatch.end();
-
-            treeCrownShadowBatch.begin(camera);
-            treeCrownShadowBatch.render(treeCrownInstances.get(i), environment);
-            treeCrownShadowBatch.end();
-
-            treeCrownBatch.begin(camera);
-            treeCrownBatch.render(treeCrownInstances.get(i), environment);
-            treeCrownBatch.end();
-        }
-
-        // Render walls
-        wallBatch.begin(camera);
-        for (ModelInstance wallInstance : wallInstances) {
-            wallBatch.render(wallInstance, environment);
-        }
-        wallBatch.end();
-
-
-
-        // Render shadows
-        for(int i = 0; i < shadowBatches.length; i++)
-            for(int j = 0; j < shadowBatches[0].length; j++) {
-                shadowBatches[i][j].begin(camera);
-                shadowBatches[i][j].render(terrainInstances[i][j]);
-                shadowBatches[i][j].end();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
+            following = !following;
+            if(following) {
+                viewport.setCamera(followingCamera);
+                Gdx.input.setInputProcessor(followingController);
+            } else {
+                viewport.setCamera(camera);
+                Gdx.input.setInputProcessor(controller);
             }
-
-        // Render terrain
-        for(int i = 0; i < modelBatches.length; i++)
-            for(int j = 0; j < modelBatches[0].length; j++) {
-                modelBatches[i][j].begin(camera);
-                modelBatches[i][j].render(terrainInstances[i][j], environment);
-                modelBatches[i][j].end();
-            }
-
-        // Render water
-        waterBatch.begin(camera);
-        waterBatch.render(waterInstance, environment);
-        waterBatch.end();
-
-        //System.out.println(engine.getState());
-
-        // test input
-        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            gameLoop.shootBall(initialGuessBot.play(currentState));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-            gameLoop.shootBall(simpleBot.play(currentState));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            gameLoop.shootBall(hillClimbingBot.play(currentState));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-            gameLoop.shootBall(gradientDescent.play(currentState));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
-            gameLoop.shootBall(newtonRaphsonBot.play(currentState));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
-            gameLoop.shootBall(simulatedAnnealing.play(currentState));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-            gameLoop.shootBall(humanPlayer.play(currentState));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
-            gameLoop.shootBall(lineHillClimbingBot.play(currentState));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
-            gameLoop.shootBall(randomRestartHillClimbingBot.play(currentState));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
-            gameLoop.shootBall(basicNewtonRaphsonBot.play(currentState));
         }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
-            gameLoop.printState();
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-            iterator = null;
-            gameLoop.revertToLastValidState();
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-            gameLoop.restartCourse();
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             manager.toMainStage();
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
             System.out.println("Camera Position: ("+ "x:" + camera.position.x + ", " + "y:" + camera.position.y + ", " + "z:" + camera.position.z + ")");
@@ -359,6 +404,17 @@ public class GolfScreen extends ScreenAdapter {
     }
     public void setCurrentState(StateVector4 state) {
         this.currentState = state;
+    }
+
+    public void humanDialogAccepted() {
+        humanPlayerDialogOpen = false;
+        gameLoop.shootBall(humanPlayerDialogStage.getShot(currentState));
+        Gdx.input.setInputProcessor(controller);
+    }
+
+    public void humanDialogRejected() {
+        humanPlayerDialogOpen = false;
+        Gdx.input.setInputProcessor(controller);
     }
 
     @Override

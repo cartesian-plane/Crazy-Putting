@@ -237,10 +237,10 @@ public class PhysicsEngine {
             var ox = -(w.endPoint()[1] - w.startPoint()[1]) * w.thickness(); //thickness is from the center
             var oy = (w.endPoint()[0] - w.startPoint()[0]) * w.thickness();
 
-            var x1 = w.startPoint()[0] + ox; var y1 = w.startPoint()[1] + oy;
-            var x2 = w.startPoint()[0] - ox; var y2 = w.startPoint()[1] - oy;
-            var x3 = w.endPoint()[0] - ox; var y3 = w.endPoint()[1] - oy;
-            var x4 = w.endPoint()[0] + ox; var y4 = w.endPoint()[1] + oy;
+            var x1 = w.startPoint()[0] - ox; var y1 = w.startPoint()[1] - oy;
+            var x2 = w.startPoint()[0] + ox; var y2 = w.startPoint()[1] - oy;
+            var x3 = w.endPoint()[0] +ox; var y3 = w.endPoint()[1] + oy;
+            var x4 = w.endPoint()[0] - ox; var y4 = w.endPoint()[1] + oy;
 
             //enclosing rectangle borders, for optimization
             var xMax = w.startPoint()[0] > w.endPoint()[0] ? x1 : x4;
@@ -266,7 +266,7 @@ public class PhysicsEngine {
 //                var dot = state.vx() * normal[0] + state.vy() * normal[1];
 //                state.setVx(state.vx() - 2 * dot * normal[0]);
 //                state.setVy(state.vy() - 2 * dot * normal[1]);
-                System.out.println("Wall collision");
+//                System.out.println("Wall collision");
             }
         }
     }
