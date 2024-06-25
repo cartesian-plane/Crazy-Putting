@@ -142,6 +142,8 @@ public class PhysicsEngine {
             //System.out.println("Underwater");
             return true;
         } else if(outOfBounds()) {
+            trajectory.getLast().setX(trajectory.getLast().x() - timeStep * trajectory.getLast().vx());
+            trajectory.getLast().setY(trajectory.getLast().y() - timeStep * trajectory.getLast().vy());
             //System.out.println("Out of bounds");
             return true;
         }
@@ -209,7 +211,7 @@ public class PhysicsEngine {
     public boolean outOfBounds() {
         boolean xout = trajectory.getLast().x() < xMin || trajectory.getLast().x() > xMax;
         boolean yout = trajectory.getLast().y() < yMin || trajectory.getLast().y() > yMax;
-        return xout && yout;
+        return xout || yout;
     }
 
     private void treeCollision(StateVector4 state) {
