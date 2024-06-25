@@ -19,11 +19,11 @@
   "walls" : [
     {
       "startPoint" : [
-        1.0,
+        2.0,
         0.0
       ],
         "endPoint" : [
-            0.0,
+            -1.0,
             1.0
       ],
         "thickness" : 0.2

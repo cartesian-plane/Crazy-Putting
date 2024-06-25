@@ -30,10 +30,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p> Every test has a tag that specifies each of the following parameters, in this exact order:</p>
  * <ul>
  *     <li>Physics equations:
- *         {@link org.ken22.physics.differentiation.InstantaneousVectorDifferentiationFactory} (simple),
- *         {@link org.ken22.physics.differentiation.InstVecDiffFactoryComplete} (complete)
+ *         {@link org.ken22.physics.differentiation.outofplace.InstantaneousVectorDifferentiationFactory} (simple),
+ *         {@link org.ken22.physics.differentiation.outofplace.InstVecDiffFactoryComplete} (complete)
  *     </li>
- *     <li>Solver: RK4 {@link org.ken22.physics.odesolvers.RK4}</li>
+ *     <li>Solver: RK4 {@link org.ken22.physics.odesolvers.outofplace.RK4}</li>
  *     <li>Terrain:
  *         Flat, incline, exponential (single hill/trough), sinusoid (many hills/troughs)
  *         {@link org.ken22.utils.MathUtils}
@@ -165,7 +165,7 @@ public class GradientDescentTest {
     @Tag("GoodInitialGuess")
     @Tag("SimplePhysics")
     @DisplayName("Flat plane, good initial velocity, Euclidian 2")
-    void flatPlaneGoodInitGuess() {
+    void test0() {
         Random gen  = new Random();
         double x = gen.nextDouble()*20-10;
         double y = gen.nextDouble()*20-10;
@@ -184,9 +184,40 @@ public class GradientDescentTest {
     @Tag("RandomInitialGuess")
     @Tag("SimplePhysics")
     @DisplayName("Flat plane, random initial guess, Euclidian 2")
-    void flatPlaneEuclidian2D() {
-        Random gen = new Random();
+    void test1() {
         testManual(MathUtils.courses[3]);
+    }
+
+    @Test
+    @Tag("SimplePhys")
+    @Tag("RK4")
+    @Tag("FlatPlane")
+    @Tag("Heuristic2")
+    @Tag("GoodInitialGuess")
+    @Tag("SimplePhysics")
+    @DisplayName("Flat plane, good initial velocity, Euclidian 2")
+    void test2() {
+        Random gen  = new Random();
+        double x = gen.nextDouble()*20-10;
+        double y = gen.nextDouble()*20-10;
+        double xt = gen.nextDouble()*20-10;
+        double yt = gen.nextDouble()*20-10;
+        double vx = (xt - x)/4;
+        double vy = (yt - y)/4;
+        testManual(MathUtils.courses[3], vx, vy, x, y, new GradientDescent2());
+    }
+
+    @Test
+    @Tag("SimplePhys")
+    @Tag("RK4")
+    @Tag("FlatPlane")
+    @Tag("Heuristic2")
+    @Tag("RandomInitialGuess")
+    @Tag("SimplePhysics")
+    @DisplayName("Flat plane, random initial guess, Euclidian 2")
+    void test3() {
+        Random gen = new Random();
+        testManual(MathUtils.courses[3], new GradientDescent2());
     }
 
     @Test
@@ -197,7 +228,7 @@ public class GradientDescentTest {
     @Tag("RandomInitialGuess")
     @Tag("SimplePhysics")
     @DisplayName("Flat plane, good initial velocity, Heuristic1")
-    void flatPlaneGoodInitGuessHeuristic1() {
+    void test4() {
         Random gen  = new Random();
         double x = gen.nextDouble()*20-10;
         double y = gen.nextDouble()*20-10;
@@ -347,7 +378,7 @@ public class GradientDescentTest {
     public void testManual(String terrain) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
-        StateVector4 initialState = generateInitialVector(course.ballX(), course.ballY(), gen);
+        StateVector4 initialState = randomInitialVector(course.ballX(), course.ballY(), gen);
         GradientDescent climber = new GradientDescent(course, createPhysicsFactory());
         StateVector4 solution = climber.play(initialState);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
@@ -363,7 +394,7 @@ public class GradientDescentTest {
     public void testManual(String terrain, ErrorFunction heur) {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
-        StateVector4 initialState = generateInitialVector(course.ballX(), course.ballY(), gen);
+        StateVector4 initialState = randomInitialVector(course.ballX(), course.ballY(), gen);
         GradientDescent climber = new GradientDescent(course, createPhysicsFactory(), heur);
         StateVector4 solution = climber.play(initialState);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
@@ -381,7 +412,7 @@ public class GradientDescentTest {
         GolfCourse course = (new CourseParser(file)).getCourse();
         double x = gen.nextDouble()*20-10;
         double y = gen.nextDouble()*20-10;
-        StateVector4 initialState = generateInitialVector(x, y, gen);
+        StateVector4 initialState = randomInitialVector(x, y, gen);
         GradientDescent climber = new GradientDescent(course, createPhysicsFactory());
         StateVector4 solution = climber.play(initialState);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
@@ -411,7 +442,7 @@ public class GradientDescentTest {
             sf_s, 5.0, 0.1, xt, yt,x,y));
     }
 
-    public StateVector4 generateInitialVector(double x, double y, Random gen) {
+    public StateVector4 randomInitialVector(double x, double y, Random gen) {
         double vx = gen.nextDouble()*10-5;
         double vymax = Math.sqrt(25-vx*vx);
         double vy = gen.nextDouble()*2*vymax-vymax-0.05; //GradientDescent delta, to prevent the delta from overshooting

@@ -124,25 +124,6 @@ public class MathUtils {
             sameSide(px, py, qx4, qy4, qx1, qy1, qx2, qy2);
     }
 
-//    public static double[] closestEdge(double x1, double x2, double x3, double qy1, double qx2, double qy2, double qx3, double qy3, double qx4, double qy4) {
-//        double[] closest = {qx1, qy1, qx2, qy2};
-//        double minDist = Double.MAX_VALUE;
-//        double[] edge1 = {qx1, qy1, qx2, qy2};
-//        double[] edge2 = {qx2, qy2, qx3, qy3};
-//        double[] edge3 = {qx3, qy3, qx4, qy4};
-//        double[] edge4 = {qx4, qy4, qx1, qy1};
-//        double[][] edges = {edge1, edge2, edge3, edge4};
-//        for (double[] edge : edges) {
-//            double[] closestEdge = closestEdge(px, py, edge[0], edge[1], edge[2], edge[3]);
-//            double dist = MathUtils.magnitude(px - closestEdge[0], py - closestEdge[1]);
-//            if (dist < minDist) {
-//                minDist = dist;
-//                closest = closestEdge;
-//            }
-//        }
-//        return closest;
-//    }
-
     public static boolean sameSide(double px1, double py1, double px2, double py2, double lx1, double ly1, double lx2, double ly2) {
         double dx1 = px1 - lx1;
         double dy1 = py1 - ly1;
@@ -150,8 +131,8 @@ public class MathUtils {
         double dy2 = py2 - ly1;
 
         // Cross product
-        double c1 = dx1 * dy2 - dx2 * dy1;
-        double c2 = dx2 * dy2 - dx2 * dy1;
+        double c1 = dx1 * (ly2 - ly1) - (lx2 - lx1) * dy1;
+        double c2 = dx2 * (ly2 - ly1) - (lx2 - lx1) * dy2;
 
         return c1 * c2 >= 0;
     }
@@ -161,13 +142,9 @@ public class MathUtils {
         double dx = x2 - x1;
         double dy = y2 - y1;
 
-        // Normal vector (perpendicular to the direction vector)
-        double nx = -dy;
-        double ny = dx;
-
         // Normalize the normal vector
-        double length = Math.sqrt(nx * nx + ny * ny);
-        double[] unitNormal = { nx / length, ny / length };
+        double length = Math.sqrt(dx * dx + dy * dy);
+        double[] unitNormal = { -dy / length, dx / length };
 
         return unitNormal;
     }
@@ -190,6 +167,14 @@ public class MathUtils {
     public static double[] reflectedVector2D(double x1, double y1, double x2, double y2, double vx, double vy) {
         double[] unitNormal = unitNormal2D(x1, y1, x2, y2);
         double dot = dot2D(vx, vy, unitNormal[0], unitNormal[1]);
+
+        // Ensure the normal vector is pointing against the incident vector for correct reflection
+        if (dot > 0) {
+            unitNormal = multiply(unitNormal, -1);
+            dot = -dot;
+        }
+
+        // Calculate the reflected vector
         double[] reflected = {vx - 2 * dot * unitNormal[0], vy - 2 * dot * unitNormal[1]};
         return reflected;
     }

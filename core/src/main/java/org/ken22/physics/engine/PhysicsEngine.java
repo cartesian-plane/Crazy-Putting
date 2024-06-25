@@ -234,13 +234,12 @@ public class PhysicsEngine {
             //find qorners of the wall
             //(y2 - y1)/(x2 - x1) = -ox/oy
             //the coordinates of the vector perpendicular to the wall
-            var ox = -(w.endPoint()[1] - w.startPoint()[1]) * w.thickness(); //thickness is from the center
-            var oy = (w.endPoint()[0] - w.startPoint()[0]) * w.thickness();
+            double wid = w.thickness()/2.0;
 
-            var x1 = w.startPoint()[0] + ox; var y1 = w.startPoint()[1] + oy;
-            var x2 = w.startPoint()[0] - ox; var y2 = w.startPoint()[1] - oy;
-            var x3 = w.endPoint()[0] - ox; var y3 = w.endPoint()[1] - oy;
-            var x4 = w.endPoint()[0] + ox; var y4 = w.endPoint()[1] + oy;
+            var x1 = w.startPoint()[0] + wid; var y1 = w.startPoint()[1] + wid;
+            var x2 = w.startPoint()[0] - wid; var y2 = w.startPoint()[1] - wid;
+            var x3 = w.endPoint()[0] - wid; var y3 = w.endPoint()[1] - wid;
+            var x4 = w.endPoint()[0] + wid; var y4 = w.endPoint()[1] + wid;
 
             //enclosing rectangle borders, for optimization
             var xMax = w.startPoint()[0] > w.endPoint()[0] ? x1 : x4;
@@ -248,8 +247,17 @@ public class PhysicsEngine {
             var yMax = w.startPoint()[1] > w.endPoint()[1] ? y1 : y4;
             var yMin = w.startPoint()[1] < w.endPoint()[1] ? y2 : y3;
 
+            double[] unitNormal = MathUtils.unitNormal2D(w.startPoint()[0], w.startPoint()[1], w.endPoint()[0], w.endPoint()[1]);
+            double xn = wid*unitNormal[0];
+            double yn = wid*unitNormal[1];
+
+            var c1x = w.startPoint()[0] - xn; var c1y = w.startPoint()[1] - yn;
+            var c2x = w.startPoint()[0] + xn; var c2y = w.startPoint()[1] + yn;
+            var c3x = w.endPoint()[0] + xn; var c3y = w.endPoint()[1] + yn;
+            var c4x = w.endPoint()[0] - xn; var c4y = w.endPoint()[1] - yn;
+
             if( !(state.x() > xMax || state.x() < xMin || state.y() > yMax || state.y() < yMin) && //quick check
-                MathUtils.pointInQuadrilateral(state.x(), state.y(), x1, y1, x2, y2, x3, y3, x4, y4)) { //full check
+                MathUtils.pointInQuadrilateral(state.x(), state.y(), c1x, c1y, c2x, c2y, c3x, c3y, c4x, c4y)) { //full check
                 //TODO: Recheck
 
                 double[] temp = MathUtils.reflectedVector2D(w.endPoint()[0], w.endPoint()[1], w.startPoint()[0], w.startPoint()[1], state.vx(), state.vy());
