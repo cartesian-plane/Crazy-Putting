@@ -1,4 +1,4 @@
-package org.ken22.players.bots.simulatedannealing;
+package org.ken22.players.bots.hillclimbing;
 
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.input.settings.GeneralSettings;
@@ -9,6 +9,7 @@ import org.ken22.physics.odesolvers.outofplace.ODESolver;
 import org.ken22.physics.odesolvers.outofplace.RK4;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
+import org.ken22.players.bots.simulatedannealing.Evaluator;
 import org.ken22.players.error.ErrorFunction;
 import org.ken22.players.error.GradientDescent2;
 
@@ -41,9 +42,9 @@ import java.util.stream.Collectors;
  * </ul>
  */
 @SuppressWarnings({"unused", "DuplicatedCode"})
-public class GradientDescent implements Player {
+public class SidewaysStepsHillCrimbingBot implements Player {
 
-    private static final Logger LOGGER = Logger.getLogger(GradientDescent.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SidewaysStepsHillCrimbingBot.class.getName());
 
     static {
 
@@ -74,24 +75,24 @@ public class GradientDescent implements Player {
     private final Evaluator evaluator;
     private GeneralSettings settings;
 
-    public GradientDescent(GolfCourse course, PhysicsFactory factory) {
+    public SidewaysStepsHillCrimbingBot(GolfCourse course, PhysicsFactory factory) {
         this(0.01, course.targetRadius(),  10, 10, course, new RK4(),
             new FivePointCenteredDifference(), 0.0001, new GradientDescent2(), factory);
     }
 
-    public GradientDescent(GolfCourse course, PhysicsFactory factory, ErrorFunction errorFunction) {
+    public SidewaysStepsHillCrimbingBot(GolfCourse course, PhysicsFactory factory, ErrorFunction errorFunction) {
         this(0.01, course.targetRadius(),  10, 10, course, new RK4(),
             new FivePointCenteredDifference(), 0.0001, errorFunction, factory);
     }
 
-    public GradientDescent(GolfCourse course, PhysicsFactory factory, int maxRestarts, int maxSidewaysMoves) {
+    public SidewaysStepsHillCrimbingBot(GolfCourse course, PhysicsFactory factory, int maxRestarts, int maxSidewaysMoves) {
         this(0.01, course.targetRadius(),  maxSidewaysMoves, maxRestarts, course, new RK4(),
             new FivePointCenteredDifference(), 0.0001, new GradientDescent2(), factory);
     }
 
-    public GradientDescent(double DELTA, double THRESHOLD, int MAX_SIDEWAYS_MOVES, int MAX_RESTARTS, GolfCourse course,
-                           ODESolver<StateVector4> solver, Differentiator differentiator, double stepSize,
-                           ErrorFunction heuristicFunction, PhysicsFactory physicsFactory) {
+    public SidewaysStepsHillCrimbingBot(double DELTA, double THRESHOLD, int MAX_SIDEWAYS_MOVES, int MAX_RESTARTS, GolfCourse course,
+                                        ODESolver<StateVector4> solver, Differentiator differentiator, double stepSize,
+                                        ErrorFunction heuristicFunction, PhysicsFactory physicsFactory) {
         this.DELTA = DELTA;
         this.THRESHOLD = THRESHOLD;
         this.MAX_SIDEWAYS_MOVES = MAX_SIDEWAYS_MOVES;

@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
@@ -20,10 +18,9 @@ import org.ken22.obstacles.*;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.bots.BotFactory;
-import org.ken22.players.HumanPlayer;
 import org.ken22.players.bots.newtonraphson.BasicNewtonRaphsonBot;
 import org.ken22.players.bots.newtonraphson.NewtonRaphsonBot;
-import org.ken22.players.bots.simulatedannealing.GradientDescent;
+import org.ken22.players.bots.hillclimbing.SidewaysStepsHillCrimbingBot;
 import org.ken22.players.bots.simulatedannealing.SimulatedAnnealing;
 import org.ken22.players.bots.hillclimbing.HillClimbingBot;
 import org.ken22.players.bots.hillclimbing.LineHillClimbingBot;
@@ -97,8 +94,7 @@ public class GolfScreen extends ScreenAdapter {
     private LineHillClimbingBot lineHillClimbingBot;
     private RandomRestartHillClimbingBot randomRestartHillClimbingBot;
     private NewtonRaphsonBot newtonRaphsonBot;
-    private GradientDescent gradientDescent;
-    private HumanPlayer humanPlayer;
+    private SidewaysStepsHillCrimbingBot sidewaysStepsHillCrimbingBot;
     private SimulatedAnnealing simulatedAnnealing;
     private BasicNewtonRaphsonBot basicNewtonRaphsonBot;
 
@@ -140,11 +136,10 @@ public class GolfScreen extends ScreenAdapter {
         hillClimbingBot = botFactory.hillClimbingBot(course, initialGuessBot);
         lineHillClimbingBot = botFactory.lineHillClimbingBot(course, initialGuessBot);
         randomRestartHillClimbingBot = botFactory.randomRestartHillClimbingBot(course, initialGuessBot);
-        gradientDescent = botFactory.gradientDescent(course);
+        sidewaysStepsHillCrimbingBot = botFactory.gradientDescent(course);
         newtonRaphsonBot = botFactory.newtonRaphsonBot(course, initialGuessBot);
         basicNewtonRaphsonBot = botFactory.basicNewtonRaphsonBot(course, initialGuessBot);
         simulatedAnnealing = botFactory.simulatedAnnealing(course);
-        //humanPlayer = new HumanPlayer();
 
         // Set map limits
         xMin = (float) (course.ballX() > course.targetXcoord() ? course.targetXcoord() -  PADDING_SIZE : course.ballX() - PADDING_SIZE);
@@ -366,13 +361,13 @@ public class GolfScreen extends ScreenAdapter {
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
                 gameLoop.shootBall(hillClimbingBot.play(currentState));
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-                gameLoop.shootBall(gradientDescent.play(currentState));
+                gameLoop.shootBall(sidewaysStepsHillCrimbingBot.play(currentState));
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
                 gameLoop.shootBall(newtonRaphsonBot.play(currentState));
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
                 gameLoop.shootBall(simulatedAnnealing.play(currentState));
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-                gameLoop.shootBall(humanPlayer.play(currentState));
+                //
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
                 gameLoop.shootBall(lineHillClimbingBot.play(currentState));
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
