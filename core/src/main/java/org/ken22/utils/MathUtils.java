@@ -2,6 +2,7 @@ package org.ken22.utils;
 
 import net.objecthunter.exp4j.Expression;
 import org.ken22.physics.differentiators.Differentiator;
+import org.ken22.physics.vectors.StateVector4;
 
 import java.util.function.Function;
 
@@ -123,6 +124,25 @@ public class MathUtils {
             sameSide(px, py, qx4, qy4, qx1, qy1, qx2, qy2);
     }
 
+//    public static double[] closestEdge(double x1, double x2, double x3, double qy1, double qx2, double qy2, double qx3, double qy3, double qx4, double qy4) {
+//        double[] closest = {qx1, qy1, qx2, qy2};
+//        double minDist = Double.MAX_VALUE;
+//        double[] edge1 = {qx1, qy1, qx2, qy2};
+//        double[] edge2 = {qx2, qy2, qx3, qy3};
+//        double[] edge3 = {qx3, qy3, qx4, qy4};
+//        double[] edge4 = {qx4, qy4, qx1, qy1};
+//        double[][] edges = {edge1, edge2, edge3, edge4};
+//        for (double[] edge : edges) {
+//            double[] closestEdge = closestEdge(px, py, edge[0], edge[1], edge[2], edge[3]);
+//            double dist = MathUtils.magnitude(px - closestEdge[0], py - closestEdge[1]);
+//            if (dist < minDist) {
+//                minDist = dist;
+//                closest = closestEdge;
+//            }
+//        }
+//        return closest;
+//    }
+
     public static boolean sameSide(double px1, double py1, double px2, double py2, double lx1, double ly1, double lx2, double ly2) {
         double dx1 = px1 - lx1;
         double dy1 = py1 - ly1;
@@ -134,5 +154,9 @@ public class MathUtils {
         double c2 = dx2 * dy2 - dx2 * dy1;
 
         return c1 * c2 >= 0;
+    }
+
+    public static double cross2D(StateVector4 vec1, StateVector4 vec2) {
+        return vec1.x() * vec2.y() - vec1.y() * vec2.x();
     }
 }

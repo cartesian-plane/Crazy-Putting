@@ -214,13 +214,15 @@ public class PhysicsEngine {
 
     private void treeCollision(StateVector4 state) {
         for(Tree t : course.getTrees()) {
-            var magnitude = MathUtils.magnitude(state.x() - t.coordinates()[0], state.y() - t.coordinates()[1]);
-            if (magnitude <= t.radius()) { //collision
-                double[] normal = new double[] {state.x() - t.coordinates()[0] / magnitude,
-                    state.y() - t.coordinates()[1] / magnitude};
-                var dot = state.vx() * normal[0] + state.vy() * normal[1];
-                state.setVx(state.vx() - 2 * dot * normal[0]);
-                state.setVy(state.vy() - 2 * dot * normal[1]);
+            var distance = MathUtils.magnitude(state.x() - t.coordinates()[0], state.y() - t.coordinates()[1]);
+            if (distance <= t.radius()) { //collision
+
+                double[] unit_normal = new double[] {(state.x() - t.coordinates()[0]) / distance,
+                    (state.y() - t.coordinates()[1]) / distance};
+                double newvx = unit_normal[0]*0.6*MathUtils.magnitude(state.vx(), state.vy());
+                double newvy = unit_normal[1]*0.6*MathUtils.magnitude(state.vx(), state.vy());
+                state.setVx(newvx);
+                state.setVy(newvy);
                 System.out.println("Tree collision");
             }
         }
