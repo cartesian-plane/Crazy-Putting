@@ -274,7 +274,7 @@ public class PhysicsEngine {
 //                var dot = state.vx() * normal[0] + state.vy() * normal[1];
 //                state.setVx(state.vx() - 2 * dot * normal[0]);
 //                state.setVy(state.vy() - 2 * dot * normal[1]);
-                System.out.println("Wall collision");
+//                System.out.println("Wall collision");
             }
         }
     }

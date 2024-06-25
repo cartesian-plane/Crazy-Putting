@@ -32,8 +32,7 @@ public class BotSettingsStage extends Stage {
 
     private SelectBox<ErrorFunctionType> errorFunctionBox;
     private SelectBox<WeightingType> weightingBox;
-
-
+    private TextField gridResolution;
 
     // Hill Climbing
     private TextField hcMaxIterations;
@@ -43,26 +42,23 @@ public class BotSettingsStage extends Stage {
     private TextField hcRandomRestarts;
     private TextField hcSidewaysMoves;
 
-
     // Newton-Raphson
     private TextField nrMaxIterations;
     private TextField nrTolerance;
     private TextField nrErrorThreshold;
-
 
     // Simulated Annealing
     private TextField saInitialTemperature;
     private TextField saCoolingRate;
     private TextField saMaxIterations;
     private TextField saDelta;
-
+    private TextField saAllottedTime;
 
     // Gradient Descent
     private TextField gdDelta;
     private TextField gdThreshold;
     private TextField gdMaxSidewaysMoves;
     private TextField gdMaxRestarts;
-
 
     // data holder for the settings
     private BotSettings settings;
@@ -90,6 +86,7 @@ public class BotSettingsStage extends Stage {
         addSelectBoxOption("Weighting:", weightingBox = new SelectBox<>(skin), WeightingType.values());
         addSelectBoxOption("Error Function:", errorFunctionBox = new SelectBox<>(skin), ErrorFunctionType.values());
 
+        addTextFieldOption("Grid Resolution:", gridResolution = createTextField(String.valueOf(settings.gridResolution), UIElementFactory.TextFieldType.NUMERICAL));
 
         // Hill Climbing
         table.row();
@@ -103,7 +100,6 @@ public class BotSettingsStage extends Stage {
         addTextFieldOption("Random Restarts:", hcRandomRestarts = createTextField(String.valueOf(settings.randomRestarts), UIElementFactory.TextFieldType.NUMERICAL));
         addTextFieldOption("Sideways Moves:", hcSidewaysMoves = createTextField(String.valueOf(settings.sidewaysMoves), UIElementFactory.TextFieldType.NUMERICAL));
 
-
         // Newton-Raphson
         table.row();
         Label nrSettingsLabel = new Label("Newton-Raphson Bot Settings", skin);
@@ -112,7 +108,6 @@ public class BotSettingsStage extends Stage {
         addTextFieldOption("Max Iterations:", nrMaxIterations = createTextField(String.valueOf(settings.nrMaxIterations), UIElementFactory.TextFieldType.NUMERICAL));
         addTextFieldOption("Tolerance:", nrTolerance = createTextField(String.valueOf(settings.nrTolerance), UIElementFactory.TextFieldType.NUMERICAL));
         addTextFieldOption("Error Threshold:", nrErrorThreshold = createTextField(String.valueOf(settings.nrErrorThreshold), UIElementFactory.TextFieldType.NUMERICAL));
-
 
         // Simulated Annealing
         table.row();
@@ -123,7 +118,7 @@ public class BotSettingsStage extends Stage {
         addTextFieldOption("Cooling Rate:", saCoolingRate = createTextField(String.valueOf(settings.saCoolingRate), UIElementFactory.TextFieldType.NUMERICAL));
         addTextFieldOption("Max Iterations:", saMaxIterations = createTextField(String.valueOf(settings.saMaxIterations), UIElementFactory.TextFieldType.NUMERICAL));
         addTextFieldOption("Delta:", saDelta = createTextField(String.valueOf(settings.saDelta), UIElementFactory.TextFieldType.NUMERICAL));
-
+        addTextFieldOption("Allotted Time:", saAllottedTime = createTextField(String.valueOf(settings.saAllottedTime), UIElementFactory.TextFieldType.NUMERICAL));
 
         // Gradient Descent
         table.row();
@@ -134,7 +129,6 @@ public class BotSettingsStage extends Stage {
         addTextFieldOption("Threshold:", gdThreshold = createTextField(String.valueOf(settings.gdThreshold), UIElementFactory.TextFieldType.NUMERICAL));
         addTextFieldOption("Max Sideways Moves:", gdMaxSidewaysMoves = createTextField(String.valueOf(settings.gdMaxSidewaysMoves), UIElementFactory.TextFieldType.NUMERICAL));
         addTextFieldOption("Max Restarts:", gdMaxRestarts = createTextField(String.valueOf(settings.gdMaxRestarts), UIElementFactory.TextFieldType.NUMERICAL));
-
 
         // Save and Back
         var buttonTable = new Table();
@@ -182,6 +176,7 @@ public class BotSettingsStage extends Stage {
         settings.gridPathfindingType = graphAlgorithmSelector.getSelected();
         settings.errorFunctionType = errorFunctionBox.getSelected();
         settings.weightingType = weightingBox.getSelected();
+        settings.gridResolution = Double.parseDouble(gridResolution.getText());
 
         // saving all
         settings.hcMaxIterations = Integer.parseInt(hcMaxIterations.getText());
@@ -191,17 +186,15 @@ public class BotSettingsStage extends Stage {
         settings.randomRestarts = Integer.parseInt(hcRandomRestarts.getText());
         settings.sidewaysMoves = Integer.parseInt(hcSidewaysMoves.getText());
 
-
         settings.nrMaxIterations = Integer.parseInt(nrMaxIterations.getText());
         settings.nrTolerance = Double.parseDouble(nrTolerance.getText());
         settings.nrErrorThreshold = Double.parseDouble(nrErrorThreshold.getText());
-
 
         settings.saInitialTemperature = Double.parseDouble(saInitialTemperature.getText());
         settings.saCoolingRate = Double.parseDouble(saCoolingRate.getText());
         settings.saMaxIterations = Integer.parseInt(saMaxIterations.getText());
         settings.saDelta = Double.parseDouble(saDelta.getText());
-
+        settings.saAllottedTime = Double.parseDouble(saAllottedTime.getText());
 
         settings.gdDelta = Double.parseDouble(gdDelta.getText());
         settings.gdThreshold = Double.parseDouble(gdThreshold.getText());
@@ -231,6 +224,8 @@ public class BotSettingsStage extends Stage {
         weightingBox.setSelected(settings.weightingType);
         errorFunctionBox.setSelected(settings.errorFunctionType);
         localSearchSelector.setSelected(settings.localSearchType);
+        gridResolution.setText(String.valueOf(settings.gridResolution));
+
 
         // loading
         hcMaxIterations.setText(String.valueOf(settings.hcMaxIterations));
@@ -250,7 +245,7 @@ public class BotSettingsStage extends Stage {
         saCoolingRate.setText(String.valueOf(settings.saCoolingRate));
         saMaxIterations.setText(String.valueOf(settings.saMaxIterations));
         saDelta.setText(String.valueOf(settings.saDelta));
-
+        saAllottedTime.setText(String.valueOf(settings.saAllottedTime));
 
         gdDelta.setText(String.valueOf(settings.gdDelta));
         gdThreshold.setText(String.valueOf(settings.gdThreshold));

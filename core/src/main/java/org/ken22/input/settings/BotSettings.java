@@ -28,7 +28,8 @@ public class BotSettings {
     public int randomRestarts; // no. of random restarts for the hill climbing algorithm
     @JsonProperty
     public int sidewaysMoves; // no. of sideways moves for the hill climbing algorithm
-
+    @JsonProperty
+    public double gridResolution; // grid resolution for pathfinding
 
     // Hill Climbing
     @JsonProperty
@@ -57,6 +58,8 @@ public class BotSettings {
     public int saMaxIterations;
     @JsonProperty
     public double saDelta;
+    @JsonProperty
+    public double saAllottedTime;
 
     // Gradient Descent
     @JsonProperty
@@ -81,6 +84,7 @@ public class BotSettings {
         settings.localSearchType = LocalSearchType.NONE;
         settings.randomRestarts = 9;
         settings.sidewaysMoves = 10;
+        settings.gridResolution = 0.1;
         settings.hcMaxIterations = 500;
         settings.hcErrorThreshold = 0.15;
         settings.hcConvergenceThreshold = 0.001;
@@ -92,6 +96,7 @@ public class BotSettings {
         settings.saCoolingRate = 0.5;
         settings.saMaxIterations = 1000;
         settings.saDelta = 0.05;
+        settings.saAllottedTime = 1000;
         settings.gdDelta = 0.01;
         settings.gdThreshold = 1.0;
         settings.gdMaxSidewaysMoves = 10;
