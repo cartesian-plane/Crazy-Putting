@@ -125,6 +125,7 @@ public class GolfScreen extends ScreenAdapter {
         this.gameLoop = gameLoop;
         gameLoop.setGolfScreen(this);
 
+        printHelpMessage();
         initialGuessBot = botFactory.initialGuessBot(course);
         simpleBot = botFactory.planarApproximationBot(course);
         hillClimbingBot = botFactory.hillClimbingBot(course, initialGuessBot);
@@ -375,5 +376,25 @@ public class GolfScreen extends ScreenAdapter {
 
     public Viewport getViewport() {
         return viewport;
+    }
+
+    public void printHelpMessage() {
+        System.out.println("Shortcuts: ");
+        System.out.println("Simple Bot: NUM_");
+        System.out.println("Initial Guess Bot: SPACE");
+        System.out.println("Hill Climbing Bot: NUM_");
+        System.out.println("Simple Bot: NUM_2");
+        System.out.println("Hill Climbing Bot: NUM_4");
+        System.out.println("Gradient Descent: NUM_3");
+        System.out.println("Newton Raphson Bot:  NUM_");
+        System.out.println("Gradient Descent: NUM_6");
+        System.out.println("Simulated Annealing: NUM_");
+        System.out.println("Newton Raphson Bot: NUM_8");
+        System.out.println("Human Player: NUM_");
+        System.out.println("Simulated Annealing: NUM_10");
+        System.out.println("Line Hill Climbing Bot: NUM_");
+        System.out.println("Random Restart Hill Climbing Bot: NUM_");
+        System.out.println("Line Hill Climbing Bot: NUM_14");
+        System.out.println("Basic Newton Raphson Bot: NUM_");
     }
 }
