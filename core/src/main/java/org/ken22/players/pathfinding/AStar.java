@@ -34,14 +34,10 @@ public class AStar implements GridPathfinding {
         yMax = course.ballY() > course.targetYcoord() ? course.ballY() + GolfScreen.PADDING_SIZE : course.targetYcoord();
 
         var expression = course.expression;
-
         expression
             .setVariable("x", ballX)
             .setVariable("y", ballY);
-
         double z = expression.evaluate();
-
-        this.terrainGrid = new double[(int) ((xMax - xMin) / GridPathfinding.GRID_RESOLUTION)][(int) ((yMax - yMin) / GridPathfinding.GRID_RESOLUTION)];
 
         Node ballNode = project(ballX, ballY, z);
 
@@ -89,7 +85,7 @@ public class AStar implements GridPathfinding {
                     neighbour.setConnection(current);
 
                     if (!inSearch) {
-                        neighbour.setH(weighting.calcWeight(neighbour, targetNode));
+                        neighbour.setH(euclideanDistance(neighbour, targetNode));
                         toSearch.add(neighbour);
                     }
                 }
@@ -170,4 +166,7 @@ public class AStar implements GridPathfinding {
             (int) ((y - yMin) / GridPathfinding.GRID_RESOLUTION), z);
     }
 
+    private double euclideanDistance(Node node1, Node node2) {
+        return Math.sqrt(Math.pow(node1.x - node2.x, 2) + Math.pow(node1.y - node2.y, 2));
+    }
 }
