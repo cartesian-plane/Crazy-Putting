@@ -6,6 +6,7 @@ import org.ken22.screens.GolfScreen;
 
 import java.util.*;
 
+@Deprecated //unimplemented
 public class BFS {
     private GolfCourse course;
 

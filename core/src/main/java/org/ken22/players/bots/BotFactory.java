@@ -2,6 +2,7 @@ package org.ken22.players.bots;
 
 import org.ken22.input.settings.BotSettings;
 import org.ken22.input.courseinput.GolfCourse;
+import org.ken22.input.settings.ErrorFunctionType;
 import org.ken22.physics.PhysicsFactory;
 import org.ken22.players.Player;
 import org.ken22.players.bots.newtonraphson.BasicNewtonRaphsonBot;
@@ -14,6 +15,7 @@ import org.ken22.players.bots.hillclimbing.RandomRestartHillClimbingBot;
 import org.ken22.players.bots.simplebots.InitialGuessBot;
 import org.ken22.players.bots.simplebots.SimplePlanarApproximationBot;
 import org.ken22.players.error.ErrorFunction;
+import org.ken22.players.error.PathfindingError;
 
 public class BotFactory {
     private BotSettings settings;
@@ -54,7 +56,12 @@ public class BotFactory {
     public ErrorFunction errorFunction(GolfCourse course) {
         ErrorFunction errorFunction = settings.errorFunctionType
             .getErrorFunction(course, physicsFactory, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting());
-        errorFunction.init(course, physicsFactory);
+        return errorFunction;
+    }
+
+    public ErrorFunction pathfindingErrorFunction(GolfCourse course) {
+        ErrorFunction errorFunction = ErrorFunctionType.PATHFINDING
+            .getErrorFunction(course, physicsFactory, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting());
         return errorFunction;
     }
 
@@ -63,7 +70,8 @@ public class BotFactory {
     }
 
     public LineHillClimbingBot lineHillClimbingBot(GolfCourse course, InitialGuessBot initialGuessBot) {
-        return new LineHillClimbingBot(initialGuessBot, course, errorFunction(course), settings.stepSize);
+        return new LineHillClimbingBot(initialGuessBot, course, pathfindingErrorFunction(course), settings.stepSize); //TODO temp
+        //return new LineHillClimbingBot(initialGuessBot, course, errorFunction(course), settings.stepSize);
     }
 
     public BasicNewtonRaphsonBot basicNewtonRaphsonBot(GolfCourse course, InitialGuessBot initialGuessBot) {
