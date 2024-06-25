@@ -68,8 +68,8 @@ public class PhysicsEngine {
 
     public PhysicsEngine (GolfCourse course, StateVector4 initialStateVector, double timeStep,
                           Differentiator differentiator, ODESolver<StateVector4> solver, boolean completePhysics) {
-        if (timeStep > 0.016) {
-            throw new IllegalArgumentException("Step size " + timeStep + " too big for 60FPS");
+        if (timeStep > 0.033) {
+            throw new IllegalArgumentException("Step size " + timeStep + " too large for 30FPS");
         }
         this.xinit = initialStateVector.x();
         this.yinit = initialStateVector.y();
@@ -334,7 +334,7 @@ public class PhysicsEngine {
      * Assumes that time matches dt = 1 -> 1s has passed, and frame rate of 60FPS
      */
     public class FrameRateIterator implements Iterator<StateVector4> {
-        private static final int FRAME_RATE = 60;
+        private static final int FRAME_RATE = 30;
         private final int kPerFrame = (int) ((1.0 / FRAME_RATE) / timeStep);
         private int index = 0; //Iterator must keep reference to the current element/index
 
