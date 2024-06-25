@@ -8,7 +8,7 @@
   "localSearchType" : "NONE",
   "randomRestarts" : 9,
   "sidewaysMoves" : 10,
-  "gridResolution": 0.1,
+  "gridResolution": 0.02,
   "hcMaxIterations" : 500,
   "hcErrorThreshold" : 0.15,
   "hcConvergenceThreshold" : 0.001,
