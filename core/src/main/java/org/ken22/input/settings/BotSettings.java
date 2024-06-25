@@ -42,7 +42,7 @@ public class BotSettings {
 
     // Newton-Raphson
     @JsonProperty
-    public double nrMaxIterations;
+    public int  nrMaxIterations;
     @JsonProperty
     public double nrTolerance;
     @JsonProperty

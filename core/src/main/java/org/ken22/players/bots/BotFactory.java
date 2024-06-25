@@ -31,14 +31,14 @@ public class BotFactory {
     }
 
     public GradientDescent gradientDescent(GolfCourse course) {
-        return new GradientDescent(0.01, course.targetRadius, settings.sidewaysMoves, settings.randomRestarts,
+        return new GradientDescent(settings.gdDelta, course.targetRadius, settings.sidewaysMoves, settings.randomRestarts,
             course, settings.odesolverType.getSolver(), settings.differentiatorType.getDifferentiator(),
             settings.stepSize, errorFunction(course), physicsFactory);
     }
 
     public SimulatedAnnealing simulatedAnnealing(GolfCourse course)  {
         return new SimulatedAnnealing(course, settings.odesolverType.getSolver(),
-            settings.differentiatorType.getDifferentiator(), settings.stepSize, 1000,1000, pathfindingErrorFunction(course)); //TODO : temp
+            settings.differentiatorType.getDifferentiator(), settings.stepSize, settings.saInitialTemperature,2000, errorFunction(course));
     }
 
     public NewtonRaphsonBot newtonRaphsonBot(GolfCourse course, Player initialGuessBot) {
@@ -59,19 +59,12 @@ public class BotFactory {
         return errorFunction;
     }
 
-    public ErrorFunction pathfindingErrorFunction(GolfCourse course) {
-        ErrorFunction errorFunction = ErrorFunctionType.PATHFINDING
-            .getErrorFunction(course, physicsFactory, settings.gridPathfindingType.getPathfinding(), settings.weightingType.getWeighting());
-        return errorFunction;
-    }
-
     public RandomRestartHillClimbingBot randomRestartHillClimbingBot(GolfCourse course, InitialGuessBot initialGuessBot) {
         return new RandomRestartHillClimbingBot(initialGuessBot, course, errorFunction(course), settings.stepSize);
     }
 
     public LineHillClimbingBot lineHillClimbingBot(GolfCourse course, InitialGuessBot initialGuessBot) {
-        return new LineHillClimbingBot(initialGuessBot, course, pathfindingErrorFunction(course), settings.stepSize); //TODO temp
-        //return new LineHillClimbingBot(initialGuessBot, course, errorFunction(course), settings.stepSize);
+        return new LineHillClimbingBot(initialGuessBot, course, errorFunction(course), settings.stepSize);
     }
 
     public BasicNewtonRaphsonBot basicNewtonRaphsonBot(GolfCourse course, InitialGuessBot initialGuessBot) {
