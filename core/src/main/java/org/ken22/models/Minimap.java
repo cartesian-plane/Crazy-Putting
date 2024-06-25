@@ -198,7 +198,7 @@ public class Minimap {
     }
 
     public int projectY(float y) {
-        return (int) ((y - yMin) / (yMax - yMin) * HEIGHT);
+        return HEIGHT - 1 - (int) ((y - yMin) / (yMax - yMin) * HEIGHT);
     }
 
     public float unprojectX(int i) {
@@ -206,7 +206,7 @@ public class Minimap {
     }
 
     public float unprojectY(int j) {
-        return yMin + ((float) j) / HEIGHT * (yMax - yMin);
+        return yMin + ((float) (HEIGHT - 1 - j)) / HEIGHT * (yMax - yMin);
     }
 
 
