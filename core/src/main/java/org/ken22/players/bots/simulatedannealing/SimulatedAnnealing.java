@@ -75,7 +75,7 @@ public final class SimulatedAnnealing implements Player {
         this.DELTA = 0.01;
         this.THRESHOLD = course.targetRadius;
         this.heuristicFunction = new EuclideanError();
-       // this.heuristicFunction.init(this.course);
+        // this.heuristicFunction.init(this.course);
         this.evaluator = new Evaluator(this.heuristicFunction, this.course);
         this.initialTemperature = 100;
         this.schedule = new LinearCooling(initialTemperature, 0.8);
@@ -85,7 +85,7 @@ public final class SimulatedAnnealing implements Player {
 
         // choose random speed vector to start with
         var speedVector = getRandomSpeedVector();
-       // initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
+        // initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
     }
 
     public SimulatedAnnealing(GolfCourse course,
@@ -114,6 +114,9 @@ public final class SimulatedAnnealing implements Player {
     }
 
     public StateVector4 play(StateVector4 state) {
+        // update the ball's position, so the bot is aware of the new position (if applicable)
+        course.ballX = state.x;
+        course.ballY = state.y;
         return search(state);
     }
 
