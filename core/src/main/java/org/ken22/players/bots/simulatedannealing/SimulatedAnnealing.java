@@ -122,7 +122,7 @@ public final class SimulatedAnnealing implements Player {
         // if the search stops before a solution is found, a logging message is displayed
         boolean foundSolution = false;
         double temperature;
-        var bestState = bootstrap();
+        var bestState = state;
         var bestStateValue = evaluator.evaluateState(bestState);
         StateVector4 current = bestState;
         // early return if we stumble upon the solution
