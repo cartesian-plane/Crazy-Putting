@@ -7,5 +7,20 @@
   "gridPathfindingType" : "A_STAR",
   "localSearchType" : "NONE",
   "randomRestarts" : 9,
-  "sidewaysMoves" : 10
+  "sidewaysMoves" : 10,
+  "hcMaxIterations" : 500,
+  "hcErrorThreshold" : 0.15,
+  "hcConvergenceThreshold" : 0.001,
+  "hcStepSize" : 0.05,
+  "nrMaxIterations" : 251,
+  "nrTolerance" : 1.0E-6,
+  "nrErrorThreshold" : 0.05,
+  "saInitialTemperature" : 1000.0,
+  "saCoolingRate" : 0.5,
+  "saMaxIterations" : 1000,
+  "saDelta" : 0.05,
+  "gdDelta" : 0.01,
+  "gdThreshold" : 1.0,
+  "gdMaxSidewaysMoves" : 10,
+  "gdMaxRestarts" : 10
 }

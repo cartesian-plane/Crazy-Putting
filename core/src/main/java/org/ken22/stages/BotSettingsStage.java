@@ -9,11 +9,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.input.settings.*;
-import org.ken22.input.odeinput.GridPathfindingType;
+import org.ken22.input.settings.GridPathfindingType;
 import org.ken22.screens.ScreenManager;
 import org.ken22.utils.userinput.UIElementFactory;
 
-import javax.swing.text.View;
 import java.io.File;
 import java.io.IOException;
 
@@ -30,14 +29,40 @@ public class BotSettingsStage extends Stage {
 
     private SelectBox<LocalSearchType> localSearchSelector;
     private SelectBox<GridPathfindingType> graphAlgorithmSelector;
-    private TextField randomRestarts;  // random restart count for the hill-climber
-    private TextField sidewaysMoves;
 
-    private SelectBox<ODESolverType> odeSolverBox;
-    private SelectBox<DifferentiatorType> differentiatorBox;
     private SelectBox<ErrorFunctionType> errorFunctionBox;
     private SelectBox<WeightingType> weightingBox;
-    private TextField stepSizeField;
+
+
+
+    // Hill Climbing
+    private TextField hcMaxIterations;
+    private TextField hcErrorThreshold;
+    private TextField hcConvergenceThreshold;
+    private TextField hcStepSize;
+    private TextField hcRandomRestarts;
+    private TextField hcSidewaysMoves;
+
+
+    // Newton-Raphson
+    private TextField nrMaxIterations;
+    private TextField nrTolerance;
+    private TextField nrErrorThreshold;
+
+
+    // Simulated Annealing
+    private TextField saInitialTemperature;
+    private TextField saCoolingRate;
+    private TextField saMaxIterations;
+    private TextField saDelta;
+
+
+    // Gradient Descent
+    private TextField gdDelta;
+    private TextField gdThreshold;
+    private TextField gdMaxSidewaysMoves;
+    private TextField gdMaxRestarts;
+
 
     // data holder for the settings
     private BotSettings settings;
@@ -50,72 +75,69 @@ public class BotSettingsStage extends Stage {
 
         this.table = new Table();
         table.defaults().pad(10);
-        this.table.setFillParent(true);
 
         Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
 
         scrollPane = new ScrollPane(table, skin);
         scrollPane.setFillParent(true);
         scrollPane.setScrollingDisabled(true, false);
+        scrollPane.setOverscroll(false, false);
 
         this.addActor(scrollPane);
 
+        addSelectBoxOption("Local search:", localSearchSelector = new SelectBox<>(skin), LocalSearchType.values());
+        addSelectBoxOption("Graph algorithm:", graphAlgorithmSelector = new SelectBox<>(skin), GridPathfindingType.values());
+        addSelectBoxOption("Weighting:", weightingBox = new SelectBox<>(skin), WeightingType.values());
+        addSelectBoxOption("Error Function:", errorFunctionBox = new SelectBox<>(skin), ErrorFunctionType.values());
 
-        table.add(new Label("Local search", skin));
-        localSearchSelector = new SelectBox<>(skin);
-        localSearchSelector.setItems(LocalSearchType.values());
-        table.add(localSearchSelector);
 
-        table.add(new Label("Graph algorithm", skin));
-        graphAlgorithmSelector = new SelectBox<>(skin);
-        graphAlgorithmSelector.setItems(GridPathfindingType.values());
-        table.add(graphAlgorithmSelector);
-
-        table.add(new Label("Weighting", skin));
-        weightingBox = new SelectBox<>(skin);
-        weightingBox.setItems(WeightingType.values());
-        table.add(weightingBox);
-
-        this.backButton = new TextButton("Back", skin);
-        this.backButton.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                manager.toMainStage();
-            }
-        });
-
+        // Hill Climbing
         table.row();
+        Label hcSettingsLabel = new Label("Hill Climbing Bot Settings", skin);
+        table.add(hcSettingsLabel).colspan(2).center();
 
-        table.add(new Label("Random restarts", skin));
-        randomRestarts = createTextField("10", UIElementFactory.TextFieldType.NUMERICAL);
-        table.add(randomRestarts);
-
-        table.add(new Label("Sideways moves", skin));
-        randomRestarts = createTextField("10", UIElementFactory.TextFieldType.NUMERICAL);
-        table.add(randomRestarts);
-
-        table.add(new Label("ODE Solver", skin));
-        odeSolverBox = new SelectBox<>(skin);
-        odeSolverBox.setItems(ODESolverType.values());
-        table.add(odeSolverBox);
+        addTextFieldOption("Max Iterations:", hcMaxIterations = createTextField(String.valueOf(settings.hcMaxIterations), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Error Threshold:", hcErrorThreshold = createTextField(String.valueOf(settings.hcErrorThreshold), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Convergence Threshold:", hcConvergenceThreshold = createTextField(String.valueOf(settings.hcConvergenceThreshold), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Step Size:", hcStepSize = createTextField(String.valueOf(settings.hcStepSize), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Random Restarts:", hcRandomRestarts = createTextField(String.valueOf(settings.randomRestarts), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Sideways Moves:", hcSidewaysMoves = createTextField(String.valueOf(settings.sidewaysMoves), UIElementFactory.TextFieldType.NUMERICAL));
 
 
-        table.add(new Label("Step Size", skin));
-        stepSizeField = new TextField("", skin);
-        table.add(stepSizeField);
-
-        table.add(new Label("Differentiator", skin));
-        differentiatorBox = new SelectBox<>(skin);
-        differentiatorBox.setItems(DifferentiatorType.values());
-        table.add(differentiatorBox);
-
-        table.add(new Label("Error Function", skin));
-        errorFunctionBox = new SelectBox<>(skin);
-        errorFunctionBox.setItems(ErrorFunctionType.values());
-        table.add(errorFunctionBox);
-
-        this.table.defaults().pad(10);
+        // Newton-Raphson
         table.row();
+        Label nrSettingsLabel = new Label("Newton-Raphson Bot Settings", skin);
+        table.add(nrSettingsLabel).colspan(2).center();
 
+        addTextFieldOption("Max Iterations:", nrMaxIterations = createTextField(String.valueOf(settings.nrMaxIterations), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Tolerance:", nrTolerance = createTextField(String.valueOf(settings.nrTolerance), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Error Threshold:", nrErrorThreshold = createTextField(String.valueOf(settings.nrErrorThreshold), UIElementFactory.TextFieldType.NUMERICAL));
+
+
+        // Simulated Annealing
+        table.row();
+        Label saSettingsLabel = new Label("Simulated Annealing Bot Settings", skin);
+        table.add(saSettingsLabel).colspan(2).center();
+
+        addTextFieldOption("Initial Temperature:", saInitialTemperature = createTextField(String.valueOf(settings.saInitialTemperature), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Cooling Rate:", saCoolingRate = createTextField(String.valueOf(settings.saCoolingRate), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Max Iterations:", saMaxIterations = createTextField(String.valueOf(settings.saMaxIterations), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Delta:", saDelta = createTextField(String.valueOf(settings.saDelta), UIElementFactory.TextFieldType.NUMERICAL));
+
+
+        // Gradient Descent
+        table.row();
+        Label gdSettingsLabel = new Label("Gradient Descent Bot Settings", skin);
+        table.add(gdSettingsLabel).colspan(2).center();
+
+        addTextFieldOption("Delta:", gdDelta = createTextField(String.valueOf(settings.gdDelta), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Threshold:", gdThreshold = createTextField(String.valueOf(settings.gdThreshold), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Max Sideways Moves:", gdMaxSidewaysMoves = createTextField(String.valueOf(settings.gdMaxSidewaysMoves), UIElementFactory.TextFieldType.NUMERICAL));
+        addTextFieldOption("Max Restarts:", gdMaxRestarts = createTextField(String.valueOf(settings.gdMaxRestarts), UIElementFactory.TextFieldType.NUMERICAL));
+
+
+        // Save and Back
+        var buttonTable = new Table();
         var saveButton = new TextButton("Save", skin);
         saveButton.addListener(new ClickListener() {
             @Override
@@ -123,25 +145,71 @@ public class BotSettingsStage extends Stage {
                 saveSettings();
             }
         });
-        table.add(saveButton).pad(10).colspan(2).center().row();
-        table.add(backButton).pad(10).colspan(2).center().row();
+
+        backButton = new TextButton("Back", skin);
+        backButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                manager.toMainStage();
+            }
+        });
+
+        buttonTable.add(saveButton).pad(10).expandX().fillX();
+        buttonTable.add(backButton).pad(10).expandX().fillX();
+
+        table.row();
+        table.add(buttonTable).colspan(2).center();
 
         loadButtons();
+    }
 
+    private <T> void addSelectBoxOption(String labelText, SelectBox<T> selectBox, T[] items) {
+        Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
+        table.row();
+        table.add(new Label(labelText, skin)).left().padRight(10);
+        selectBox.setItems(items);
+        table.add(selectBox).expandX().fillX();
+    }
+
+    private void addTextFieldOption(String labelText, TextField textField) {
+        Skin skin = new Skin(Gdx.files.internal("skins/test/uiskin.json"));
+        table.row();
+        table.add(new Label(labelText, skin)).left().padRight(10);
+        table.add(textField).expandX().fillX();
     }
 
     private void saveSettings() {
         settings.localSearchType = localSearchSelector.getSelected();
         settings.gridPathfindingType = graphAlgorithmSelector.getSelected();
-        settings.differentiatorType = differentiatorBox.getSelected();
         settings.errorFunctionType = errorFunctionBox.getSelected();
         settings.weightingType = weightingBox.getSelected();
-        settings.odesolverType = odeSolverBox.getSelected();
-        settings.stepSize = Double.parseDouble(stepSizeField.getText());
 
-        settings.randomRestarts = Integer.parseInt(randomRestarts.getText());
+        // saving all
+        settings.hcMaxIterations = Integer.parseInt(hcMaxIterations.getText());
+        settings.hcErrorThreshold = Double.parseDouble(hcErrorThreshold.getText());
+        settings.hcConvergenceThreshold = Double.parseDouble(hcConvergenceThreshold.getText());
+        settings.hcStepSize = Double.parseDouble(hcStepSize.getText());
+        settings.randomRestarts = Integer.parseInt(hcRandomRestarts.getText());
+        settings.sidewaysMoves = Integer.parseInt(hcSidewaysMoves.getText());
+
+
+        settings.nrMaxIterations = Integer.parseInt(nrMaxIterations.getText());
+        settings.nrTolerance = Double.parseDouble(nrTolerance.getText());
+        settings.nrErrorThreshold = Double.parseDouble(nrErrorThreshold.getText());
+
+
+        settings.saInitialTemperature = Double.parseDouble(saInitialTemperature.getText());
+        settings.saCoolingRate = Double.parseDouble(saCoolingRate.getText());
+        settings.saMaxIterations = Integer.parseInt(saMaxIterations.getText());
+        settings.saDelta = Double.parseDouble(saDelta.getText());
+
+
+        settings.gdDelta = Double.parseDouble(gdDelta.getText());
+        settings.gdThreshold = Double.parseDouble(gdThreshold.getText());
+        settings.gdMaxSidewaysMoves = Integer.parseInt(gdMaxSidewaysMoves.getText());
+        settings.gdMaxRestarts = Integer.parseInt(gdMaxRestarts.getText());
 
         this.manager.botSettings = this.settings;
+
         // save the new settings in the .json
 
         // Note: everything is written into the default bot settings, meaning there currently aren't multiple settings
@@ -159,16 +227,35 @@ public class BotSettingsStage extends Stage {
     }
 
     private void loadButtons() {
-        // make the UI reflect the loaded settings
         graphAlgorithmSelector.setSelected(settings.gridPathfindingType);
         weightingBox.setSelected(settings.weightingType);
-        odeSolverBox.setSelected(settings.odesolverType);
-        differentiatorBox.setSelected(settings.differentiatorType);
         errorFunctionBox.setSelected(settings.errorFunctionType);
-        stepSizeField.setText(String.valueOf(settings.stepSize));
         localSearchSelector.setSelected(settings.localSearchType);
-        graphAlgorithmSelector.setSelected(settings.gridPathfindingType);
-        randomRestarts.setText(String.valueOf(settings.randomRestarts));
+
+        // loading
+        hcMaxIterations.setText(String.valueOf(settings.hcMaxIterations));
+        hcErrorThreshold.setText(String.valueOf(settings.hcErrorThreshold));
+        hcConvergenceThreshold.setText(String.valueOf(settings.hcConvergenceThreshold));
+        hcStepSize.setText(String.valueOf(settings.hcStepSize));
+        hcRandomRestarts.setText(String.valueOf(settings.randomRestarts));
+        hcSidewaysMoves.setText(String.valueOf(settings.sidewaysMoves));
+
+
+        nrMaxIterations.setText(String.valueOf(settings.nrMaxIterations));
+        nrTolerance.setText(String.valueOf(settings.nrTolerance));
+        nrErrorThreshold.setText(String.valueOf(settings.nrErrorThreshold));
+
+
+        saInitialTemperature.setText(String.valueOf(settings.saInitialTemperature));
+        saCoolingRate.setText(String.valueOf(settings.saCoolingRate));
+        saMaxIterations.setText(String.valueOf(settings.saMaxIterations));
+        saDelta.setText(String.valueOf(settings.saDelta));
+
+
+        gdDelta.setText(String.valueOf(settings.gdDelta));
+        gdThreshold.setText(String.valueOf(settings.gdThreshold));
+        gdMaxSidewaysMoves.setText(String.valueOf(settings.gdMaxSidewaysMoves));
+        gdMaxRestarts.setText(String.valueOf(settings.gdMaxRestarts));
     }
 
     @Override

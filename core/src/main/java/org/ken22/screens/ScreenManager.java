@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.ken22.Application;
-import org.ken22.controller.ApplicationController;
+import org.ken22.odesolver_p1.ODESolverController;
 import org.ken22.game.GameLoop;
 import org.ken22.input.settings.BotSettings;
 import org.ken22.input.settings.GeneralSettings;
@@ -133,7 +133,7 @@ public class ScreenManager extends ScreenAdapter {
 
     public void toOdeSolverScreen() {
         if (this.currentStage != null) this.currentStage.dispose();
-        ApplicationController.main(new String[0]);
+        ODESolverController.main(new String[0]);
     }
 
     public void setCourse(GolfCourse course) {
