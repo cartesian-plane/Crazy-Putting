@@ -40,26 +40,43 @@ public class Minimap {
 
         float padding = GolfScreen.PADDING_SIZE;
 
+        // initial boundaries
         this.xMin = (float) Math.min(course.ballX(), course.targetXcoord()) - padding;
         this.xMax = (float) Math.max(course.ballX(), course.targetXcoord()) + padding;
         this.yMin = (float) Math.min(course.ballY(), course.targetYcoord()) - padding;
         this.yMax = (float) Math.max(course.ballY(), course.targetYcoord()) + padding;
 
-        float range = (float) course.range();
-        if ((xMax - xMin) < range) {
-            float centerX = (xMin + xMax) / 2;
-            xMin = centerX - range / 2;
-            xMax = centerX + range / 2;
-        }
-
-        if ((yMax - yMin) < range) {
-            float centerY = (yMin + yMax) / 2;
-            yMin = centerY - range / 2;
-            yMax = centerY + range / 2;
-        }
+        // this important
+        adjustRange();
 
         init();
     }
+
+
+
+    private void adjustRange() {
+        float range = (float) course.range();
+        float xRange = xMax - xMin;
+        float yRange = yMax - yMin;
+
+        if (xRange < range || yRange < range) {
+            float maxRange = Math.max(xRange, yRange);
+
+            if (xRange < maxRange) {
+                float centerX = (xMin + xMax) / 2;
+                xMin = centerX - maxRange / 2;
+                xMax = centerX + maxRange / 2;
+            }
+
+            if (yRange < maxRange) {
+                float centerY = (yMin + yMax) / 2;
+                yMin = centerY - maxRange / 2;
+                yMax = centerY + maxRange / 2;
+            }
+        }
+    }
+
+
 
     public void init() {
         terrainmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGB888);
@@ -191,6 +208,7 @@ public class Minimap {
     public float unprojectY(int j) {
         return yMin + ((float) j) / HEIGHT * (yMax - yMin);
     }
+
 
     private void drawThickLine(Pixmap pixmap, int x1, int y1, int x2, int y2, int thickness, Color color) {
         double angle = Math.atan2(y2 - y1, x2 - x1);

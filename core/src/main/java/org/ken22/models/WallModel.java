@@ -30,6 +30,16 @@ public class WallModel {
             VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
 
         wallInstance = new ModelInstance(wallModel);
+
+        // rotation angle and position of the wall
+        float angle = (float) Math.toDegrees(Math.atan2(endY - startY, endX - startX));
+        float centerX = (startX + endX) / 2;
+        float centerY = (startY + endY) / 2;
+
+        //setting the position and rotation
+        wallInstance.transform.setToTranslation(centerX, 0.5f, centerY);
+        wallInstance.transform.rotate(0, 1, 0, -angle);
+
     }
 
     public ModelInstance getWallInstance() {

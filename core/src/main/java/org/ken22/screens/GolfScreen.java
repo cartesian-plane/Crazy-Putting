@@ -187,20 +187,7 @@ public class GolfScreen extends ScreenAdapter {
         wallBatch = new ModelBatch();
         for (Wall w : course.walls) {
             WallModel wallModel = new WallModel(w);
-            var wallInstance = wallModel.getWallInstance();
-            var center = new double[] {
-                (w.startPoint()[0] + w.endPoint()[0])/2,
-                (w.startPoint()[1] + w.endPoint()[1])/2
-            };
-            // rotation angle and position of the wall
-            var angle = Math.toDegrees(
-                Math.atan2(w.endPoint()[1]- w.startPoint()[1],
-                w.endPoint()[0] - w.endPoint()[1]));
-
-            //setting the rotation
-            wallInstance.transform.setToTranslation((float) center[0], 0f, (float) center[1]);
-            wallInstance.transform.rotate(0, 1, 0, (float) -angle);
-            wallInstances.add(wallInstance);
+            wallInstances.add(wallModel.getWallInstance());
         }
 
 
