@@ -37,18 +37,19 @@ import java.util.logging.Logger;
  * </ul>
  */
 public final class SimulatedAnnealing implements Player {
-    private static final Logger LOGGER = Logger.getLogger(GradientDescent.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SimulatedAnnealing.class.getName());
 
     static {
 
         // the default level is INFO
         // if you want to change logging, just change the enum type at (1) and (2)
         // https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html
-        LOGGER.setLevel(Level.FINER); // (1)
+        LOGGER.setLevel(Level.FINE); // (1)
 
 
         Handler consoleHandler = new ConsoleHandler();
         consoleHandler.setLevel(Level.FINE); // (2)
+        LOGGER.setUseParentHandlers(false);
         LOGGER.addHandler(consoleHandler);
     }
 
@@ -94,6 +95,7 @@ public final class SimulatedAnnealing implements Player {
                               double initialTemperature,
                               double allottedTime,
                               ErrorFunction errorFunction) {
+        LOGGER.log(Level.FINE, "Initializing simulated annealing");
         this.course = course;
         this.solver = solver;
         this.differentiator = differentiator;
@@ -102,6 +104,7 @@ public final class SimulatedAnnealing implements Player {
         this.THRESHOLD = course.targetRadius;
         System.out.println("THRESHOLD = " + THRESHOLD);
         this.heuristicFunction = errorFunction;
+        LOGGER.log(Level.INFO, "Error function " + heuristicFunction.getClass().getName());
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
             this.stepSize);
 

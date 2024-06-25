@@ -13,6 +13,7 @@ public class AStar implements GridPathfinding {
     private Weighting weighting;
 
     private double[][] terrainGrid;
+    public Node[][] nodes;
     private Node finish;
 
     double xMin, xMax, yMin, yMax;
@@ -21,6 +22,7 @@ public class AStar implements GridPathfinding {
         this.finish = finish;
         this.course = course;
         this.terrainGrid = terrainGrid;
+        this.nodes = new Node[terrainGrid.length][terrainGrid[0].length];
         this.weighting = weighting;
     }
 
@@ -32,14 +34,10 @@ public class AStar implements GridPathfinding {
         yMax = course.ballY() > course.targetYcoord() ? course.ballY() + GolfScreen.PADDING_SIZE : course.targetYcoord();
 
         var expression = course.expression;
-
         expression
             .setVariable("x", ballX)
             .setVariable("y", ballY);
-
         double z = expression.evaluate();
-
-        this.terrainGrid = new double[(int) ((xMax - xMin) / GridPathfinding.GRID_RESOLUTION)][(int) ((yMax - yMin) / GridPathfinding.GRID_RESOLUTION)];
 
         Node ballNode = project(ballX, ballY, z);
 
@@ -87,7 +85,7 @@ public class AStar implements GridPathfinding {
                     neighbour.setConnection(current);
 
                     if (!inSearch) {
-                        neighbour.setH(weighting.calcWeight(neighbour, targetNode));
+                        neighbour.setH(euclideanDistance(neighbour, targetNode));
                         toSearch.add(neighbour);
                     }
                 }
@@ -129,25 +127,33 @@ public class AStar implements GridPathfinding {
 
         if (x + 1 < terrainGrid.length) {
             var newZ = terrainGrid[x + 1][y];
-            neighbour1 = new Node(x + 1, y, newZ);
+            if (nodes[x + 1][y] == null)
+                nodes[x + 1][y] = new Node(x + 1, y, newZ);
+            neighbour1 = nodes[x + 1][y];
             if (neighbour1.walkable)
                 neighbours.add(neighbour1);
         }
         if (x - 1 >= 0) {
             var newZ = terrainGrid[x - 1][y];
-            neighbour2 = new Node(x - 1, y, newZ);
+            if (nodes[x - 1][y] == null)
+                nodes[x - 1][y] = new Node(x - 1, y, newZ);
+            neighbour2 = nodes[x - 1][y];
             if (neighbour2.walkable)
                 neighbours.add(neighbour2);
         }
         if (y + 1 < terrainGrid[0].length) {
             var newZ = terrainGrid[x][y + 1];
-            neighbour3 = new Node(x, y + 1, newZ);
+            if (nodes[x][y + 1] == null)
+                nodes[x][y + 1] = new Node(x, y + 1, newZ);
+            neighbour3 = nodes[x][y + 1];
             if (neighbour3.walkable)
                 neighbours.add(neighbour3);
         }
         if (y - 1 >= 0) {
             var newZ = terrainGrid[x][y - 1];
-            neighbour4 = new Node(x, y - 1, newZ);
+            if (nodes[x][y - 1] == null)
+                nodes[x][y - 1] = new Node(x, y - 1, newZ);
+            neighbour4 = nodes[x][y - 1];
             if (neighbour4.walkable)
                 neighbours.add(neighbour4);
         }
@@ -160,4 +166,7 @@ public class AStar implements GridPathfinding {
             (int) ((y - yMin) / GridPathfinding.GRID_RESOLUTION), z);
     }
 
+    private double euclideanDistance(Node node1, Node node2) {
+        return Math.sqrt(Math.pow(node1.x - node2.x, 2) + Math.pow(node1.y - node2.y, 2));
+    }
 }

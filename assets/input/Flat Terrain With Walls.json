@@ -11,7 +11,7 @@
   "maximumSpeed" : 100.0,
   "targetRadius" : 0.05,
   "targetXcoord" : -0.5,
-  "targetYcoord" : -1.0,
+  "targetYcoord" : 2.5,
   "ballXcoord" : 0.5,
   "ballYcoord" : 0.5,
   "trees" : [ ],

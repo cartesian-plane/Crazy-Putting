@@ -35,10 +35,10 @@ public class PathfindingError implements ErrorFunction {
         this.physicsEngine = physicsEngine;
 
         // generate terrain grid // we use Double.MAX_VALUE to enconde where the ball can't go
-        xMin = course.ballX() < course.targetXcoord() ? course.ballX() - GolfScreen.PADDING_SIZE : course.targetXcoord();
-        xMax = course.ballX() > course.targetXcoord() ? course.ballX() + GolfScreen.PADDING_SIZE : course.targetXcoord();
-        yMin = course.ballY() < course.targetYcoord() ? course.ballY() - GolfScreen.PADDING_SIZE : course.targetYcoord();
-        yMax = course.ballY() > course.targetYcoord() ? course.ballY() + GolfScreen.PADDING_SIZE : course.targetYcoord();
+        xMin = course.ballX() < course.targetXcoord() ? course.ballX() - GolfScreen.PADDING_SIZE : course.targetXcoord() - GolfScreen.PADDING_SIZE;
+        xMax = course.ballX() > course.targetXcoord() ? course.ballX() + GolfScreen.PADDING_SIZE : course.targetXcoord() + GolfScreen.PADDING_SIZE;
+        yMin = course.ballY() < course.targetYcoord() ? course.ballY() - GolfScreen.PADDING_SIZE : course.targetYcoord() - GolfScreen.PADDING_SIZE;
+        yMax = course.ballY() > course.targetYcoord() ? course.ballY() + GolfScreen.PADDING_SIZE : course.targetYcoord() + GolfScreen.PADDING_SIZE;
         this.terrainGrid = new double[(int) ((xMax - xMin) / GridPathfinding.GRID_RESOLUTION)][(int) ((yMax - yMin) / GridPathfinding.GRID_RESOLUTION)];
         for (int i = 0; i < terrainGrid.length; i++) {
             for (int j = 0; j < terrainGrid[0].length; j++) {
