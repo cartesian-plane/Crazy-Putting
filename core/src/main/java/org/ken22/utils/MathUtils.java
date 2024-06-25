@@ -191,8 +191,7 @@ public class MathUtils {
         double[] unitNormal = unitNormal2D(x1, y1, x2, y2);
         double dot = dot2D(vx, vy, unitNormal[0], unitNormal[1]);
         double[] reflected = {vx - 2 * dot * unitNormal[0], vy - 2 * dot * unitNormal[1]};
-        double[] normalizedReflected = normalize(reflected[0], reflected[1]);
-        return normalizedReflected;
+        return reflected;
     }
 
 }

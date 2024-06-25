@@ -254,12 +254,11 @@ public class PhysicsEngine {
                 MathUtils.pointInQuadrilateral(state.x(), state.y(), x1, y1, x2, y2, x3, y3, x4, y4)) { //full check
                 //TODO: Recheck
 
-                // New collision logic
-//                double[] temp = MathUtils.reflectedVector2D(w.endPoint()[0], w.endPoint()[1], w.startPoint()[0], w.startPoint()[1], state.vx(), state.vy());
-//                double v = MathUtils.magnitude(state.vx(), state.vy());
-//                double[] reflected_velocities  = MathUtils.multiply(temp, 0.8*v);
-//                state.setVx(reflected_velocities[0]);
-//                state.setVy(reflected_velocities[1]);
+                double[] temp = MathUtils.reflectedVector2D(w.endPoint()[0], w.endPoint()[1], w.startPoint()[0], w.startPoint()[1], state.vx(), state.vy());
+                double v = MathUtils.magnitude(state.vx(), state.vy());
+                double[] reflected_velocities  = MathUtils.multiply(temp, 0.8*v);
+                state.setVx(reflected_velocities[0]);
+                state.setVy(reflected_velocities[1]);
 
 
                 double[] normal = new double[] {state.x() - w.startPoint()[0], state.y() - w.startPoint()[1]};
