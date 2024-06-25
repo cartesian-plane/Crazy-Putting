@@ -1,0 +1,111 @@
+@startuml physicsx
+
+rectangle "physics" as P {
+
+        class "StateVector4" as SV4 {
+            +x : double
+            +y : double
+            +vx : double
+            +vy : double
+            +StateVector4(x : double, y : double, vx : double, vy : double)
+            +add(sv : StateVector4) : StateVector4
+            +multiply(scalar : double) : StateVector4
+        }
+
+        class "PhysicsEngine" as PE {
+            +stateVector4 : StateVector4
+            +odeSolver : "ODESolver<StateVector4>"
+            +differentiator : Differentiator
+            +physicsEngine(sv : StateVector4, course : GolfCourse, h : double)
+            +isAtRest() : boolean
+            -underwater() : boolean
+            -reachedTarget() : boolean
+            -outOfBounds() : boolean
+            +nextStep() : StateVector4
+            +solve() : StateVector4
+            +iterator() : FrameRateIterator
+            +stepIterator() : StepIterator
+        }
+
+
+
+    rectangle "differentiation" as DN {
+
+        class "InstantaneousVectorDifferentiation4" as IVD4 {
+            +apply(v : StateVector4) : StateVector4
+        }
+
+        class "VectorDifferentiation4" as VD4{
+            +apply(dt : Double, v : StateVector4) : StateVector4
+        }
+
+        class "InstantaneousVectorDifferentiationFactory" as IVDF {
+            +instantaneousVectorDifferentiation4() : InstantaneousVectorDifferentiation4
+            +altInstantaneousVectorDifferentiation4() : InstantaneousVectorDifferentiation4
+        }
+
+        class "VectorDifferentiationFactory" as VDF {
+            +normalSpeedvectorDifferentiation4() : VectorDifferentiation4
+            +lowSpeedVectorDifferentiation4() : VectorDifferentiation4
+        }
+
+        IVDF -up-> IVD4
+        VDF --> VD4
+        VDF -left-> IVD4
+    }
+
+    rectangle "differentiators" as DR {
+
+        class "Differentiator" as DIF {
+            +differentiate(h : double, sv : StateVector4, dif : BiFunction<Double, Double>) : StateVector4
+        }
+
+        class "ThreePointCenteredDifference" as TPCD {
+            +differentiate(h : double, sv : StateVector4, dif : BiFunction<Double, Double>) : StateVector4
+        }
+
+        class "FivePointCenteredDifference" as FPCD {
+            +differentiate(h : double, sv : StateVector4, dif : BiFunction<Double, Double>) : StateVector4
+        }
+
+        FPCD -up-|> DIF
+        TPCD -up-|> DIF
+
+        PE --> DIF
+        DIF -up-> VD4
+    }
+
+    rectangle "odesolvers" as ES {
+        class "ODESolver<State>" as ODES {
+            +solve(h : double, endTime : double, sv : State, dif : BiFunction<Double, State, State>) : State
+            +nextStep(h : double, sv : State, dif : BiFunction<Double, State, State>) : State
+        }
+
+        class "RK4" as RK4 {
+            +solve(h : double, endTime : double, sv : StateVector4, dif : BiFunction<Double, StateVector4, StateVector4>) : StateVector4
+            +nextStep(h : double, sv : StateVector4, dif : BiFunction<Double, StateVector4, StateVector4>) : StateVector4
+        }
+
+        class "RK2" as RK2 {
+            +solve(h : double, endTime : double, sv : StateVector4, dif : BiFunction<Double, StateVector4, StateVector4>) : StateVector4
+            +nextStep(h : double, sv : StateVector4, dif : BiFunction<Double, StateVector4, StateVector4>) : StateVector4
+        }
+
+        RK4 -up-|> ODES
+        RK2 -up-|> ODES
+
+        PE --> ODES
+    }
+}
+
+rectangle "game_engine" as GE {
+}
+
+GE -down->"FrameRateIterator" PE
+
+rectangle "graphics_engine" as GR {
+}
+
+GR <-left- "FrameRateIterator" GE
+
+@enduml

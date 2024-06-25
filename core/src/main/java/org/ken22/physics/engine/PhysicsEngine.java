@@ -216,8 +216,8 @@ public class PhysicsEngine {
         for(Tree t : course.getTrees()) {
             var magnitude = MathUtils.magnitude(state.x() - t.coordinates()[0], state.y() - t.coordinates()[1]);
             if (magnitude <= t.radius()) { //collision
-                double[] normal = new double[] {state.x() - t.coordinates()[0] / magnitude,
-                    state.y() - t.coordinates()[1] / magnitude};
+                var normal = new double[] {(state.x() - t.coordinates()[0]) / t.radius(),
+                    (state.y() - t.coordinates()[1]) / t.radius()};
                 var dot = state.vx() * normal[0] + state.vy() * normal[1];
                 state.setVx(state.vx() - 2 * dot * normal[0]);
                 state.setVy(state.vy() - 2 * dot * normal[1]);
