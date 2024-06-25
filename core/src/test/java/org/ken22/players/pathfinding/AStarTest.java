@@ -82,5 +82,47 @@ class AStarTest {
 
     }
 
+    @Test
+    @DisplayName("Test tree avoidance on 10x0 grid")
+    public void testTreeAvoidance() throws NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+        AStar aStar = new AStar();
+        Field finish;
+        Field terrainGrid;
 
+        finish = AStar.class.getDeclaredField("finish");
+        terrainGrid = AStar.class.getDeclaredField("terrainGrid");
+
+
+        finish.setAccessible(true);
+        terrainGrid.setAccessible(true);
+
+        double f = Double.POSITIVE_INFINITY;
+        double b = 2;
+        double t = 2;
+        double[][] testGrid = {
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, t, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, f, 1, 1, 1, f, 1, 1},
+            {1, 1, 1, f, f, f, f, f, 1, 1},
+            {1, 1, 1, 1, f, f, f, 1, 1, 1},
+            {1, 1, 1, 1, f, f, f, 1, 1, 1},
+            {1, 1, 1, f, 1, 1, 1, f, 1, 1},
+            {1, 1, 1, f, 1, 1, 1, f, 1, 1},
+            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+            {1, 1, 1, 1, 1, b, 1, 1, 1, 1},
+        };
+        terrainGrid.set(aStar, testGrid);
+        var ballNode = new Node(9, 5, 2);
+        var targetNode = new Node(1, 5, 2);
+        Method findPath = AStar.class.getDeclaredMethod("findPath", Node.class, Node.class);
+        findPath.setAccessible(true);
+
+        aStar.init(null, testGrid, null, new EquivalentWeighting());
+
+        System.out.println("Avoiding tree...");
+         var returnedPath = aStar.findPath(ballNode, targetNode);
+        Collections.reverse(returnedPath);
+        System.out.println("returnedPathReversed = " + returnedPath);
+    }
 }

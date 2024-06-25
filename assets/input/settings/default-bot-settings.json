@@ -2,7 +2,7 @@
   "odesolverType" : "RK4",
   "differentiatorType" : "THREE_POINT_CENTERED",
   "stepSize" : 0.001,
-  "errorFunctionType" : "EUCLIDEAN",
+  "errorFunctionType" : "PATHFINDING",
   "weightingType" : "EQUIVALENT",
   "gridPathfindingType" : "A_STAR",
   "localSearchType" : "NONE",
