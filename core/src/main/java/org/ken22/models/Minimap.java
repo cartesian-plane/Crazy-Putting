@@ -11,7 +11,6 @@ import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.SandPit;
 import org.ken22.obstacles.Tree;
 import org.ken22.screens.GolfScreen;
-import org.ken22.utils.GolfExpression;
 import org.ken22.utils.MathUtils;
 import org.ken22.obstacles.Wall;
 
@@ -37,7 +36,7 @@ public class Minimap {
 
     public Minimap(GolfCourse course, Viewport viewport) {
         this.course = course;
-        this.expr = GolfExpression.expr(course);
+        this.expr = course.expression;
 
         float padding = GolfScreen.PADDING_SIZE;
 

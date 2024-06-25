@@ -4,7 +4,6 @@ import net.objecthunter.exp4j.Expression;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
-import org.ken22.utils.GolfExpression;
 
 public class SimplePlanarApproximationBot implements Player {
 
@@ -16,7 +15,7 @@ public class SimplePlanarApproximationBot implements Player {
 
     public SimplePlanarApproximationBot(GolfCourse course) {
         this.course = course;
-        this.expr = GolfExpression.expr(course);
+        this.expr = course.expression;
     }
 
     @Override

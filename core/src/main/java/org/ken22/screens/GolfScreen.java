@@ -30,7 +30,6 @@ import org.ken22.players.bots.hillclimbing.LineHillClimbingBot;
 import org.ken22.players.bots.hillclimbing.RandomRestartHillClimbingBot;
 import org.ken22.players.bots.simplebots.InitialGuessBot;
 import org.ken22.players.bots.simplebots.SimplePlanarApproximationBot;
-import org.ken22.utils.GolfExpression;
 
 import java.util.ArrayList;
 import java.util.logging.ConsoleHandler;
@@ -120,7 +119,7 @@ public class GolfScreen extends ScreenAdapter {
     public GolfScreen(ScreenManager manager, GolfCourse course, BotFactory botFactory, GameLoop gameLoop) {
         this.manager = manager;
         this.course = course;
-        this.expr = GolfExpression.expr(course);
+        this.expr = course.expression;
         this.currentState = new StateVector4(course.ballX(), course.ballY(), 0, 0);
         this.botFactory = botFactory;
         this.gameLoop = gameLoop;
