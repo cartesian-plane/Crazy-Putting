@@ -362,6 +362,8 @@ public class GolfScreen extends ScreenAdapter {
             gameLoop.restartCourse();
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             manager.toMainStage();
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+            System.out.println("Camera Position: ("+ "x:" + camera.position.x + ", " + "y:" + camera.position.y + ", " + "z:" + camera.position.z + ")");
         }
     }
 
