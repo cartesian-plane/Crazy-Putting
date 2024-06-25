@@ -59,7 +59,6 @@ public class AStar implements GridPathfinding {
             toSearch.remove(current);
 
             if (current.equals(targetNode)) {
-                System.out.println("hi");
                 var currentPathTile = current;
                 var path = new ArrayList<Node>();
                 while (!currentPathTile.equals(startNode)) {
