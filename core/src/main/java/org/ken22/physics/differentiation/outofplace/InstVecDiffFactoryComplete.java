@@ -14,17 +14,65 @@ public class InstVecDiffFactoryComplete implements InstVecDiffFactory {
     private Differentiator differentiator;
     private double h;
     private Expression expr;
-    double g;
-    double kf_g;
-    double sf_g;
+
+    private InstantaneousVectorDifferentiation4 normalSpeed;
+    private InstantaneousVectorDifferentiation4 lowSpeed;
 
     public InstVecDiffFactoryComplete(double h, Expression expr, GolfCourse course, Differentiator differentiator) {
         this.h = h;
         this.expr = expr;
         this.differentiator = differentiator;
-        this.g = course.gravitationalConstant();
-        this.kf_g = course.kineticFrictionGrass();
-        this.sf_g = course.staticFrictionGrass();
+
+this.normalSpeed = new InstantaneousVectorDifferentiation4() {
+            private double g = course.gravitationalConstant();
+            private double kf_g = course.kineticFrictionGrass();
+
+            @Override
+            public StateVector4 apply(StateVector4 sv) {
+                double vx = sv.vx();
+                double vy = sv.vy();
+                double x = sv.x();
+                double y = sv.y();
+                double df_dx = xSlope(x, y);
+                double df_dy = ySlope(x, y);
+                double d_norm = MathUtils.magnitude(1, df_dx, df_dy);
+                double big_term = MathUtils.magnitude(vx, vy, df_dx*vx+df_dy*vy );
+
+                return new StateVector4(
+                    vx,
+                    vy,
+                    (-(this.g/d_norm) * (df_dx/d_norm + this.kf_g * vx / (big_term))),
+                    (-(this.g/d_norm) * (df_dy/d_norm + this.kf_g * vy / (big_term)))
+                );
+            }
+        };
+
+        this.lowSpeed = new InstantaneousVectorDifferentiation4() {
+            private double g = course.gravitationalConstant();
+            private double kf_g = course.kineticFrictionGrass();
+            @Override
+            public StateVector4 apply(StateVector4 sv) {
+                {
+                    double x = sv.x();
+                    double y = sv.y();
+                    double vx = sv.vx();
+                    double vy = sv.vy();
+                    double df_dx = xSlope(x, y);
+                    double df_dy = ySlope(x, y);
+                    double d_norm = MathUtils.magnitude(1, df_dx, df_dy);
+
+                    // approximation not from booklet vx, vy -> dh_dx, dh_dy and vx^2, vy^2 -> 0
+                    double big_term = MathUtils.magnitude(df_dy*df_dx+df_dy*df_dy );
+
+                    return new StateVector4(
+                        vx,
+                        vy,
+                        (-(this.g*df_dx/d_norm) * (1/d_norm + this.kf_g / (big_term))),
+                        (-(this.g*df_dy/d_norm) * (1/d_norm + this.kf_g / (big_term)))
+                    );
+                }
+            }
+        };
     }
 
     /**
@@ -32,23 +80,7 @@ public class InstVecDiffFactoryComplete implements InstVecDiffFactory {
      * @return a lambda function that solves the ODE for normal speed
      */
     public InstantaneousVectorDifferentiation4 instantaneousVectorDifferentiation4() {
-        return (sv) -> {
-            double vx = sv.vx();
-            double vy = sv.vy();
-            double x = sv.x();
-            double y = sv.y();
-            double df_dx = xSlope(x, y);
-            double df_dy = ySlope(x, y);
-            double d_norm = MathUtils.magnitude(1, df_dx, df_dy);
-            double big_term = MathUtils.magnitude(vx, vy, df_dx*vx+df_dy*vy );
-
-            return new StateVector4(
-                vx,
-                vy,
-                (-(this.g/d_norm) * (df_dx/d_norm + this.kf_g * vx / (big_term))),
-                (-(this.g/d_norm) * (df_dy/d_norm + this.kf_g * vy / (big_term)))
-            );
-        };
+        return normalSpeed;
     }
 
     /**
@@ -56,24 +88,7 @@ public class InstVecDiffFactoryComplete implements InstVecDiffFactory {
      * @return a lambda function that solves the ODE for normal speed
      */
     public InstantaneousVectorDifferentiation4 altInstantaneousVectorDifferentiation4() {
-        return (sv) -> {
-            double x = sv.x();
-            double y = sv.y();
-            double vx = sv.vx();
-            double vy = sv.vy();
-            double df_dx = xSlope(x, y);
-            double df_dy = ySlope(x, y);
-            double d_norm = MathUtils.magnitude(1, df_dx, df_dy);
-
-            // approximation not from booklet vx, vy -> dh_dx, dh_dy and vx^2, vy^2 -> 0
-            double big_term = MathUtils.magnitude(df_dy*df_dx+df_dy*df_dy );
-            return new StateVector4(
-                vx,
-                vy,
-                (-(this.g*df_dx/d_norm) * (1/d_norm + this.kf_g / (big_term))),
-                (-(this.g*df_dy/d_norm) * (1/d_norm + this.kf_g / (big_term)))
-            );
-        };
+        return lowSpeed;
     }
 
     /**
