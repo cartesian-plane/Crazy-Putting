@@ -75,7 +75,7 @@ public class PhysicsEngine {
         this.yinit = initialStateVector.y();
         double vx = initialStateVector.vx();
         double vy = initialStateVector.vy();
-        if (MathUtils.magnitude(vx, vy) > 5) {
+        if (MathUtils.magnitude(vx, vy) > 100) {
             throw new IllegalArgumentException("Initial vector speed too high! (max speed = "
                 + 100 + ")"); //TODO: use the max speed from settings
         }

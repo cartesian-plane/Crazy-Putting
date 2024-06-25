@@ -4,6 +4,8 @@ import org.ken22.input.settings.BotSettings;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.PhysicsFactory;
 import org.ken22.players.Player;
+import org.ken22.players.bots.newtonraphson.BasicNewtonRaphsonBot;
+import org.ken22.players.bots.newtonraphson.NewtonRaphsonBot;
 import org.ken22.players.bots.simulatedannealing.GradientDescent;
 import org.ken22.players.bots.simulatedannealing.SimulatedAnnealing;
 import org.ken22.players.bots.hillclimbing.HillClimbingBot;
@@ -62,5 +64,9 @@ public class BotFactory {
 
     public LineHillClimbingBot lineHillClimbingBot(GolfCourse course, InitialGuessBot initialGuessBot) {
         return new LineHillClimbingBot(initialGuessBot, course, errorFunction(course), settings.stepSize);
+    }
+
+    public BasicNewtonRaphsonBot basicNewtonRaphsonBot(GolfCourse course, InitialGuessBot initialGuessBot) {
+        return new BasicNewtonRaphsonBot(initialGuessBot, errorFunction(course), settings.stepSize);
     }
 }
