@@ -55,11 +55,9 @@ public class BotSettings {
     @JsonProperty
     public double saCoolingRate;
     @JsonProperty
-    public int saMaxIterations;
-    @JsonProperty
     public double saDelta;
     @JsonProperty
-    public double saAllottedTime;
+    public int saAllottedTime;
 
     // Gradient Descent
     @JsonProperty
@@ -94,9 +92,8 @@ public class BotSettings {
         settings.nrErrorThreshold = 0.05;
         settings.saInitialTemperature = 1000;
         settings.saCoolingRate = 0.5;
-        settings.saMaxIterations = 1000;
         settings.saDelta = 0.05;
-        settings.saAllottedTime = 1000;
+        settings.saAllottedTime = 2000;
         settings.gdDelta = 0.01;
         settings.gdThreshold = 1.0;
         settings.gdMaxSidewaysMoves = 10;

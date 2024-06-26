@@ -50,7 +50,6 @@ public class BotSettingsStage extends Stage {
     // Simulated Annealing
     private TextField saInitialTemperature;
     private TextField saCoolingRate;
-    private TextField saMaxIterations;
     private TextField saDelta;
     private TextField saAllottedTime;
 
@@ -116,7 +115,6 @@ public class BotSettingsStage extends Stage {
 
         addTextFieldOption("Initial Temperature:", saInitialTemperature = createTextField(String.valueOf(settings.saInitialTemperature), UIElementFactory.TextFieldType.NUMERICAL));
         addTextFieldOption("Cooling Rate:", saCoolingRate = createTextField(String.valueOf(settings.saCoolingRate), UIElementFactory.TextFieldType.NUMERICAL));
-        addTextFieldOption("Max Iterations:", saMaxIterations = createTextField(String.valueOf(settings.saMaxIterations), UIElementFactory.TextFieldType.NUMERICAL));
         addTextFieldOption("Delta:", saDelta = createTextField(String.valueOf(settings.saDelta), UIElementFactory.TextFieldType.NUMERICAL));
         addTextFieldOption("Allotted Time:", saAllottedTime = createTextField(String.valueOf(settings.saAllottedTime), UIElementFactory.TextFieldType.NUMERICAL));
 
@@ -192,9 +190,8 @@ public class BotSettingsStage extends Stage {
 
         settings.saInitialTemperature = Double.parseDouble(saInitialTemperature.getText());
         settings.saCoolingRate = Double.parseDouble(saCoolingRate.getText());
-        settings.saMaxIterations = Integer.parseInt(saMaxIterations.getText());
         settings.saDelta = Double.parseDouble(saDelta.getText());
-        settings.saAllottedTime = Double.parseDouble(saAllottedTime.getText());
+        settings.saAllottedTime = Integer.parseInt(saAllottedTime.getText());
 
         settings.gdDelta = Double.parseDouble(gdDelta.getText());
         settings.gdThreshold = Double.parseDouble(gdThreshold.getText());
@@ -243,7 +240,6 @@ public class BotSettingsStage extends Stage {
 
         saInitialTemperature.setText(String.valueOf(settings.saInitialTemperature));
         saCoolingRate.setText(String.valueOf(settings.saCoolingRate));
-        saMaxIterations.setText(String.valueOf(settings.saMaxIterations));
         saDelta.setText(String.valueOf(settings.saDelta));
         saAllottedTime.setText(String.valueOf(settings.saAllottedTime));
 

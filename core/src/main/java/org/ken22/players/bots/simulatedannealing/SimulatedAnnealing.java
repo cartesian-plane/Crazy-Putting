@@ -44,11 +44,11 @@ public final class SimulatedAnnealing implements Player {
         // the default level is INFO
         // if you want to change logging, just change the enum type at (1) and (2)
         // https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html
-        LOGGER.setLevel(Level.FINEST); // (1)
+        LOGGER.setLevel(Level.INFO); // (1)
 
 
         Handler consoleHandler = new ConsoleHandler();
-        consoleHandler.setLevel(Level.FINEST); // (2)
+        consoleHandler.setLevel(Level.INFO); // (2)
         LOGGER.setUseParentHandlers(false);
         LOGGER.addHandler(consoleHandler);
     }
@@ -64,43 +64,21 @@ public final class SimulatedAnnealing implements Player {
     private final ODESolver<StateVector4> solver;
     private final Differentiator differentiator;
     private final double stepSize;
-    private double allottedTime;
-    private int kmax = 1000;
+    private int allottedTime;
+    private double coolingRate;
     private Player initialGuess;
 
     private final ErrorFunction heuristicFunction;
     private final Evaluator evaluator;
 
-    public SimulatedAnnealing(GolfCourse course) {
-        this.course = course;
-        this.ballX = course.ballX;
-        this.bally = course.ballY;
-        this.solver = new RK4();
-        this.differentiator = new FivePointCenteredDifference();
-        this.stepSize = 0.0001;
-        this.DELTA = 0.01;
-        this.THRESHOLD = course.targetRadius;
-        this.heuristicFunction = new EuclideanError();
-        // this.heuristicFunction.init(this.course);
-        this.evaluator = new Evaluator(this.heuristicFunction, this.course);
-        this.initialTemperature = 100;
-        this.schedule = new LinearCooling(initialTemperature, 0.8);
-        this.initialGuess = new InitialGuessBot(course);
-
-        var initialX = course.ballX();
-        var initialY = course.ballY();
-
-        // choose random speed vector to start with
-        var speedVector = getRandomSpeedVector();
-        // initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
-    }
-
     public SimulatedAnnealing(Player initialGuess, GolfCourse course,
                                 ODESolver<StateVector4> solver,
                                 Differentiator differentiator,
                                 double stepSize,
+                                double delta,
                                 double initialTemperature,
-                                double allottedTime,
+                                int allottedTime,
+                                double coolingRate,
                                 ErrorFunction errorFunction) {
         LOGGER.log(Level.FINE, "Initializing simulated annealing");
         this.initialGuess = initialGuess;
@@ -110,17 +88,23 @@ public final class SimulatedAnnealing implements Player {
         this.solver = solver;
         this.differentiator = differentiator;
         this.stepSize = stepSize;
-        this.DELTA = 0.05;
+        this.DELTA = delta;
         this.THRESHOLD = course.targetRadius;
+        this.coolingRate = coolingRate;
+        this.allottedTime = allottedTime;
         this.heuristicFunction = errorFunction;
         LOGGER.log(Level.INFO, "Error function for simulated annealing: " + heuristicFunction.getClass().getName());
         LOGGER.log(Level.INFO, "THRESHOLD = " + THRESHOLD);
+        LOGGER.log(Level.INFO, "DELTA = " + DELTA);
+        LOGGER.log(Level.INFO, "Initial temperature = " + initialTemperature);
+        LOGGER.log(Level.INFO, "Cooling rate = " + this.coolingRate);
+        LOGGER.log(Level.INFO, "Allotted time = " + this.allottedTime);
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
             this.stepSize);
 
-        this.initialTemperature = 1000;
+        this.initialTemperature = initialTemperature;
         this.allottedTime = allottedTime;
-        this.schedule = new LinearCooling(initialTemperature, 0.5);
+        this.schedule = new LinearCooling(initialTemperature, coolingRate);
     }
 
     public StateVector4 play(StateVector4 state) {
@@ -144,7 +128,7 @@ public final class SimulatedAnnealing implements Player {
         if (evaluator.evaluateState(bestState) < THRESHOLD) {
             return bestState;
         }
-        for (int k = 0; k < kmax; k++) {
+        for (int k = 0; k < allottedTime; k++) {
             temperature = schedule.getNewTemperature(k);
             LOGGER.log(Level.FINE, "Temperature = " + temperature);
             var next = getRandomNeighbour(bestState);
