@@ -100,11 +100,11 @@ public class CourseEditorStage extends Stage {
         var targetRadiusLabel = new Label("Target Radius:", skin);
 
         String ballCoords = "(" + selectedCourse.ballX() + ", " + selectedCourse.ballY() + ")";
-        var ballCoordField = createNumericalTextField(ballCoords, skin);
+        var ballCoordField = new TextField(ballCoords, skin);
         var ballCoordLabel = new Label("Ball Coordinates:", skin);
 
         String holeCoords = "(" + selectedCourse.targetXcoord() + ", " + selectedCourse.targetYcoord() + ")";
-        var targetCoordField = createNumericalTextField(holeCoords, skin);
+        var targetCoordField = new TextField(holeCoords, skin);
         var targetCoordLabel = new Label("Hole Coordinates:", skin);
 
         table.row();
