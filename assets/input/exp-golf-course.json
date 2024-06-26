@@ -1,6 +1,6 @@
 {
   "name": "Mountain Peak",
-  "courseProfile": "0.4*(0.9 - e^(-(x^2 + y^2) / 8))",
+  "courseProfile": "0.4 * (0.9 - Math.exp( -((Math.pow(x, 2) + Math.pow(y, 2)) / 8) ))",
   "range": 5.0,
   "mass": 0.0459,
   "gravitationalConstant": 9.80665,

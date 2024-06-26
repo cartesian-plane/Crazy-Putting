@@ -9,7 +9,7 @@ import org.ken22.input.settings.ODESolverType;
 import org.ken22.obstacles.SandPit;
 import org.ken22.obstacles.Tree;
 import org.ken22.physics.PhysicsFactory;
-import org.ken22.players.bots.simulatedannealing.GradientDescent;
+import org.ken22.players.bots.hillclimbing.SidewaysStepsHillCrimbingBot;
 import org.ken22.input.courseinput.CourseParser;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.engine.PhysicsEngine;
@@ -316,7 +316,7 @@ public class GradientDescentTest {
         double x = course.ballX();
         double y = course.ballY();
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
-        GradientDescent climber = new GradientDescent(course, createPhysicsFactory());
+        SidewaysStepsHillCrimbingBot climber = new SidewaysStepsHillCrimbingBot(course, createPhysicsFactory());
         StateVector4 solution = climber.play(initialState);
         PhysicsEngine engine = new PhysicsEngine(course, solution, true);
         engine.solve();
@@ -332,7 +332,7 @@ public class GradientDescentTest {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
-        GradientDescent climber = new GradientDescent(course, createPhysicsFactory());
+        SidewaysStepsHillCrimbingBot climber = new SidewaysStepsHillCrimbingBot(course, createPhysicsFactory());
         StateVector4 solution = climber.play(initialState);
         PhysicsEngine engine = new PhysicsEngine(course, solution, true);
         engine.solve();
@@ -348,7 +348,7 @@ public class GradientDescentTest {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
         StateVector4 initialState = new StateVector4(x, y, vx, vy);
-        GradientDescent climber = new GradientDescent(course, createPhysicsFactory(), heur);
+        SidewaysStepsHillCrimbingBot climber = new SidewaysStepsHillCrimbingBot(course, createPhysicsFactory(), heur);
         StateVector4 solution = climber.play(initialState);
         PhysicsEngine engine = new PhysicsEngine(course, solution, true);
         engine.solve();
@@ -379,7 +379,7 @@ public class GradientDescentTest {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
         StateVector4 initialState = randomInitialVector(course.ballX(), course.ballY(), gen);
-        GradientDescent climber = new GradientDescent(course, createPhysicsFactory());
+        SidewaysStepsHillCrimbingBot climber = new SidewaysStepsHillCrimbingBot(course, createPhysicsFactory());
         StateVector4 solution = climber.play(initialState);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
         engine.solve();
@@ -395,7 +395,7 @@ public class GradientDescentTest {
         Random gen = new Random();
         GolfCourse course = randomCourse(terrain, terrain, gen);
         StateVector4 initialState = randomInitialVector(course.ballX(), course.ballY(), gen);
-        GradientDescent climber = new GradientDescent(course, createPhysicsFactory(), heur);
+        SidewaysStepsHillCrimbingBot climber = new SidewaysStepsHillCrimbingBot(course, createPhysicsFactory(), heur);
         StateVector4 solution = climber.play(initialState);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
         engine.solve();
@@ -413,7 +413,7 @@ public class GradientDescentTest {
         double x = gen.nextDouble()*20-10;
         double y = gen.nextDouble()*20-10;
         StateVector4 initialState = randomInitialVector(x, y, gen);
-        GradientDescent climber = new GradientDescent(course, createPhysicsFactory());
+        SidewaysStepsHillCrimbingBot climber = new SidewaysStepsHillCrimbingBot(course, createPhysicsFactory());
         StateVector4 solution = climber.play(initialState);
         PhysicsEngine engine = new PhysicsEngine(course, solution);
         engine.solve();

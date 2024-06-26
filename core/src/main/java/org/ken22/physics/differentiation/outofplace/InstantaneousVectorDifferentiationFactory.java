@@ -3,6 +3,7 @@ package org.ken22.physics.differentiation.outofplace;
 //fml
 
 import net.objecthunter.exp4j.Expression;
+import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.vectors.StateVector4;
@@ -13,7 +14,7 @@ public class InstantaneousVectorDifferentiationFactory implements InstVecDiffFac
     private double h;
 
     private GolfCourse course;
-    private Expression expr;
+    private InjectedClass expr;
 
     private InstantaneousVectorDifferentiation4 normalSpeed = (sv) -> {
         double df_dx = xSlope(sv.x(), sv.y());
@@ -39,7 +40,8 @@ public class InstantaneousVectorDifferentiationFactory implements InstVecDiffFac
         );
     };
 
-    public InstantaneousVectorDifferentiationFactory(double h, Expression expr, GolfCourse course, Differentiator differentiator) {
+    public InstantaneousVectorDifferentiationFactory(double h, InjectedClass expr, GolfCourse course,
+                                                     Differentiator differentiator) {
         this.h = h;
         this.expr = expr;
         this.course = course;

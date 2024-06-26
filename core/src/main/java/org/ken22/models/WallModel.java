@@ -8,12 +8,13 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import net.objecthunter.exp4j.Expression;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import org.ken22.input.InjectedClass;
 import org.ken22.obstacles.Wall;
 
 public class WallModel {
     private ModelInstance wallInstance;
 
-    public WallModel(Wall wall, Expression terrainExpression) {
+    public WallModel(Wall wall, InjectedClass terrainExpression) {
         ModelBuilder modelBuilder = new ModelBuilder();
 
         float startX = (float) wall.startPoint()[0];
@@ -23,8 +24,9 @@ public class WallModel {
         float thickness = (float) wall.thickness();
 
         // terrain height at the start and end points of the wall
-        float startHeight = (float) terrainExpression.setVariable("x", startX).setVariable("y", startY).evaluate();
-        float endHeight = (float) terrainExpression.setVariable("x", endX).setVariable("y", endY).evaluate();
+        float startHeight =
+            (float) terrainExpression.evaluate(startX, startY);
+        float endHeight = (float) terrainExpression.evaluate(endX, endY);
         float wallHeight = 0.5f; // height of the wall
 
         // Create the wall model

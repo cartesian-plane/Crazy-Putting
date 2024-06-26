@@ -1,6 +1,7 @@
 package org.ken22.physics.differentiation.outofplace;
 
 import net.objecthunter.exp4j.Expression;
+import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.vectors.StateVector4;
@@ -13,12 +14,12 @@ public class InstVecDiffFactoryComplete implements InstVecDiffFactory {
 
     private Differentiator differentiator;
     private double h;
-    private Expression expr;
+    private InjectedClass expr;
 
     private InstantaneousVectorDifferentiation4 normalSpeed;
     private InstantaneousVectorDifferentiation4 lowSpeed;
 
-    public InstVecDiffFactoryComplete(double h, Expression expr, GolfCourse course, Differentiator differentiator) {
+    public InstVecDiffFactoryComplete(double h, InjectedClass expr, GolfCourse course, Differentiator differentiator) {
         this.h = h;
         this.expr = expr;
         this.differentiator = differentiator;

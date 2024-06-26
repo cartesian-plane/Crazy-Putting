@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import net.objecthunter.exp4j.Expression;
+import org.ken22.input.InjectedClass;
 import org.ken22.obstacles.SandPit;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class TerrainModel {
 
 
 
-    private final Expression expr;
+    private final InjectedClass expr;
     private final List<SandPit> sandPits;
 
     /**
@@ -42,7 +43,7 @@ public class TerrainModel {
      *
      */
 
-    public TerrainModel(Expression expr, float xMin, float xMax, float yMin, float yMax, List<SandPit> sandPits) {
+    public TerrainModel(InjectedClass expr, float xMin, float xMax, float yMin, float yMax, List<SandPit> sandPits) {
         this.expr = expr;
         this.xMin = xMin;
         this.xMax = xMax;
@@ -83,10 +84,10 @@ public class TerrainModel {
                         float x1 = i + MESH_RESOLUTION;
                         float z1 = j + MESH_RESOLUTION;
 
-                        float y00 = (float) expr.setVariable("x", x0).setVariable("y", z0).evaluate();
-                        float y01 = (float) expr.setVariable("x", x0).setVariable("y", z1).evaluate();
-                        float y10 = (float) expr.setVariable("x", x1).setVariable("y", z0).evaluate();
-                        float y11 = (float) expr.setVariable("x", x1).setVariable("y", z1).evaluate();
+                        float y00 = (float) expr.evaluate(x0, z0);
+                        float y01 = (float) expr.evaluate(x0, z1);
+                        float y10 = (float) expr.evaluate(x1, z0);
+                        float y11 = (float) expr.evaluate(x1, z1);
 
                         Vector3 p1 = new Vector3(x0, y00, z0);
                         Vector3 p2 = new Vector3(x0, y01, z1);

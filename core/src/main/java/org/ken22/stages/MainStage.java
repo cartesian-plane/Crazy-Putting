@@ -59,15 +59,7 @@ public class MainStage extends Stage {
         playButton = UIElementFactory.createStyledButton("Play", skin, Color.GREEN, () -> manager.toGolfScreen());
 
         courseSelectorButton = UIElementFactory.createStyledButton("Course Selector", skin, null, () -> {
-            List<GolfCourse> courses = Arrays.asList(
-                new GolfCourse("Mountain Peak", "sin(x) * cos(y)", 100, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 50, 50, 10, 10),
-                new GolfCourse("Desert Dunes", "tan(x) + tan(y)", 200, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 50, 50, 20, 20),
-                new GolfCourse("Forest Glade", "x^2 + y^2", 100, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 60, 60, 15, 15),
-                new GolfCourse("Ocean Breeze", "sin(x) + cos(y)", 200, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 70, 70, 25, 25),
-                new GolfCourse("Canyon Run", "x * y", 100, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 80, 80, 12, 12),
-                new GolfCourse("Sunset Valley", "exp(x) - y", 200, 1, 9.81, 0.3, 0.4, 0.5, 0.6, 30, 5, 90, 90, 22, 22)
-            );
-            manager.toCourseSelectorScreen(courses);
+            manager.toCourseSelectorScreen();
             updateMinimap();
         });
 

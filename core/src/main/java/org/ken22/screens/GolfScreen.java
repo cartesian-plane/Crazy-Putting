@@ -8,22 +8,20 @@ import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.FirstPersonCameraController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.game.GameLoop;
+import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.models.*;
 import org.ken22.obstacles.*;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.bots.BotFactory;
-import org.ken22.players.HumanPlayer;
 import org.ken22.players.bots.newtonraphson.BasicNewtonRaphsonBot;
 import org.ken22.players.bots.newtonraphson.NewtonRaphsonBot;
-import org.ken22.players.bots.simulatedannealing.GradientDescent;
+import org.ken22.players.bots.hillclimbing.SidewaysStepsHillCrimbingBot;
 import org.ken22.players.bots.simulatedannealing.SimulatedAnnealing;
 import org.ken22.players.bots.hillclimbing.HillClimbingBot;
 import org.ken22.players.bots.hillclimbing.LineHillClimbingBot;
@@ -97,8 +95,7 @@ public class GolfScreen extends ScreenAdapter {
     private LineHillClimbingBot lineHillClimbingBot;
     private RandomRestartHillClimbingBot randomRestartHillClimbingBot;
     private NewtonRaphsonBot newtonRaphsonBot;
-    private GradientDescent gradientDescent;
-    private HumanPlayer humanPlayer;
+    private SidewaysStepsHillCrimbingBot sidewaysStepsHillCrimbingBot;
     private SimulatedAnnealing simulatedAnnealing;
     private BasicNewtonRaphsonBot basicNewtonRaphsonBot;
 
@@ -108,7 +105,7 @@ public class GolfScreen extends ScreenAdapter {
     private StateVector4 currentState;
 
     private GolfCourse course;
-    private Expression expr;
+    private InjectedClass expr;
 
     private HumanPlayerDialogStage humanPlayerDialogStage;
     boolean humanPlayerDialogOpen = false;
@@ -127,7 +124,7 @@ public class GolfScreen extends ScreenAdapter {
     public GolfScreen(ScreenManager manager, GolfCourse course, BotFactory botFactory, GameLoop gameLoop) {
         this.manager = manager;
         this.course = course;
-        this.expr = course.expression;
+        this.expr = course.getInjectedExpression();
         this.currentState = new StateVector4(course.ballX(), course.ballY(), 0, 0);
         this.botFactory = botFactory;
         this.gameLoop = gameLoop;
@@ -140,11 +137,10 @@ public class GolfScreen extends ScreenAdapter {
         hillClimbingBot = botFactory.hillClimbingBot(course, initialGuessBot);
         lineHillClimbingBot = botFactory.lineHillClimbingBot(course, initialGuessBot);
         randomRestartHillClimbingBot = botFactory.randomRestartHillClimbingBot(course, initialGuessBot);
-        gradientDescent = botFactory.gradientDescent(course);
+        sidewaysStepsHillCrimbingBot = botFactory.gradientDescent(course);
         newtonRaphsonBot = botFactory.newtonRaphsonBot(course, initialGuessBot);
         basicNewtonRaphsonBot = botFactory.basicNewtonRaphsonBot(course, initialGuessBot);
         simulatedAnnealing = botFactory.simulatedAnnealing(course);
-        //humanPlayer = new HumanPlayer();
 
         // Set map limits
         xMin = (float) (course.ballX() > course.targetXcoord() ? course.targetXcoord() -  PADDING_SIZE : course.ballX() - PADDING_SIZE);
@@ -180,10 +176,7 @@ public class GolfScreen extends ScreenAdapter {
         for (Tree t : course.trees) {
             TreeModel treeModel = new TreeModel((float) t.radius());
             var treeInstance = treeModel.getTreeInstance();
-            var treeBaseHeight = (float) expr
-                .setVariable("x", t.coordinates()[0])
-                .setVariable("y", t.coordinates()[1])
-                .evaluate();
+            var treeBaseHeight = (float) expr.evaluate(t.coordinates()[0], t.coordinates()[1]);
             treeInstance.transform.setTranslation((float) t.coordinates()[0], treeBaseHeight, (float) t.coordinates()[1]);
             treeInstances.add(treeInstance);
             var treeCrownInstance = treeModel.getCrownInstance();
@@ -214,7 +207,8 @@ public class GolfScreen extends ScreenAdapter {
         poleInstance = targetModel.getPoleInstance();
         targetBatch = new ModelBatch();
 
-        var targetHeight = expr.setVariable("x", course.targetXcoord()).setVariable("y", course.targetYcoord()).evaluate();
+        var targetHeight =
+            expr.evaluate(course.targetXcoord(), course.targetYcoord());
         cylinderInstance.transform.setTranslation((float) course.targetXcoord(), (float) targetHeight, (float) course.targetYcoord());
         poleInstance.transform.setTranslation((float) course.targetXcoord(), (float) targetHeight,  (float) course.targetYcoord());
 
@@ -259,14 +253,16 @@ public class GolfScreen extends ScreenAdapter {
                 currentState = iterator.next();
                 LOGGER.log(Level.FINE, currentState.x() + " " + currentState.y());
                 //System.out.println(state.x() + " " + state.y());
-                height = 0.05 + expr.setVariable("x", currentState.x()).setVariable("y", currentState.y()).evaluate();
+                height =
+                    0.05 + expr.evaluate(currentState.x(), currentState.y());
                 golfBallInstance.transform.setTranslation((float) currentState.x(), (float) height, (float) currentState.y());
             } else if (iterator != null) {
                 currentState = iterator.last();
                 iterator = null;
             } else {
                 gameLoop.renditionFinished();
-                height = 0.05 + expr.setVariable("x", currentState.x()).setVariable("y", currentState.y()).evaluate();
+                height =
+                    0.05 + expr.evaluate(currentState.x(), currentState.y());
                 golfBallInstance.transform.setTranslation((float) currentState.x(), (float) height, (float) currentState.y());
             }
 
@@ -276,10 +272,7 @@ public class GolfScreen extends ScreenAdapter {
                 controller.update();
                 camera.update();
             } else {
-                double terrainLevel = expr
-                    .setVariable("x", currentState.x())
-                    .setVariable("y", currentState.y())
-                    .evaluate();
+                double terrainLevel = expr.evaluate(currentState.x(), currentState.y());
                 followingCamera.position.set(
                     (float) currentState.x(),
                     (float) terrainLevel + 0.5f,
@@ -366,13 +359,13 @@ public class GolfScreen extends ScreenAdapter {
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
                 gameLoop.shootBall(hillClimbingBot.play(currentState));
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-                gameLoop.shootBall(gradientDescent.play(currentState));
+                gameLoop.shootBall(sidewaysStepsHillCrimbingBot.play(currentState));
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
                 gameLoop.shootBall(newtonRaphsonBot.play(currentState));
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
                 gameLoop.shootBall(simulatedAnnealing.play(currentState));
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-                gameLoop.shootBall(humanPlayer.play(currentState));
+                //
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
                 gameLoop.shootBall(lineHillClimbingBot.play(currentState));
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {

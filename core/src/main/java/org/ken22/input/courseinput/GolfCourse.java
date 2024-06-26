@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
+import org.ken22.input.InjectedClass;
+import org.ken22.input.InjectedClassLoader;
 import org.ken22.obstacles.Tree;
 import org.ken22.obstacles.SandPit;
 import org.ken22.obstacles.Wall;
@@ -45,7 +47,7 @@ public class GolfCourse {
     public double ballY;
 
     @JsonIgnore
-    public Expression expression;
+    private InjectedClass expression;
 
     //obstacles
     @JsonProperty("trees")
@@ -90,9 +92,19 @@ public class GolfCourse {
         this.ballX = ballX;
         this.ballY = ballY;
 
-        this.expression = new ExpressionBuilder(this.courseProfile)
-            .variables("x", "y")
-            .build();
+        this.expression = new InjectedClassLoader(courseProfile).getInjectedClass();
+    }
+
+    /**
+     * Return the injected class containing the expression.
+     * <p>Be careful if you changing this variable.</p>
+     * @return the injected class containing the terrain function
+     */
+    public InjectedClass getInjectedExpression() {
+        if (expression == null) {
+            throw new RuntimeException("Expression was not injected");
+        }
+        return expression;
     }
 
     @JsonProperty("name")

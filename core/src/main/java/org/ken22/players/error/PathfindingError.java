@@ -1,6 +1,7 @@
 package org.ken22.players.error;
 
 import net.objecthunter.exp4j.Expression;
+import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.Tree;
 import org.ken22.physics.PhysicsFactory;
@@ -15,7 +16,7 @@ import javax.swing.plaf.nimbus.State;
 public class PathfindingError implements ErrorFunction {
 
     private GolfCourse course;
-    private Expression expr;
+    private InjectedClass expr;
 
     private PhysicsFactory physicsEngine;
 
@@ -31,7 +32,7 @@ public class PathfindingError implements ErrorFunction {
 
     public void init(GolfCourse course, PhysicsFactory physicsEngine) {
         this.course = course;
-        this.expr = course.expression;
+        this.expr = course.getInjectedExpression();
         this.physicsEngine = physicsEngine;
 
         // generate terrain grid // we use Double.MAX_VALUE to enconde where the ball can't go
@@ -42,10 +43,7 @@ public class PathfindingError implements ErrorFunction {
         this.terrainGrid = new double[(int) ((xMax - xMin) / GridPathfinding.GRID_RESOLUTION)][(int) ((yMax - yMin) / GridPathfinding.GRID_RESOLUTION)];
         for (int i = 0; i < terrainGrid.length; i++) {
             for (int j = 0; j < terrainGrid[0].length; j++) {
-                terrainGrid[i][j] = expr
-                    .setVariable("x", xMin + i * GridPathfinding.GRID_RESOLUTION)
-                    .setVariable("y", yMin + j * GridPathfinding.GRID_RESOLUTION)
-                    .evaluate();
+                terrainGrid[i][j] = expr.evaluate(xMin + i * GridPathfinding.GRID_RESOLUTION, yMin + j * GridPathfinding.GRID_RESOLUTION);
                 if (terrainGrid[i][j] < 0) { // if water, then set to max value
                     terrainGrid[i][j] = Double.MAX_VALUE;
                 }
@@ -62,7 +60,7 @@ public class PathfindingError implements ErrorFunction {
         int finishX, finishY;
         finishX = (int) ((course.targetXcoord() - xMin) / GridPathfinding.GRID_RESOLUTION);
         finishY = (int) ((course.targetYcoord() - yMin) / GridPathfinding.GRID_RESOLUTION);
-        Node finish = new Node(finishX, finishY, expr.setVariable("x", course.targetXcoord()).setVariable("y", course.targetYcoord()).evaluate());
+        Node finish = new Node(finishX, finishY, expr.evaluate(course.targetXcoord(),  course.targetYcoord()));
         this.pathfinding.init(finish, terrainGrid, course, weighting);
     }
 

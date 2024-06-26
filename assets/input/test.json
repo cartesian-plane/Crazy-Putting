@@ -1,6 +1,6 @@
 {
   "name": "Sunset Valley",
-  "courseProfile": "0.5*sin((x+y)/10) + 1",
+  "courseProfile": "0.5*Math.sin((x+y)/10) + 1",
   "range": 5.0,
   "mass": 0.0459,
   "gravitationalConstant": 9.80665,

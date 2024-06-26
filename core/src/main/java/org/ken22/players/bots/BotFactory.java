@@ -2,12 +2,11 @@ package org.ken22.players.bots;
 
 import org.ken22.input.settings.BotSettings;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.input.settings.ErrorFunctionType;
 import org.ken22.physics.PhysicsFactory;
 import org.ken22.players.Player;
 import org.ken22.players.bots.newtonraphson.BasicNewtonRaphsonBot;
 import org.ken22.players.bots.newtonraphson.NewtonRaphsonBot;
-import org.ken22.players.bots.simulatedannealing.GradientDescent;
+import org.ken22.players.bots.hillclimbing.SidewaysStepsHillCrimbingBot;
 import org.ken22.players.bots.simulatedannealing.SimulatedAnnealing;
 import org.ken22.players.bots.hillclimbing.HillClimbingBot;
 import org.ken22.players.bots.hillclimbing.LineHillClimbingBot;
@@ -15,7 +14,6 @@ import org.ken22.players.bots.hillclimbing.RandomRestartHillClimbingBot;
 import org.ken22.players.bots.simplebots.InitialGuessBot;
 import org.ken22.players.bots.simplebots.SimplePlanarApproximationBot;
 import org.ken22.players.error.ErrorFunction;
-import org.ken22.players.error.PathfindingError;
 
 public class BotFactory {
     private BotSettings settings;
@@ -30,14 +28,14 @@ public class BotFactory {
         return new HillClimbingBot(initialGuessBot, course, errorFunction(course), settings.stepSize);
     }
 
-    public GradientDescent gradientDescent(GolfCourse course) {
-        return new GradientDescent(settings.gdDelta, course.targetRadius, settings.sidewaysMoves, settings.randomRestarts,
+    public SidewaysStepsHillCrimbingBot gradientDescent(GolfCourse course) {
+        return new SidewaysStepsHillCrimbingBot(settings.gdDelta, course.targetRadius, settings.sidewaysMoves, settings.randomRestarts,
             course, settings.odesolverType.getSolver(), settings.differentiatorType.getDifferentiator(),
             settings.stepSize, errorFunction(course), physicsFactory);
     }
 
     public SimulatedAnnealing simulatedAnnealing(GolfCourse course)  {
-        return new SimulatedAnnealing(course, settings.odesolverType.getSolver(),
+        return new SimulatedAnnealing(null, course, settings.odesolverType.getSolver(),
             settings.differentiatorType.getDifferentiator(), settings.stepSize, settings.saInitialTemperature,2000, errorFunction(course));
     }
 

@@ -1,11 +1,9 @@
 package org.ken22.game;
 
-import com.badlogic.gdx.graphics.Camera;
 import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.engine.PhysicsEngine;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.input.courseinput.GolfCourse;
-import org.ken22.players.HumanPlayer;
 import org.ken22.screens.GolfScreen;
 
 public class GameLoop {
