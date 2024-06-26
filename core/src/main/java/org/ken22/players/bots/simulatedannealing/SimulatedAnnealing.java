@@ -210,6 +210,7 @@ public final class SimulatedAnnealing implements Player {
      * @return the best vector from the list of random vectors
      */
     private StateVector4 bootstrap() {
+        LOGGER.log(Level.INFO, "Bootstrapping the search (might take a while)");
         var randomVectors = getRandomVectors();
         StateVector4 bestVector = null;
         double bestVectorValue = Double.MAX_VALUE;
@@ -226,7 +227,7 @@ public final class SimulatedAnnealing implements Player {
             }
         }
 
-        // just return a random one if the really is no better vector
+        // just return a random one if there really is no better vector
         return (bestVector == null ? randomVectors.getFirst() : bestVector);
     }
 
@@ -243,7 +244,7 @@ public final class SimulatedAnnealing implements Player {
         ArrayList<StateVector4> randomVectors = new ArrayList<>();
         for (double vx : vx_s) {
             for (double vy: vy_s) {
-                if (PhysicsUtils.magnitude(vx, vy) < 5.0) {
+                if (PhysicsUtils.magnitude(vx, vy) < course.maximumSpeed) {
                     randomVectors.add(new StateVector4(ballX, bally, vx, vy));
                 }
             }
@@ -260,10 +261,12 @@ public final class SimulatedAnnealing implements Player {
     private double[] getRandomSpeedVector() {
         double[] vector = new double[2];
         Random random = new Random();
-        vector[0] = random.nextDouble() * 5 * 2 - 5; // random number between -5 and 5
-        double x = Math.sqrt(25-vector[0]*vector[0]);
-        vector[1] = random.nextDouble()*2*x-x; // random number between -5 and 5
-        return vector;
+        do {
+            vector[0] = random.nextDouble() * 5 * 2 - 5; // random number between -5 and 5
+            double x = Math.sqrt(25-vector[0]*vector[0]);
+            vector[1] = random.nextDouble()*2*x-x; // random number between -5 and 5
 
+        } while (PhysicsUtils.magnitude(vector[0], vector[1]) > course.maximumSpeed);
+        return vector;
     }
 }

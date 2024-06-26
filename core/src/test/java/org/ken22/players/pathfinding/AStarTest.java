@@ -95,7 +95,7 @@ class AStarTest {
 
     @Test
     @DisplayName("Test tree avoidance on 10x0 grid")
-    public void testTreeAvoidance() throws NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+    public void testTreeAvoidance() throws NoSuchMethodException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
         AStar aStar = new AStar();
         Field finish;
         Field terrainGrid;
@@ -132,7 +132,11 @@ class AStarTest {
         aStar.init(null, testGrid, null, new EquivalentWeighting());
 
         System.out.println("Avoiding tree...");
-         var returnedPath = aStar.findPath(ballNode, targetNode);
+        var returnedPath = aStar.findPath(ballNode, targetNode);
+        Method weightSum = aStar.getClass().getDeclaredMethod("weightSum", List.class);
+        weightSum.setAccessible(true);
+        var result = weightSum.invoke(aStar, returnedPath);
+        assertEquals(14.0, result);
         Collections.reverse(returnedPath);
         System.out.println("returnedPathReversed = " + returnedPath);
     }

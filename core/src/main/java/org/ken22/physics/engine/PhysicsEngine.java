@@ -114,9 +114,9 @@ public class PhysicsEngine {
             System.out.println("Warning: Setting a state vector with zero speed");
         }
 
-        if (MathUtils.magnitude(stateVector.vx(), stateVector.vy()) > 100) {
+        if (MathUtils.magnitude(stateVector.vx(), stateVector.vy()) > course.maximumSpeed) {
             throw new IllegalArgumentException("Initial vector speed too high! (max speed = "
-                + 100 + ")"); //TODO use the max speed from settings
+                + course.maximumSpeed + ")"); //TODO use the max speed from settings
         }
 
         this.trajectory.clear();
