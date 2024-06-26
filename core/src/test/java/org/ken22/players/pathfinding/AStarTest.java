@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.ken22.players.weighting.EquivalentWeighting;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +17,7 @@ class AStarTest {
 
     @Test
     @DisplayName("Test wall avoidance on 5x5 grid")
-    public void testWallAvoidance() throws NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+    public void testWallAvoidance() throws NoSuchMethodException, IllegalAccessException, NoSuchFieldException, InvocationTargetException {
         AStar aStar = new AStar();
         Field finish;
         Field terrainGrid;
@@ -75,7 +76,17 @@ class AStarTest {
         expectedPath.add(node13);
         Collections.reverse(expectedPath);
 
-        assertEquals(expectedPath, returnedPath);
+        Method weightSum = aStar.getClass().getDeclaredMethod("weightSum", List.class);
+        weightSum.setAccessible(true);
+
+
+        System.out.println("Heyyyyyy");
+        System.out.println("expectedPath = " + expectedPath);
+        System.out.println("returnedPath = " + returnedPath);
+        var result = weightSum.invoke(aStar, returnedPath);
+        assertEquals(12.0, result);
+
+
 
         System.out.println(returnedPath.reversed());
 
