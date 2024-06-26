@@ -8,6 +8,7 @@ import org.ken22.physics.odesolvers.outofplace.RK4;
 import org.ken22.physics.utils.PhysicsUtils;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
+import org.ken22.players.bots.simplebots.InitialGuessBot;
 import org.ken22.players.error.ErrorFunction;
 import org.ken22.players.error.EuclideanError;
 import org.ken22.utils.MathUtils;
@@ -37,6 +38,7 @@ import java.util.logging.Logger;
  */
 public final class SimulatedAnnealing implements Player {
     private static final Logger LOGGER = Logger.getLogger(SimulatedAnnealing.class.getName());
+    private static final int NR_BOOTSTRAP_VECTORS = 15;
 
     static {
 
@@ -64,6 +66,7 @@ public final class SimulatedAnnealing implements Player {
     private final double stepSize;
     private double allottedTime;
     private int kmax = 1000;
+    private Player initialGuess;
 
     private final ErrorFunction heuristicFunction;
     private final Evaluator evaluator;
@@ -82,6 +85,7 @@ public final class SimulatedAnnealing implements Player {
         this.evaluator = new Evaluator(this.heuristicFunction, this.course);
         this.initialTemperature = 100;
         this.schedule = new LinearCooling(initialTemperature, 0.8);
+        this.initialGuess = new InitialGuessBot(course);
 
         var initialX = course.ballX();
         var initialY = course.ballY();
@@ -91,14 +95,15 @@ public final class SimulatedAnnealing implements Player {
         // initialState = new StateVector4(initialX, initialY, speedVector[0], speedVector[1]);
     }
 
-    public SimulatedAnnealing(GolfCourse course,
-                              ODESolver<StateVector4> solver,
-                              Differentiator differentiator,
-                              double stepSize,
-                              double initialTemperature,
-                              double allottedTime,
-                              ErrorFunction errorFunction) {
+    public SimulatedAnnealing(Player initialGuess, GolfCourse course,
+                                ODESolver<StateVector4> solver,
+                                Differentiator differentiator,
+                                double stepSize,
+                                double initialTemperature,
+                                double allottedTime,
+                                ErrorFunction errorFunction) {
         LOGGER.log(Level.FINE, "Initializing simulated annealing");
+        this.initialGuess = initialGuess;
         this.course = course;
         this.ballX = course.ballX;
         this.bally = course.ballY;
@@ -122,15 +127,17 @@ public final class SimulatedAnnealing implements Player {
         // update the ball's position, so the bot is aware of the new position (if applicable)
         ballX = state.x;
         bally = state.y;
-        return search(state);
-    }
 
-    private StateVector4 search(StateVector4 state) {
         // flag that stores whether a solution was found
         // if the search stops before a solution is found, a logging message is displayed
         boolean foundSolution = false;
         double temperature;
-        var bestState = bootstrap();
+        StateVector4 bestState;
+        if (initialGuess != null)
+            bestState = initialGuess.play(state);
+        else
+            bestState = bootstrap();
+
         var bestStateValue = evaluator.evaluateState(bestState);
         StateVector4 current = bestState;
         // early return if we stumble upon the solution
@@ -181,46 +188,27 @@ public final class SimulatedAnnealing implements Player {
         return bestState;
     }
 
-    private double getTemperature(int k) {
-        return 1 -(((double)(k)+1)/(double)(kmax));
-    }
-
     private StateVector4 getRandomNeighbour(StateVector4 currentState) {
-//
-//        final double initialX = currentState.x();
-//        final double initialY = currentState.y();
-//
-//        // we are in a 2-d space, so we have 4 neighbours
-//        var neighbour1 = new StateVector4(initialX, initialY,
-//            currentState.vx() + DELTA, currentState.vy());
-//        var neighbour2 = new StateVector4(initialX, initialY,
-//            currentState.vx() - DELTA, currentState.vy());
-//
-//
-//        var neighbour3 = new StateVector4(initialX, initialY,
-//            currentState.vx(), currentState.vy() + DELTA);
-//        var neighbour4 = new StateVector4(initialX, initialY,
-//            currentState.vx(), currentState.vy() - DELTA);
-//
-//        ArrayList<StateVector4> neighbours = new ArrayList<>();
-//        neighbours.add(neighbour1);
-//        neighbours.add(neighbour2);
-//        neighbours.add(neighbour3);
-//        neighbours.add(neighbour4);
-//
-//        // ensures a random neighbour is always returned
-//        Collections.shuffle(neighbours);
-//        return neighbours.getFirst();
 
         final double initialVx = currentState.vx();
         final double initialVy = currentState.vy();
 
-        double vx = initialVx + DELTA * ((Math.random() - 0.5) * 2);
-        double vy = initialVy + DELTA * ((Math.random() - 0.5) * 2);
+        // uniform distribution on a circle
+        var radius = DELTA;
+        var angle = Math.random() * 2 * Math.PI;
+        double vx = initialVx + radius * Math.cos(angle);
+        double vy = initialVy + radius * Math.sin(angle);
 
         return new StateVector4(currentState.x(), currentState.y(), vx, vy);
     }
 
+
+
+    /**
+     * <p>Bootstrap the search by generating a list of random vectors and selecting the best one.</p>
+     *
+     * @return the best vector from the list of random vectors
+     */
     private StateVector4 bootstrap() {
         var randomVectors = getRandomVectors();
         StateVector4 bestVector = null;
@@ -242,9 +230,15 @@ public final class SimulatedAnnealing implements Player {
         return (bestVector == null ? randomVectors.getFirst() : bestVector);
     }
 
+    /**
+     * <p>Generate a list of random vectors to bootstrap the search.</p>
+     * Ensures that the magnitude of the vector does not exceed 5m/s
+     *
+     * @return list of random vectors
+     */
     private List<StateVector4> getRandomVectors() {
-        double[] vx_s = MathUtils.linspace(-5, 5, 30);
-        double[] vy_s = MathUtils.linspace(-5, 5, 30);
+        double[] vx_s = MathUtils.linspace(-5, 5, NR_BOOTSTRAP_VECTORS);
+        double[] vy_s = MathUtils.linspace(-5, 5, NR_BOOTSTRAP_VECTORS);
 
         ArrayList<StateVector4> randomVectors = new ArrayList<>();
         for (double vx : vx_s) {

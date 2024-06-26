@@ -35,7 +35,7 @@ public class BotFactory {
     }
 
     public SimulatedAnnealing simulatedAnnealing(GolfCourse course)  {
-        return new SimulatedAnnealing(course, settings.odesolverType.getSolver(),
+        return new SimulatedAnnealing(null, course, settings.odesolverType.getSolver(),
             settings.differentiatorType.getDifferentiator(), settings.stepSize, settings.saInitialTemperature,2000, errorFunction(course));
     }
 
