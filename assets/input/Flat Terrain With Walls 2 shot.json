@@ -1,0 +1,131 @@
+{
+  "name" : "Flat Terrain With Walls 2 shot",
+  "courseProfile" : "0*x + 0*y",
+  "range" : 10.0,
+  "mass" : 0.0459,
+  "gravitationalConstant" : 9.81,
+  "kineticFrictionGrass" : 0.08,
+  "staticFrictionGrass" : 0.2,
+  "kineticFrictionSand" : 0.1,
+  "staticFrictionSand" : 0.1,
+  "maximumSpeed" : 100.0,
+  "targetRadius" : 0.05,
+  "targetXcoord" : 1.5,
+  "targetYcoord" : 0.5,
+  "ballXcoord" : 0.5,
+  "ballYcoord" : 0.5,
+  "trees" : [ ],
+  "sandPits" : [ ],
+  "walls" : [
+    {
+      "endPoint": [
+        0.0,
+        1.0
+      ],
+      "startPoint": [
+        0.0,
+        0.0
+      ],
+      "thickness": 0.2
+    },
+    {
+      "endPoint": [
+        1.0,
+        0.0
+      ],
+      "startPoint": [
+        0.0,
+        0.0
+      ],
+      "thickness": 0.2
+    },
+    {
+      "endPoint": [
+        1.0,
+        0.0
+      ],
+      "startPoint": [
+        1.0,
+        2.0
+      ],
+      "thickness": 0.2
+    },
+    {
+      "endPoint": [
+        1.0,
+        2.0
+      ],
+      "startPoint": [
+        -1.0,
+        2.0
+      ],
+      "thickness": 0.2
+    },
+    {
+      "endPoint": [
+        -1.0,
+        2.0
+      ],
+      "startPoint": [
+        -1.0,
+        -1.0
+      ],
+      "thickness": 0.2
+    },
+    {
+      "endPoint": [
+        -1.0,
+        -1.0
+      ],
+      "startPoint": [
+        3.0,
+        -1.0
+      ],
+      "thickness": 0.2
+    },
+    {
+      "endPoint": [
+        1.0,
+        0.0
+      ],
+      "startPoint": [
+        2.0,
+        0.0
+      ],
+      "thickness": 0.2
+    },
+    {
+      "endPoint": [
+        2.0,
+        0.0
+      ],
+      "startPoint": [
+        2.0,
+        1.0
+      ],
+      "thickness": 0.2
+    },
+    {
+      "endPoint": [
+        3.0,
+        -1.0
+      ],
+      "startPoint": [
+        3.0,
+        2.0
+      ],
+      "thickness": 0.2
+    },
+    {
+      "endPoint": [
+        3.0,
+        2.0
+      ],
+      "startPoint": [
+        0.0,
+        2.0
+      ],
+      "thickness": 0.2
+    }
+  ]
+}
