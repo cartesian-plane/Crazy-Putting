@@ -115,68 +115,51 @@ public class MathUtils {
         return differentiator.differentiate(h, yCoord, fy);
     }
 
-    // credit to https://stackoverflow.com/questions/217578/how-can-i-determine-whether-a-2d-point-is-within-a-polygon
-    // and to chatgpt for using the crossproduct idea
-    public static boolean pointInQuadrilateral(double px, double py, double qx1, double qy1, double qx2, double qy2, double qx3, double qy3, double qx4, double qy4) {
-        return sameSide(px, py, qx1, qy1, qx2, qy2, qx3, qy3) &&
-            sameSide(px, py, qx2, qy2, qx3, qy3, qx4, qy4) &&
-            sameSide(px, py, qx3, qy3, qx4, qy4, qx1, qy1) &&
-            sameSide(px, py, qx4, qy4, qx1, qy1, qx2, qy2);
+    public static double cross2D(double x1, double y1, double x2, double y2) {
+        return x1 * y2 - x2 * y1;
     }
 
-    public static boolean sameSide(double px1, double py1, double px2, double py2, double lx1, double ly1, double lx2, double ly2) {
-        double dx1 = px1 - lx1;
-        double dy1 = py1 - ly1;
-        double dx2 = px2 - lx1;
-        double dy2 = py2 - ly1;
+    // credit to https://stackoverflow.com/questions/217578/how-can-i-determine-whether-a-2d-point-is-within-a-polygon
+    // Check if a point is inside a quadrilateral using the cross product method (credit to GPT the almighty)
+    public static boolean pointInQuadrilateral(double px, double py, double smx, double smy, double spx, double spy, double epx, double epy, double emx, double emy) {
+        double sign1 = cross2D(px - smx, py - smy, emx - smx, emy - smy);
+        double sign2 = cross2D(px - emx, py - emy, epx - emx, epy - emy);
+        double sign3 = cross2D(px - epx, py - epy, spx - epx, spy - epy);
+        double sign4 = cross2D(px - spx, py - spy, smx - spx, smy - spy);
 
-        // Cross product
-        double c1 = dx1 * (ly2 - ly1) - (lx2 - lx1) * dy1;
-        double c2 = dx2 * (ly2 - ly1) - (lx2 - lx1) * dy2;
+        boolean allPositive = (sign1 > 0 && sign2 > 0 && sign3 > 0 && sign4 > 0);
+        boolean allNegative = (sign1 < 0 && sign2 < 0 && sign3 < 0 && sign4 < 0);
 
-        return c1 * c2 >= 0;
+        return allPositive || allNegative;
     }
 
     public static double[] unitNormal2D(double x1, double y1, double x2, double y2) {
-        // Direction vector of the line segment
         double dx = x2 - x1;
         double dy = y2 - y1;
 
-        // Normalize the normal vector
-        double length = Math.sqrt(dx * dx + dy * dy);
-        double[] unitNormal = { -dy / length, dx / length };
+        // Perpendicular vector (reciprocal)
+        double var1 = -dy;
+        double var2 = dx;
 
-        return unitNormal;
+        // Normalize the normal vector
+        double length = Math.sqrt(var1 * var1 + var2 * var2);
+        return new double[]{var1 / length, var2 / length};
     }
 
     public static double dot2D(double x1, double y1, double x2, double y2) {
         return x1 * x2 + y1 * y2;
     }
 
-    // Method to normalize a vector
-    public static double[] normalize(double x, double y) {
-        double length = Math.sqrt(x * x + y * y);
-        return new double[]{x / length, y / length};
-    }
-
-    // Method to multiply a vector by a scalar
+    // Multiply a vector by a scalar
     public static double[] multiply(double[] vector, double scalar) {
         return new double[]{vector[0] * scalar, vector[1] * scalar};
     }
 
-    public static double[] reflectedVector2D(double x1, double y1, double x2, double y2, double vx, double vy) {
-        double[] unitNormal = unitNormal2D(x1, y1, x2, y2);
-        double dot = dot2D(vx, vy, unitNormal[0], unitNormal[1]);
-
-        // Ensure the normal vector is pointing against the incident vector for correct reflection
-        if (dot > 0) {
-            unitNormal = multiply(unitNormal, -1);
-            dot = -dot;
-        }
+    // Calculate the reflected vector
+    public static double[] reflectedVector2D(double xn, double yn, double vx, double vy) {
+        double dot = dot2D(vx, vy, xn, yn);
 
         // Calculate the reflected vector
-        double[] reflected = {vx - 2 * dot * unitNormal[0], vy - 2 * dot * unitNormal[1]};
-        return reflected;
+        return new double[]{vx - 2 * dot * xn, vy - 2 * dot * yn};
     }
-
 }

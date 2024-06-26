@@ -231,53 +231,40 @@ public class PhysicsEngine {
 
     private void wallCollision(StateVector4 state) {
         for (Wall w : course.walls) {
-            //find qorners of the wall
-            //(y2 - y1)/(x2 - x1) = -ox/oy
-            //the coordinates of the vector perpendicular to the wall
-            double wid = w.thickness()/2.0;
+            // Find the thickness offset
+            double wid = w.thickness() / 2.0;
 
-            var x1 = w.startPoint()[0] + wid; var y1 = w.startPoint()[1] + wid;
-            var x2 = w.startPoint()[0] - wid; var y2 = w.startPoint()[1] - wid;
-            var x3 = w.endPoint()[0] - wid; var y3 = w.endPoint()[1] - wid;
-            var x4 = w.endPoint()[0] + wid; var y4 = w.endPoint()[1] + wid;
-
-            //enclosing rectangle borders, for optimization
-            var xMax = w.startPoint()[0] > w.endPoint()[0] ? x1 : x4;
-            var xMin = w.startPoint()[0] < w.endPoint()[0] ? x2 : x3;
-            var yMax = w.startPoint()[1] > w.endPoint()[1] ? y1 : y4;
-            var yMin = w.startPoint()[1] < w.endPoint()[1] ? y2 : y3;
-
+            // Calculate unit normal to the wall
             double[] unitNormal = MathUtils.unitNormal2D(w.startPoint()[0], w.startPoint()[1], w.endPoint()[0], w.endPoint()[1]);
-            double xn = wid*unitNormal[0];
-            double yn = wid*unitNormal[1];
+            double xn = wid * unitNormal[0];
+            double yn = wid * unitNormal[1];
 
-            var c1x = w.startPoint()[0] - xn; var c1y = w.startPoint()[1] - yn;
-            var c2x = w.startPoint()[0] + xn; var c2y = w.startPoint()[1] + yn;
-            var c3x = w.endPoint()[0] + xn; var c3y = w.endPoint()[1] + yn;
-            var c4x = w.endPoint()[0] - xn; var c4y = w.endPoint()[1] - yn;
+            // Calculate actual corners of the wall using the normal
+            double smx = w.startPoint()[0] - xn, smy = w.startPoint()[1] - yn;
+            double spx = w.startPoint()[0] + xn, spy = w.startPoint()[1] + yn;
+            double epx = w.endPoint()[0] + xn, epy = w.endPoint()[1] + yn;
+            double emx = w.endPoint()[0] - xn, emy = w.endPoint()[1] - yn;
 
-            if( !(state.x() > xMax || state.x() < xMin || state.y() > yMax || state.y() < yMin) && //quick check
-                MathUtils.pointInQuadrilateral(state.x(), state.y(), c1x, c1y, c2x, c2y, c3x, c3y, c4x, c4y)) { //full check
-                //TODO: Recheck
+            // Calculate the bounding box for quick rejection
+            double xMax = Math.max(smx, Math.max(spx, Math.max(epx, emx)));
+            double xMin = Math.min(smx, Math.min(spx, Math.min(epx, emx)));
+            double yMax = Math.max(smy, Math.max(spy, Math.max(epy, emy)));
+            double yMin = Math.min(smy, Math.min(spy, Math.min(epy, emy)));
 
-                double[] temp = MathUtils.reflectedVector2D(w.endPoint()[0], w.endPoint()[1], w.startPoint()[0], w.startPoint()[1], state.vx(), state.vy());
+            // Quick rejection test
+            if ( (state.x() <= xMax && state.x() >= xMin && state.y() <= yMax && state.y() >= yMin) &&
+                MathUtils.pointInQuadrilateral(state.x(), state.y(), smx, smy, spx, spy, epx, epy, emx, emy)) {
+
+                // Calculate mirror reflection of the ball from the wall
+                double[] temp = MathUtils.reflectedVector2D(xn, yn, state.vx(), state.vy());
                 double v = MathUtils.magnitude(state.vx(), state.vy());
-                double[] reflected_velocities  = MathUtils.multiply(temp, 0.8*v);
+                double[] reflected_velocities = MathUtils.multiply(temp, 0.8 * v);
                 state.setVx(reflected_velocities[0]);
                 state.setVy(reflected_velocities[1]);
-
-
-//                double[] normal = new double[] {state.x() - w.startPoint()[0], state.y() - w.startPoint()[1]};
-//                var magnitude = MathUtils.magnitude(normal[0], normal[1]);
-//                normal[0] /= magnitude;
-//                normal[1] /= magnitude;
-//                var dot = state.vx() * normal[0] + state.vy() * normal[1];
-//                state.setVx(state.vx() - 2 * dot * normal[0]);
-//                state.setVy(state.vy() - 2 * dot * normal[1]);
-//                System.out.println("Wall collision");
             }
         }
     }
+
 
     /**
      * Generates, appends and returns the next state vector in the trajectory according to the step size
