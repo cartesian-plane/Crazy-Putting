@@ -66,15 +66,15 @@ public class InjectedClassLoader {
 
         System.out.println("sourceRootPath = " + sourceRootPath);
         File root = Files.createTempDirectory(sourceRootPath, null).toFile();
-        System.out.println("root = " + root);
-//        Runtime.getRuntime().addShutdownHook(new Thread() {
-//
-//            @Override
-//            public void run() {
-//                System.out.println("Deleting temp files...");
-//                deleteDirectory(root);
-//            }
-//        });
+        System.out.println("Current runtime: " + Runtime.getRuntime());
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+
+            @Override
+            public void run() {
+                System.out.println("Deleting temp files...");
+                deleteDirectory(root);
+            }
+        });
 
         File sourceFile = new File(root, "injected/ExpressionClass.java");
         sourceFile.getParentFile().mkdirs();
