@@ -5,6 +5,7 @@ import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.Tree;
 import org.ken22.obstacles.Wall;
+import org.ken22.physics.differentiation.inplace.InPlaceVectorDifferentiation4;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.differentiators.FivePointCenteredDifference;
 import org.ken22.physics.differentiation.outofplace.VectorDifferentiation4;
@@ -27,6 +28,7 @@ public class PhysicsEngine {
     private static final double paddingSize = 2.5;
     private static final double DEFAULT_TIME_STEP = 0.0001;
     private static final double STOPPING_THRESHOLD = 0.05;
+    private static final boolean USE_OUT_OF_PLACE_SOLVER = true; //inplace solver is not working properly
     private final GolfCourse course;
     private final InjectedClass expr;
     private double xinit, yinit;
@@ -308,29 +310,35 @@ public class PhysicsEngine {
      * @return {@link StateVector4} the final prediction
      */
     public StateVector4 solve() {
-        while (!isAtRest()) {
-            nextStep();
+        if (USE_OUT_OF_PLACE_SOLVER) {
+            while (!isAtRest()) {
+                nextStep();
+            }
+            return trajectory.getLast();
+        } else{
+            StateVector4 currentState = trajectory.getLast();
+            StateVector4 initialState =
+                new StateVector4(trajectory.getLast().x(), trajectory.getLast().y(), trajectory.getLast().vx(), trajectory.getLast().vy());
+
+            //run simulation
+            while (!isAtRest()) {
+                InPlaceVectorDifferentiation4 inPlaceDifferentiation;
+                // Decide which equations to use for updating the acceleration
+                if (MathUtils.magnitude(currentState.vx(), currentState.vy()) < STOPPING_THRESHOLD) {
+                    inPlaceDifferentiation = inPlaceVectorDifferentiationFactory.lowSpeedVectorDifferentiation4();
+                } else {
+                    inPlaceDifferentiation = inPlaceVectorDifferentiationFactory.normalSpeedVectorDifferentiation4();
+                }
+
+                inPlaceSolver.nextStep(timeStep, trajectory.getLast(), inPlaceDifferentiation);
+
+                treeCollision(currentState);
+                wallCollision(currentState);
+            }
+
+            trajectory.set(trajectory.size() - 1, initialState); //replace initial state for rendering
+            return currentState;
         }
-        return trajectory.getLast();
-//        StateVector4 currentState =
-//            new StateVector4(trajectory.getLast().x(), trajectory.getLast().y(), trajectory.getLast().vx(), trajectory.getLast().vy());
-//
-//        while (!isAtRest()) {
-//            InPlaceVectorDifferentiation4 inPlaceDifferentiation;
-//            // Decide which equations to use for updating the acceleration
-//            if (MathUtils.magnitude(currentState.vx(), currentState.vy()) < STOPPING_THRESHOLD) {
-//                inPlaceDifferentiation = inPlaceVectorDifferentiationFactory.lowSpeedVectorDifferentiation4();
-//            } else {
-//                inPlaceDifferentiation = inPlaceVectorDifferentiationFactory.normalSpeedVectorDifferentiation4();
-//            }
-//
-//            inPlaceSolver.nextStep(timeStep, currentState, inPlaceDifferentiation);
-//
-//            treeCollision(currentState);
-//            wallCollision(currentState);
-//        }
-//
-//        return currentState;
     }
 
     public FrameRateIterator iterator() {

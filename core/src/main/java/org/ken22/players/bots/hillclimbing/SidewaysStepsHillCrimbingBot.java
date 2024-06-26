@@ -102,7 +102,6 @@ public class SidewaysStepsHillCrimbingBot implements Player {
         this.differentiator = differentiator;
         this.stepSize = stepSize;
         this.heuristicFunction = heuristicFunction;
-        this.heuristicFunction.init(course, physicsFactory);
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
             this.stepSize);
     }

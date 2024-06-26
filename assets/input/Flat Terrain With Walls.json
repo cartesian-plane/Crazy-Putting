@@ -10,8 +10,8 @@
   "staticFrictionSand" : 0.1,
   "maximumSpeed" : 100.0,
   "targetRadius" : 0.05,
-  "targetXcoord" : -0.5,
-  "targetYcoord" : 2.5,
+  "targetXcoord" : 0.5,
+  "targetYcoord" : -0.5,
   "ballXcoord" : 0.5,
   "ballYcoord" : 0.5,
   "trees" : [ ],
@@ -69,6 +69,28 @@
       "startPoint": [
         -1.0,
         -1.0
+      ],
+      "thickness": 0.2
+    },
+    {
+      "endPoint": [
+        -1.0,
+        -1.0
+      ],
+      "startPoint": [
+        1.0,
+        -1.0
+      ],
+      "thickness": 0.2
+    },
+    {
+      "endPoint": [
+         1.0,
+        -1.0
+      ],
+      "startPoint": [
+        1.0,
+        0.0
       ],
       "thickness": 0.2
     }

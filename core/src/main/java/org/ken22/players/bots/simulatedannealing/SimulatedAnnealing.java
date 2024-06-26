@@ -44,16 +44,16 @@ public final class SimulatedAnnealing implements Player {
         // the default level is INFO
         // if you want to change logging, just change the enum type at (1) and (2)
         // https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html
-        LOGGER.setLevel(Level.INFO); // (1)
+        LOGGER.setLevel(Level.FINEST); // (1)
 
 
         Handler consoleHandler = new ConsoleHandler();
-        consoleHandler.setLevel(Level.INFO); // (2)
+        consoleHandler.setLevel(Level.FINEST); // (2)
         LOGGER.setUseParentHandlers(false);
         LOGGER.addHandler(consoleHandler);
     }
 
-    private static final int NR_BOOTSTRAP_VECTORS = 15;
+    private static final int NR_BOOTSTRAP_VECTORS = 30;
     private final double DELTA;
     private final double THRESHOLD;
     private final double initialTemperature;
