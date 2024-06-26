@@ -2,6 +2,7 @@ package org.ken22.players.error;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
+import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.engine.PhysicsEngine;
@@ -23,10 +24,8 @@ public class GradientDescent1 implements ErrorFunction {
         double x_t = course.targetXcoord();
         double y_t = course.targetYcoord();
         String terrain = course.courseProfile();
-        Expression expr = course.expression;
-        double z_t = expr.setVariable("x", x_t)
-            .setVariable("y", y_t)
-            .evaluate();
+        InjectedClass expr = course.getInjectedExpression();
+        double z_t = expr.evaluate(x_t, y_t);
 
         System.out.println("Target coordinates: (" + x_t + ", " + y_t + ", " + z_t + ")");
 
@@ -34,9 +33,7 @@ public class GradientDescent1 implements ErrorFunction {
             StateVector4 vec = engine.nextStep();
             double x = vec.x();
             double y = vec.y();
-            double z = expr.setVariable("x", x)
-                .setVariable("y", y)
-                .evaluate();
+            double z = expr.evaluate(x, y);
 
             double current = MathUtils.magnitude(x - x_t, y - y_t, z - z_t);
             if(current < d_min) {
@@ -52,7 +49,7 @@ public class GradientDescent1 implements ErrorFunction {
         double y_i = initial.y();
         double vx_i = initial.vx();
         double vy_i = initial.vy();
-        double z_i = expr.setVariable("x", x_i).setVariable("y", y_i).evaluate();
+        double z_i = expr.evaluate(x_i, y_i);
 
         System.out.println("Initial state: (" + x_i + ", " + y_i + ", " + z_i + ")");
 
@@ -63,7 +60,7 @@ public class GradientDescent1 implements ErrorFunction {
         double y_f = last.y();
         double vx_f = last.vx();
         double vy_f = last.vy();
-        double z_f = expr.setVariable("x", x_f).setVariable("y", y_f).evaluate();
+        double z_f = expr.evaluate(x_f, y_f);
 
         System.out.println("Final state: (" + x_f + ", " + y_f + ", " + z_f + ")");
         System.out.println("Final velocities: (" + vx_f + ", " + vy_f + ")");

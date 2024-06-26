@@ -1,6 +1,7 @@
 package org.ken22.players.bots.simplebots;
 
 import net.objecthunter.exp4j.Expression;
+import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
@@ -11,11 +12,11 @@ public class SimplePlaneBot2  implements Player {
     StateVector4 targetState;
 
     GolfCourse course;
-    Expression expr;
+    InjectedClass expr;
 
     public SimplePlaneBot2(GolfCourse course) {
         this.course = course;
-        this.expr = course.expression;
+        this.expr = course.getInjectedExpression();
     }
 
     @Override
@@ -26,8 +27,10 @@ public class SimplePlaneBot2  implements Player {
         this.targetState = new StateVector4(course.targetXcoord(), course.targetYcoord(), 0, 0);
 
         // solve
-        var currentHeight = expr.setVariable("x", initState.x()).setVariable("y", initState.y()).evaluate();
-        var targetHeight = expr.setVariable("x", targetState.x()).setVariable("y", targetState.y()).evaluate();
+        var currentHeight =
+            expr.evaluate(initState.x(), initState.y());
+        var targetHeight =
+            expr.evaluate(targetState.x(),  targetState.y());
 
         var dx = targetState.x() - initState.x();
         var dy = targetState.y() - initState.y();

@@ -1,6 +1,6 @@
 {
   "name" : "Ocean Breeze",
-  "courseProfile" : "sin(x)*sin(y)",
+  "courseProfile" : "Math.sin(x)*Math.sin(y)",
   "range" : 10.0,
   "mass" : 0.0459,
   "gravitationalConstant" : 9.80665,

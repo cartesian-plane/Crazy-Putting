@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
+import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.SandPit;
 import org.ken22.obstacles.Tree;
@@ -29,14 +30,14 @@ public class Minimap {
 
     private float xMin, xMax, yMin, yMax;
     private GolfCourse course;
-    private Expression expr;
+    private InjectedClass expr;
 
     private double[][] heightMap = new double[WIDTH][HEIGHT];
     private boolean[][] waterMask = new boolean[WIDTH][HEIGHT];
 
     public Minimap(GolfCourse course, Viewport viewport) {
         this.course = course;
-        this.expr = course.expression;
+        this.expr = course.getInjectedExpression();
 
         float padding = GolfScreen.PADDING_SIZE;
 
@@ -161,17 +162,15 @@ public class Minimap {
         image.setDrawable(new TextureRegionDrawable(texture));
     }
 
-    private void initHeightMap(Expression heightFunction) {
+    private void initHeightMap(InjectedClass heightFunction) {
         double[] xCoords = MathUtils.linspace(xMin, xMax, WIDTH);
         double[] yCoords = MathUtils.linspace(yMin, yMax, HEIGHT);
 
         for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
-                heightFunction
-                    .setVariable("x", xCoords[i])
-                    .setVariable("y", yCoords[j]);
 
-                heightMap[i][j] = heightFunction.evaluate();
+
+                heightMap[i][j] = heightFunction.evaluate(xCoords[i], yCoords[j]);
                 if (heightMap[i][j] < 0) waterMask[i][j] = true; // water at (i, j)
             }
         }

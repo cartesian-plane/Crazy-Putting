@@ -1,6 +1,7 @@
 package org.ken22.physics.differentiation.inplace;
 
 import net.objecthunter.exp4j.Expression;
+import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.differentiators.Differentiator;
 import org.ken22.physics.vectors.StateVector4;
@@ -14,14 +15,15 @@ public class VectorDifferentiationFactory {
     private boolean complete;
 
     private GolfCourse course;
-    private Expression expr;
+    private InjectedClass expr;
 
     private InPlaceVectorDifferentiation4 normalComplete;
     private InPlaceVectorDifferentiation4 lowComplete;
     private InPlaceVectorDifferentiation4 normalSimple;
     private InPlaceVectorDifferentiation4 lowSimple;
 
-    public VectorDifferentiationFactory(double h, Expression expr, GolfCourse course, Differentiator differentiator, boolean completePhysics) {
+    public VectorDifferentiationFactory(double h, InjectedClass expr, GolfCourse course, Differentiator differentiator,
+                                        boolean completePhysics) {
         this.h = h;
         this.expr = expr;
         this.course = course;

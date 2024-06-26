@@ -2,6 +2,7 @@ package org.ken22.players.error;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
+import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.engine.PhysicsEngine;
@@ -26,18 +27,14 @@ public class GradientDescent2 implements ErrorFunction {
         double x_t = course.targetXcoord();
         double y_t = course.targetYcoord();
         String terrain = course.courseProfile();
-        Expression expr = course.expression;
-        double z_t = expr.setVariable("x", x_t)
-            .setVariable("y", y_t)
-            .evaluate();
+        InjectedClass expr = course.getInjectedExpression();
+        double z_t = expr.evaluate(x_t, y_t);
 
         while (!engine.isAtRest()) {
             StateVector4 vec = engine.nextStep();
             double x = vec.x();
             double y = vec.y();
-            double z = expr.setVariable("x", x)
-                .setVariable("y", y)
-                .evaluate();
+            double z = expr.evaluate(x, y);
 
             double current = MathUtils.magnitude(x - x_t, y - y_t, z - z_t);
             if(current < d_min) {
@@ -53,21 +50,21 @@ public class GradientDescent2 implements ErrorFunction {
         double y_i = initial.y();
         double vx_i = initial.vx();
         double vy_i = initial.vy();
-        double z_i = expr.setVariable("x", x_i).setVariable("y", y_i).evaluate();
+        double z_i = expr.evaluate(x_i, y_i);
         double d_i = MathUtils.magnitude(x_t-x_i, y_t-y_i, z_t-z_i);
         double v_i = MathUtils.magnitude(vx_i, vy_i);
 
 
         double x_c = closest.x();
         double y_c = closest.y();
-        double z_c = expr.setVariable("x", x_c).setVariable("y", y_c).evaluate();
+        double z_c = expr.evaluate(x_c, y_c);
         double d_c = MathUtils.magnitude(x_t-x_c, y_t-y_c, z_t-z_c);
 
         double x_f = last.x();
         double y_f = last.y();
         double vx_f = last.vx();
         double vy_f = last.vy();
-        double z_f = expr.setVariable("x", x_f).setVariable("y", y_f).evaluate();
+        double z_f = expr.evaluate(x_f, y_f);
         double d_f = MathUtils.magnitude(x_f-x_t, y_f-y_t, z_f-z_t);
         double v_f = MathUtils.magnitude(vx_f, vy_f);
 

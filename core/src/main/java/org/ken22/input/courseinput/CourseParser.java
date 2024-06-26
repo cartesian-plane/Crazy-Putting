@@ -3,6 +3,7 @@ package org.ken22.input.courseinput;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
+import org.ken22.input.InjectedClass;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +14,7 @@ public class CourseParser {
 
     private GolfCourse course;
     private Map<String, Double> variables = new HashMap<>();
-    private Expression expression;
+    private InjectedClass expression;
     private String terrain;
 
     public CourseParser(File jsonFile) {
@@ -23,7 +24,7 @@ public class CourseParser {
             this.course = objectMapper.readValue(jsonFile, GolfCourse.class);
             System.out.println(this.course.name());
             this.terrain = course.courseProfile();
-            this.expression = course.expression;
+            this.expression = course.getInjectedExpression();
         } catch (
             IOException e) {
             e.printStackTrace();
@@ -38,7 +39,7 @@ public class CourseParser {
         return variables;
     }
 
-    public Expression getExpression() {
+    public InjectedClass getExpression() {
         return expression;
     }
 

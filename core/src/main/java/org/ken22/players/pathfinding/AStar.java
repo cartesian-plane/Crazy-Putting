@@ -33,11 +33,9 @@ public class AStar implements GridPathfinding {
         yMin = course.ballY() < course.targetYcoord() ? course.ballY() - GolfScreen.PADDING_SIZE : course.targetYcoord();
         yMax = course.ballY() > course.targetYcoord() ? course.ballY() + GolfScreen.PADDING_SIZE : course.targetYcoord();
 
-        var expression = course.expression;
-        expression
-            .setVariable("x", ballX)
-            .setVariable("y", ballY);
-        double z = expression.evaluate();
+        var expression = course.getInjectedExpression();
+
+        double z = expression.evaluate(ballX, ballY);
 
         Node ballNode = project(ballX, ballY, z);
 

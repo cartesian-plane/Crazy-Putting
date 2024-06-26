@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import net.objecthunter.exp4j.Expression;
 import org.ken22.game.GameLoop;
+import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.models.*;
 import org.ken22.obstacles.*;
@@ -104,7 +105,7 @@ public class GolfScreen extends ScreenAdapter {
     private StateVector4 currentState;
 
     private GolfCourse course;
-    private Expression expr;
+    private InjectedClass expr;
 
     private HumanPlayerDialogStage humanPlayerDialogStage;
     boolean humanPlayerDialogOpen = false;
@@ -123,7 +124,7 @@ public class GolfScreen extends ScreenAdapter {
     public GolfScreen(ScreenManager manager, GolfCourse course, BotFactory botFactory, GameLoop gameLoop) {
         this.manager = manager;
         this.course = course;
-        this.expr = course.expression;
+        this.expr = course.getInjectedExpression();
         this.currentState = new StateVector4(course.ballX(), course.ballY(), 0, 0);
         this.botFactory = botFactory;
         this.gameLoop = gameLoop;
@@ -175,10 +176,7 @@ public class GolfScreen extends ScreenAdapter {
         for (Tree t : course.trees) {
             TreeModel treeModel = new TreeModel((float) t.radius());
             var treeInstance = treeModel.getTreeInstance();
-            var treeBaseHeight = (float) expr
-                .setVariable("x", t.coordinates()[0])
-                .setVariable("y", t.coordinates()[1])
-                .evaluate();
+            var treeBaseHeight = (float) expr.evaluate(t.coordinates()[0], t.coordinates()[1]);
             treeInstance.transform.setTranslation((float) t.coordinates()[0], treeBaseHeight, (float) t.coordinates()[1]);
             treeInstances.add(treeInstance);
             var treeCrownInstance = treeModel.getCrownInstance();
@@ -209,7 +207,8 @@ public class GolfScreen extends ScreenAdapter {
         poleInstance = targetModel.getPoleInstance();
         targetBatch = new ModelBatch();
 
-        var targetHeight = expr.setVariable("x", course.targetXcoord()).setVariable("y", course.targetYcoord()).evaluate();
+        var targetHeight =
+            expr.evaluate(course.targetXcoord(), course.targetYcoord());
         cylinderInstance.transform.setTranslation((float) course.targetXcoord(), (float) targetHeight, (float) course.targetYcoord());
         poleInstance.transform.setTranslation((float) course.targetXcoord(), (float) targetHeight,  (float) course.targetYcoord());
 
@@ -254,14 +253,16 @@ public class GolfScreen extends ScreenAdapter {
                 currentState = iterator.next();
                 LOGGER.log(Level.FINE, currentState.x() + " " + currentState.y());
                 //System.out.println(state.x() + " " + state.y());
-                height = 0.05 + expr.setVariable("x", currentState.x()).setVariable("y", currentState.y()).evaluate();
+                height =
+                    0.05 + expr.evaluate(currentState.x(), currentState.y());
                 golfBallInstance.transform.setTranslation((float) currentState.x(), (float) height, (float) currentState.y());
             } else if (iterator != null) {
                 currentState = iterator.last();
                 iterator = null;
             } else {
                 gameLoop.renditionFinished();
-                height = 0.05 + expr.setVariable("x", currentState.x()).setVariable("y", currentState.y()).evaluate();
+                height =
+                    0.05 + expr.evaluate(currentState.x(), currentState.y());
                 golfBallInstance.transform.setTranslation((float) currentState.x(), (float) height, (float) currentState.y());
             }
 
@@ -271,10 +272,7 @@ public class GolfScreen extends ScreenAdapter {
                 controller.update();
                 camera.update();
             } else {
-                double terrainLevel = expr
-                    .setVariable("x", currentState.x())
-                    .setVariable("y", currentState.y())
-                    .evaluate();
+                double terrainLevel = expr.evaluate(currentState.x(), currentState.y());
                 followingCamera.position.set(
                     (float) currentState.x(),
                     (float) terrainLevel + 0.5f,

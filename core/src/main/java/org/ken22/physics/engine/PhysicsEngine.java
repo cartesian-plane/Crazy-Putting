@@ -1,6 +1,7 @@
 package org.ken22.physics.engine;
 
 import net.objecthunter.exp4j.Expression;
+import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.Tree;
 import org.ken22.obstacles.Wall;
@@ -27,7 +28,7 @@ public class PhysicsEngine {
     private static final double DEFAULT_TIME_STEP = 0.0001;
     private static final double STOPPING_THRESHOLD = 0.05;
     private final GolfCourse course;
-    private final Expression expr;
+    private final InjectedClass expr;
     private double xinit, yinit;
     private double xMin, xMax, yMin, yMax;
     private double xTarget, yTarget;
@@ -85,7 +86,7 @@ public class PhysicsEngine {
         this.timeStep = timeStep;
         this.differentiator = differentiator;
         this.solver = solver;
-        this.expr = course.expression;
+        this.expr = course.getInjectedExpression();
         this.vectorDifferentiationFactory = new VectorDifferentiationFactory(timeStep, expr, course, differentiator, completePhysics);
         trajectory.add(initialStateVector);
         this.inPlaceVectorDifferentiationFactory = new org.ken22.physics.differentiation.inplace.VectorDifferentiationFactory(timeStep, expr, course, differentiator, completePhysics);
@@ -179,10 +180,8 @@ public class PhysicsEngine {
         double x = lastVector.x();
         double y = lastVector.y();
 
-        expr.setVariable("x", x)
-            .setVariable("y", y);
 
-        double height = expr.evaluate();
+        double height = expr.evaluate(x, y);
 
         return height < 0;
     }
