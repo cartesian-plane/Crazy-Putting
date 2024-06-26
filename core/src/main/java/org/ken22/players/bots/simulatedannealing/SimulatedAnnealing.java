@@ -8,7 +8,6 @@ import org.ken22.physics.odesolvers.outofplace.RK4;
 import org.ken22.physics.utils.PhysicsUtils;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.Player;
-import org.ken22.players.bots.Schedule;
 import org.ken22.players.error.ErrorFunction;
 import org.ken22.players.error.EuclideanError;
 import org.ken22.utils.MathUtils;

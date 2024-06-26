@@ -1,4 +1,4 @@
-package org.ken22.players.bots;
+package org.ken22.players.bots.simulatedannealing;
 
 @FunctionalInterface
 public interface Schedule {
