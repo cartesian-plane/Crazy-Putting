@@ -231,35 +231,39 @@ public class PhysicsEngine {
     private void wallCollision(StateVector4 state) {
         for (Wall w : course.walls) {
             // Find the thickness offset
-            double wid = w.thickness() / 2.0;
+            double wid = w.thickness();
 
             // Calculate unit normal to the wall
             double[] unitNormal = MathUtils.unitNormal2D(w.startPoint()[0], w.startPoint()[1], w.endPoint()[0], w.endPoint()[1]);
-            double xn = wid * unitNormal[0];
-            double yn = wid * unitNormal[1];
+            double xn = unitNormal[0];
+            double yn = unitNormal[1];
+            double xnw = xn*wid;
+            double ynw = yn*wid;
 
             // Calculate actual corners of the wall using the normal
-            double smx = w.startPoint()[0] - xn, smy = w.startPoint()[1] - yn;
-            double spx = w.startPoint()[0] + xn, spy = w.startPoint()[1] + yn;
-            double epx = w.endPoint()[0] + xn, epy = w.endPoint()[1] + yn;
-            double emx = w.endPoint()[0] - xn, emy = w.endPoint()[1] - yn;
+            double smx = w.startPoint()[0] - xnw, smy = w.startPoint()[1] - ynw;
+            double spx = w.startPoint()[0] + xnw, spy = w.startPoint()[1] + ynw;
+            double epx = w.endPoint()[0] + xnw, epy = w.endPoint()[1] + ynw;
+            double emx = w.endPoint()[0] - xnw, emy = w.endPoint()[1] - ynw;
 
-            // Calculate the bounding box for quick rejection
+            // Calculate the bounding box for quick test
             double xMax = Math.max(smx, Math.max(spx, Math.max(epx, emx)));
             double xMin = Math.min(smx, Math.min(spx, Math.min(epx, emx)));
             double yMax = Math.max(smy, Math.max(spy, Math.max(epy, emy)));
             double yMin = Math.min(smy, Math.min(spy, Math.min(epy, emy)));
 
             // Quick rejection test
-            if ( (state.x() <= xMax && state.x() >= xMin && state.y() <= yMax && state.y() >= yMin) &&
-                MathUtils.pointInQuadrilateral(state.x(), state.y(), smx, smy, spx, spy, epx, epy, emx, emy)) {
+            if ( state.x() <= xMax && state.x() >= xMin && state.y() <= yMax && state.y() >= yMin &&
+                MathUtils.pointInQuadrilateral(state.x(), state.y(), smx, smy, spx, spy, epx, epy, emx, emy) ) {
 
                 // Calculate mirror reflection of the ball from the wall
                 double[] temp = MathUtils.reflectedVector2D(xn, yn, state.vx(), state.vy());
                 double v = MathUtils.magnitude(state.vx(), state.vy());
-                double[] reflected_velocities = MathUtils.multiply(temp, 0.8 * v);
+                double[] reflected_velocities = MathUtils.multiply(temp, 0.8);
                 state.setVx(reflected_velocities[0]);
                 state.setVy(reflected_velocities[1]);
+                state.setX(state.x() + timeStep*reflected_velocities[0]);
+                state.setY(state.y() + timeStep*reflected_velocities[1]);
             }
         }
     }

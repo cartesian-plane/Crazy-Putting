@@ -138,17 +138,9 @@ public class MathUtils {
         double dx = x2 - x1;
         double dy = y2 - y1;
 
-        // Perpendicular vector (reciprocal)
-        double var1 = -dy;
-        double var2 = dx;
-
         // Normalize the normal vector
-        double length = Math.sqrt(var1 * var1 + var2 * var2);
-        return new double[]{var1 / length, var2 / length};
-    }
-
-    public static double dot2D(double x1, double y1, double x2, double y2) {
-        return x1 * x2 + y1 * y2;
+        double length = Math.sqrt(dx * dx + dy * dy);
+        return new double[]{-dy / length, dx / length};
     }
 
     // Multiply a vector by a scalar
@@ -158,7 +150,7 @@ public class MathUtils {
 
     // Calculate the reflected vector
     public static double[] reflectedVector2D(double xn, double yn, double vx, double vy) {
-        double dot = dot2D(vx, vy, xn, yn);
+        double dot = xn*vx+yn*vy;
 
         // Calculate the reflected vector
         return new double[]{vx - 2 * dot * xn, vy - 2 * dot * yn};
