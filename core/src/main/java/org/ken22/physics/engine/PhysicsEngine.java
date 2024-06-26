@@ -109,7 +109,7 @@ public class PhysicsEngine {
             throw new IllegalArgumentException("State vector cannot be null");
         }
         if(stateVector.vx() == 0.0 && stateVector.vy() == 0.0) {
-            throw new IllegalArgumentException("State vector cannot have zero velocity");
+            System.out.println("Warning: Setting a state vector with zero speed");
         }
 
         if (MathUtils.magnitude(stateVector.vx(), stateVector.vy()) > 100) {

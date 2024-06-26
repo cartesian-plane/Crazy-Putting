@@ -38,22 +38,22 @@ import java.util.logging.Logger;
  */
 public final class SimulatedAnnealing implements Player {
     private static final Logger LOGGER = Logger.getLogger(SimulatedAnnealing.class.getName());
-    private static final int NR_BOOTSTRAP_VECTORS = 15;
 
     static {
 
         // the default level is INFO
         // if you want to change logging, just change the enum type at (1) and (2)
         // https://docs.oracle.com/javase/8/docs/api/java/util/logging/Level.html
-        LOGGER.setLevel(Level.FINE); // (1)
+        LOGGER.setLevel(Level.INFO); // (1)
 
 
         Handler consoleHandler = new ConsoleHandler();
-        consoleHandler.setLevel(Level.FINE); // (2)
+        consoleHandler.setLevel(Level.INFO); // (2)
         LOGGER.setUseParentHandlers(false);
         LOGGER.addHandler(consoleHandler);
     }
 
+    private static final int NR_BOOTSTRAP_VECTORS = 15;
     private final double DELTA;
     private final double THRESHOLD;
     private final double initialTemperature;
@@ -112,9 +112,9 @@ public final class SimulatedAnnealing implements Player {
         this.stepSize = stepSize;
         this.DELTA = 0.05;
         this.THRESHOLD = course.targetRadius;
-        System.out.println("THRESHOLD = " + THRESHOLD);
         this.heuristicFunction = errorFunction;
-        LOGGER.log(Level.INFO, "Error function " + heuristicFunction.getClass().getName());
+        LOGGER.log(Level.INFO, "Error function for simulated annealing: " + heuristicFunction.getClass().getName());
+        LOGGER.log(Level.INFO, "THRESHOLD = " + THRESHOLD);
         this.evaluator = new Evaluator(this.heuristicFunction, this.course, this.solver, this.differentiator,
             this.stepSize);
 
@@ -146,7 +146,7 @@ public final class SimulatedAnnealing implements Player {
         }
         for (int k = 0; k < kmax; k++) {
             temperature = schedule.getNewTemperature(k);
-            System.out.println("temperature = " + temperature);
+            LOGGER.log(Level.FINE, "Temperature = " + temperature);
             var next = getRandomNeighbour(bestState);
             double nextValue = evaluator.evaluateState(next);
             double currentValue = evaluator.evaluateState(current);
@@ -163,8 +163,8 @@ public final class SimulatedAnnealing implements Player {
                 current = next; // if the evaluation is improved, accept immediately
             } else {
                 double probability = Math.exp(deltaE / temperature);
-                System.out.println("probability = " + probability);
-                System.out.println("deltaE = " + deltaE);
+                LOGGER.log(Level.FINE, "probability = " + probability);
+                LOGGER.log(Level.FINE, "deltaE = " + deltaE);
                 if (Math.random() < probability) {
                     current = next;
                 }
