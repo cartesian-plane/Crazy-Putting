@@ -31,6 +31,23 @@ public class CourseParser {
         }
     }
 
+    public CourseParser(File jsonFile, boolean injected) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            this.course = objectMapper.readValue(jsonFile, GolfCourse.class);
+            System.out.println(this.course.name());
+            this.terrain = course.courseProfile();
+            if(injected) {
+                this.expression = course.getInjectedExpression();
+            }
+
+        } catch (
+            IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public GolfCourse getCourse() {
         return course;
     }

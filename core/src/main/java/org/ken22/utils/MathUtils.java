@@ -12,7 +12,7 @@ import java.util.function.Function;
  */
 public class MathUtils {
     public static final double paddingSize = 2.5;
-    public static String[] courses = {"0.4*(0.9-exp(-(x^2+y^2)/8))", "1.41421356237+sin(x)+cos(y)", "3*x-2*y", "0.5"};
+    public static String[] courses = {"0.4*(0.9-Math.exp(-(x*x+y*y)/8.0))", "1.41421356237+Math.sin(x)+Math.cos(y)", "3*x-2*y", "0.5"};
     public static double mass = 1.0;
     public static double range = 5.0;
     public static double maxspeed = 5.0;

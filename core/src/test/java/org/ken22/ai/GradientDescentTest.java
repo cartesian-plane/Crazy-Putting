@@ -409,7 +409,7 @@ public class GradientDescentTest {
 
     public void testFromJSON(File file, String name, ArrayList<Executable> tests) throws IOException {
         Random gen = new Random();
-        GolfCourse course = (new CourseParser(file)).getCourse();
+        GolfCourse course = (new CourseParser(file, false)).getCourse();
         double x = gen.nextDouble()*20-10;
         double y = gen.nextDouble()*20-10;
         StateVector4 initialState = randomInitialVector(x, y, gen);
