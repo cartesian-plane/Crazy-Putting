@@ -210,7 +210,7 @@ public final class SimulatedAnnealing implements Player {
      * @return the best vector from the list of random vectors
      */
     private StateVector4 bootstrap() {
-        LOGGER.log(Level.INFO, "Bootstrapping the search (might take a while");
+        LOGGER.log(Level.INFO, "Bootstrapping the search (might take a while)");
         var randomVectors = getRandomVectors();
         StateVector4 bestVector = null;
         double bestVectorValue = Double.MAX_VALUE;
@@ -227,7 +227,7 @@ public final class SimulatedAnnealing implements Player {
             }
         }
 
-        // just return a random one if the really is no better vector
+        // just return a random one if there really is no better vector
         return (bestVector == null ? randomVectors.getFirst() : bestVector);
     }
 
