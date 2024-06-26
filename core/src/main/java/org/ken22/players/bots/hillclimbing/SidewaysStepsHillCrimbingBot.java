@@ -159,48 +159,49 @@ public class SidewaysStepsHillCrimbingBot implements Player {
             //Direction of sideways move
             Direction currentDirection = null; //private inner enum
 
+
             while (sidewaysMoves < MAX_SIDEWAYS_MOVES) {
 
                 var neighbours = generateNeighbours(currentState, visited, visitedidx);
                 if (neighbours.isEmpty()) {
                     break;
                 }
+
                 var neighbourEvaluations = evaluator.evaluateNeighbours(neighbours);
                 var bestNeighbour = Collections.min(neighbourEvaluations.entrySet(), Map.Entry.comparingByValue()).getKey();
                 double bestNeighbourValue = neighbourEvaluations.get(bestNeighbour);
 
                 if(sidewaysMoves > 0) { // previous move was a sideways move (escaping local minimum)
                     if(bestNeighbourValue <= referenceStateValue) { //escaped local minimum
-                        referenceStateValue = bestNeighbourValue; //keep track of local minimum value to be escaped
-                        visited[visitedidx] = bestNeighbour;
                         currentState = bestNeighbour;
                         currentStateValue = bestNeighbourValue;
+                        referenceStateValue = bestNeighbourValue; //keep track of local minimum value to be escaped
                         sidewaysMoves = 0;
                     }
                     else { //not escaped local minimum
                         //check direction from which local minimum was approached
                         currentDirection = checkDirection(bestNeighbour, currentState);
                         //move along direction of approach
-                        StateVector4 newState = moveSideways(currentState, currentDirection);
-                        visited[visitedidx] = currentState;
+                        currentState = moveSideways(currentState, currentDirection);
                         sidewaysMoves++;
                     }
                 }
+
                 else { //  previous move was not a sideways move (not escaping local minimum)
                     if (bestNeighbourValue >= currentStateValue) { // local minimum
                         currentDirection = checkDirection(bestNeighbour, currentState);
                         currentState = moveSideways(currentState, currentDirection);;
-                        visited[visitedidx] = currentState;
                         sidewaysMoves++;
                     }
                     else { // not local minimum
+                        referenceStateValue = bestNeighbourValue;
                         currentState = bestNeighbour;
                         currentStateValue = bestNeighbourValue;
-                        visited[visitedidx] = currentState;
                     }
                 }
 
                 //Update number of visited states
+                visited[visitedidx] = currentState;
                 visitedidx++;
 
                 // check if a solution is reached
@@ -358,7 +359,7 @@ public class SidewaysStepsHillCrimbingBot implements Player {
             neighbours.add(neighbour4);
         }
 
-        checkVisited(visited, neighbours, visitedidx);
+        removeVisited(visited, neighbours, visitedidx);
 
         return neighbours;
     }
@@ -441,7 +442,7 @@ public class SidewaysStepsHillCrimbingBot implements Player {
      * @param neighbours: array of generated neighbours
      * @param visitedidx: how many visited states are currently stored
      */
-    private void checkVisited(StateVector4[] visited, List<StateVector4> neighbours, int visitedidx) {
+    private void removeVisited(StateVector4[] visited, List<StateVector4> neighbours, int visitedidx) {
         List<StateVector4> toRemove = new ArrayList<>();
 
         for (int i = 0; i < visitedidx; i++) {
