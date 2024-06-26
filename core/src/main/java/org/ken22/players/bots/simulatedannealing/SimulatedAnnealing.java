@@ -210,6 +210,7 @@ public final class SimulatedAnnealing implements Player {
      * @return the best vector from the list of random vectors
      */
     private StateVector4 bootstrap() {
+        LOGGER.log(Level.INFO, "Bootstrapping the search (might take a while");
         var randomVectors = getRandomVectors();
         StateVector4 bestVector = null;
         double bestVectorValue = Double.MAX_VALUE;
