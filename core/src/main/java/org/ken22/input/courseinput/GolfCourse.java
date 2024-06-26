@@ -100,11 +100,16 @@ public class GolfCourse {
      * <p>Be careful if you changing this variable.</p>
      * @return the injected class containing the terrain function
      */
+    @JsonIgnore
     public InjectedClass getInjectedExpression() {
         if (expression == null) {
             throw new RuntimeException("Expression was not injected");
         }
         return expression;
+    }
+
+    @JsonIgnore void setInjectedExpression() {
+        this.expression = new InjectedClassLoader(courseProfile).getInjectedClass();
     }
 
     @JsonProperty("name")

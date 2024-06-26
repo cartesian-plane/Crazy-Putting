@@ -68,7 +68,6 @@ public class CourseEditorStage extends Stage {
 
 
         var functionField = new TextField(selectedCourse.courseProfile(), skin);
-        functionField.setMaxLength(30);
         var functionLabel = new Label("Terrain function", skin);
 
         //var rangeField = new TextField("0.5", skin);
