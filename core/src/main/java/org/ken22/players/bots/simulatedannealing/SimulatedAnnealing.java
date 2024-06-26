@@ -38,7 +38,6 @@ import java.util.logging.Logger;
  */
 public final class SimulatedAnnealing implements Player {
     private static final Logger LOGGER = Logger.getLogger(SimulatedAnnealing.class.getName());
-    private static final int NR_BOOTSTRAP_VECTORS = 15;
 
     static {
 
@@ -54,6 +53,7 @@ public final class SimulatedAnnealing implements Player {
         LOGGER.addHandler(consoleHandler);
     }
 
+    private static final int NR_BOOTSTRAP_VECTORS = 15;
     private final double DELTA;
     private final double THRESHOLD;
     private final double initialTemperature;
