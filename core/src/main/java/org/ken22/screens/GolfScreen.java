@@ -2,6 +2,8 @@ package org.ken22.screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
@@ -115,6 +117,9 @@ public class GolfScreen extends ScreenAdapter {
     private boolean following;
 
     private Camera currentCamera;
+
+    private SpriteBatch spriteBatch = new SpriteBatch();
+    private BitmapFont font = new BitmapFont();
 
     /**
      * Everything in GolfScreen is initialized here, rather than in the show() method.
@@ -344,7 +349,29 @@ public class GolfScreen extends ScreenAdapter {
             waterBatch.render(waterInstance, environment);
             waterBatch.end();
 
-            //System.out.println(engine.getState());
+            // text
+            var startX = Gdx.graphics.getWidth() - 250f;
+            var startY = Gdx.graphics.getHeight();
+            var deltaY = -15f;
+            this.spriteBatch.begin();
+            this.font.setColor(Color.WHITE);
+            this.font.draw(spriteBatch, "Ball coords: ("+currentState.x()+", "+currentState.y()+")", startX/2-100f, startY+deltaY);
+            this.font.draw(spriteBatch, "P: human player", startX, startY + deltaY*3);
+            this.font.draw(spriteBatch, "SPACE : initial guess bot", startX, startY + deltaY*4);
+            this.font.draw(spriteBatch, "1 : simple rule-based bot", startX, startY + deltaY*5);
+            this.font.draw(spriteBatch, "2 : simmulated annealing bot", startX, startY + deltaY*6);
+            this.font.draw(spriteBatch, "3 : line search hill-climbing bot", startX, startY + deltaY*7);
+            this.font.draw(spriteBatch, "4 : random restarts hill-climbing bot", startX, startY + deltaY*8);
+            this.font.draw(spriteBatch, "5 : sideways steps hill-climbing bot", startX, startY + deltaY*9);
+            this.font.draw(spriteBatch, "6 : simple hill-climbing bot", startX, startY + deltaY*10);
+            this.font.draw(spriteBatch, "7 : newton-raphson bot (f'=0)", startX, startY + deltaY*11);
+            this.font.draw(spriteBatch, "8 : basic newton-raphson bot (f=0) ", startX, startY + deltaY*12);
+            this.font.draw(spriteBatch, "T : revert to last valid state", startX, startY + deltaY*14);
+            this.font.draw(spriteBatch, "R : restart course", startX, startY + deltaY*15);
+            this.font.draw(spriteBatch, "F : switch camera", startX, startY+deltaY*16);
+            this.font.draw(spriteBatch, "K : print camera position", startX, startY + deltaY*17);
+
+            this.spriteBatch.end();
 
             // test input
             if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
@@ -357,20 +384,18 @@ public class GolfScreen extends ScreenAdapter {
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
                 gameLoop.shootBall(simpleBot.play(currentState));
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-                gameLoop.shootBall(hillClimbingBot.play(currentState));
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-                gameLoop.shootBall(sidewaysStepsHillCrimbingBot.play(currentState));
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
-                gameLoop.shootBall(newtonRaphsonBot.play(currentState));
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
                 gameLoop.shootBall(simulatedAnnealing.play(currentState));
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-                //
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
                 gameLoop.shootBall(lineHillClimbingBot.play(currentState));
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
                 gameLoop.shootBall(randomRestartHillClimbingBot.play(currentState));
-            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
+                gameLoop.shootBall(sidewaysStepsHillCrimbingBot.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+                gameLoop.shootBall(hillClimbingBot.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
+                gameLoop.shootBall(newtonRaphsonBot.play(currentState));
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
                 gameLoop.shootBall(basicNewtonRaphsonBot.play(currentState));
             }
 

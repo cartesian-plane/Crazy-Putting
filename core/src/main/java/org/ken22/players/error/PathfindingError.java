@@ -4,6 +4,7 @@ import net.objecthunter.exp4j.Expression;
 import org.ken22.input.InjectedClass;
 import org.ken22.input.courseinput.GolfCourse;
 import org.ken22.obstacles.Tree;
+import org.ken22.obstacles.Wall;
 import org.ken22.physics.PhysicsFactory;
 import org.ken22.physics.vectors.StateVector4;
 import org.ken22.players.pathfinding.GridPathfinding;
@@ -35,6 +36,7 @@ public class PathfindingError implements ErrorFunction {
         this.expr = course.getInjectedExpression();
         this.physicsEngine = physicsEngine;
 
+
         // generate terrain grid // we use Double.MAX_VALUE to enconde where the ball can't go
         xMin = course.ballX() < course.targetXcoord() ? course.ballX() - GolfScreen.PADDING_SIZE : course.targetXcoord() - GolfScreen.PADDING_SIZE;
         xMax = course.ballX() > course.targetXcoord() ? course.ballX() + GolfScreen.PADDING_SIZE : course.targetXcoord() + GolfScreen.PADDING_SIZE;
@@ -53,13 +55,18 @@ public class PathfindingError implements ErrorFunction {
                         terrainGrid[i][j] = Double.MAX_VALUE;
                     }
                 }
+                for(Wall w : course.walls) {
+                    if (w.isPointInWall(xMin + i * GridPathfinding.GRID_RESOLUTION, yMin + j * GridPathfinding.GRID_RESOLUTION)) {
+                        terrainGrid[i][j] = Double.MAX_VALUE;
+                    }
+                }
             }
         }
 
         // initialize pathfinding
         int finishX, finishY;
-        finishX = (int) ((course.targetXcoord() - xMin) / GridPathfinding.GRID_RESOLUTION);
-        finishY = (int) ((course.targetYcoord() - yMin) / GridPathfinding.GRID_RESOLUTION);
+        finishX = (int) (1+(course.targetXcoord() - xMin) / GridPathfinding.GRID_RESOLUTION);
+        finishY = (int) (1+(course.targetYcoord() - yMin) / GridPathfinding.GRID_RESOLUTION);
         Node finish = new Node(finishX, finishY, expr.evaluate(course.targetXcoord(),  course.targetYcoord()));
         this.pathfinding.init(finish, terrainGrid, course, weighting);
     }
@@ -68,14 +75,5 @@ public class PathfindingError implements ErrorFunction {
     public double calculateError(StateVector4 state) {
         state = physicsEngine.runSimulation(state, course);
         return pathfinding.calcPathDist(state.x(), state.y());
-    }
-
-    public Node project(double x, double y, double z) {
-        return new Node((int) ((x - xMin) / GridPathfinding.GRID_RESOLUTION),
-            (int) ((y - yMin) / GridPathfinding.GRID_RESOLUTION), z);
-    }
-
-    public double[] unproject(int x, int y) {
-        return new double[] {xMin + x * GridPathfinding.GRID_RESOLUTION, yMin + y * GridPathfinding.GRID_RESOLUTION};
     }
 }

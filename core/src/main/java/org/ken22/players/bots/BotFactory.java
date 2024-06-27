@@ -36,7 +36,10 @@ public class BotFactory {
 
     public SimulatedAnnealing simulatedAnnealing(GolfCourse course)  {
         return new SimulatedAnnealing(null, course, settings.odesolverType.getSolver(),
-            settings.differentiatorType.getDifferentiator(), settings.stepSize, settings.saInitialTemperature,2000, errorFunction(course));
+            settings.differentiatorType.getDifferentiator(), settings.stepSize,
+            settings.saDelta, settings.saInitialTemperature,
+            settings.saAllottedTime,
+            settings.saCoolingRate, errorFunction(course));
     }
 
     public NewtonRaphsonBot newtonRaphsonBot(GolfCourse course, Player initialGuessBot) {
