@@ -132,7 +132,7 @@ public class SidewaysStepsHillCrimbingBot implements Player {
         // if the search stops before a solution is found, a logging message is displayed
         boolean foundSolution = false;
 
-        //Store visited states
+        //Store visited states to avoid cycles
         int visitedidx = 0;
         StateVector4[] visited = new StateVector4[400];
 
@@ -147,11 +147,16 @@ public class SidewaysStepsHillCrimbingBot implements Player {
         //Keep track of restarts
         int restartCount = 0;
 
+        //Keep track of best value for each restart
+        StateVector4 solution = null;
+        double solutionValue = Double.MAX_VALUE;
+
         while (restartCount <= MAX_RESTARTS) {
             //Keep track of sideways moves
             int sidewaysMoves = 0;
 
             //Reference point (local minimum) from when you started making sideways moves
+            var referenceStatePoint = currentState;
             var referenceStateValue = currentStateValue;
 
             //Direction of sideways move
@@ -161,6 +166,10 @@ public class SidewaysStepsHillCrimbingBot implements Player {
 
                 var neighbours = generateNeighbours(currentState, visited, visitedidx);
                 if (neighbours.isEmpty()) {
+                    if(referenceStateValue < solutionValue) {
+                        solution = referenceStatePoint;
+                        solutionValue = referenceStateValue;
+                    }
                     break;
                 }
 
@@ -172,6 +181,7 @@ public class SidewaysStepsHillCrimbingBot implements Player {
                     if(bestNeighbourValue <= referenceStateValue) { //escaped local minimum
                         currentState = bestNeighbour;
                         currentStateValue = bestNeighbourValue;
+                        referenceStatePoint = bestNeighbour;
                         referenceStateValue = bestNeighbourValue; //keep track of local minimum value to be escaped
                         sidewaysMoves = 0;
                     }
@@ -189,9 +199,10 @@ public class SidewaysStepsHillCrimbingBot implements Player {
                         sidewaysMoves++;
                     }
                     else { // not local minimum
+                        currentState = bestNeighbour;
+                        referenceStatePoint = bestNeighbour;
                         referenceStateValue = bestNeighbourValue;
                         currentStateValue = bestNeighbourValue;
-                        currentState = bestNeighbour;
                     }
                 }
 
@@ -210,14 +221,37 @@ public class SidewaysStepsHillCrimbingBot implements Player {
                 var message = "Found solution! " + "vx: " + currentState.vx() + ", vy: " + currentState.vy();
                 LOGGER.log(Level.INFO, message);
                 break;
-            } else { //If solution not found start using new random initial guess
-                restartCount += 1;
+            } else if (restartCount < 10) { //If solution not found start using new random initial guess
+
+                if(referenceStateValue < solutionValue) {
+                    solution = referenceStatePoint;
+                    solutionValue = referenceStateValue;
+                }
+
                 double[] randomSpeedVector = getRandomSpeedVector();
-                // choose a new random starting point
-                currentState = new StateVector4(initialState.x(), initialState.y(), randomSpeedVector[0],
+
+                // choose a new random starting point not similar to visited states
+                StateVector4 newStateVector = new StateVector4(initialState.x(), initialState.y(), randomSpeedVector[0],
                     randomSpeedVector[1]);
-                visited = new StateVector4[400];;
+                for(StateVector4 visitedState : visited) {
+                    if(newStateVector.approxEquals(visitedState, 1, 0.5)) {
+                        double[] random = getRandomSpeedVector();
+                        newStateVector = new StateVector4(initialState.x(), initialState.y(), randomSpeedVector[0],
+                            randomSpeedVector[1]);
+                    }
+                    else {
+                        currentState = newStateVector;
+                        currentStateValue = evaluator.evaluateState(currentState);
+                        break;
+                    }
+                }
+
+                visited = new StateVector4[400];
                 visitedidx = 0;
+
+                restartCount += 1;
+            } else {
+                return solution;
             }
         }
 
