@@ -1,8 +1,54 @@
-# golf-game
+# Crazy Putting! - Advanced Physics Simulation & AI Project
 
-A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
+![Crazy Putting Banner Placeholder](placeholder_banner.png) This repository contains the source code for "Crazy Putting!", a university project developed for KEN1600 Project 1.2 at Maastricht University (Bachelor Data Science and Artificial Intelligence, Academic Year 2023-2024). The project focuses on creating a comprehensive physics simulator for a golf putting game, featuring advanced AI agents, complex terrain handling, and a modular design.
 
-This project was generated with a template including simple application launchers and a main class extending `Game` that sets the first screen.
+## Project Overview
+
+The core objective was to build a simulator capable of modeling golf ball motion on varying terrains with obstacles, governed by differential equations. Key aspects include:
+
+* **A general-purpose physics engine:** Designed for flexibility, allowing different physical laws and numerical integration methods to be implemented and swapped.
+* **Intelligent AI agents:** Development of AI bots capable of analyzing the course and determining optimal shots using various optimization algorithms.
+* **Complex environment simulation:** Handling terrains defined by mathematical functions and incorporating various types of obstacles.
+* **User interaction:** Providing tools for users to create, modify, and visualize golf courses.
+
+## Features
+
+* **Modular Physics Engine:**
+    * Decoupled implementation of physical laws (gravity, friction) and Ordinary Differential Equation (ODE) solvers.
+    * Supports multiple numerical integrators like Euler, Runge-Kutta 4 (RK4), and Verlet methods for simulating ball physics.
+* **Dynamic Terrain Generation:**
+    * Input terrains defined by mathematical equations `h(x, y)`.
+    * Includes a custom parser (using Visitor pattern) and a highly optimized runtime compilation approach to evaluate terrain height and gradients efficiently, overcoming initial performance bottlenecks with lambda expressions.
+* **Obstacle Simulation:**
+    * Integration of various static obstacles like trees, walls, sand pits, and water bodies.
+    * Sophisticated collision detection using convex polygon checks based on cross-product logic.
+    * Realistic physics responses upon collision (e.g., velocity reflection).
+* **Interactive Level Editor:**
+    * A graphical user interface (GUI) allowing users to visually design, create, and modify golf course layouts, including terrain and obstacle placement.
+* **AI Player Agents:**
+    * Implementation of multiple AI strategies:
+        * Hill-Climbing (Line Search)
+        * Newton-Raphson Method
+        * Simulated Annealing
+    * AI agents map input actions (shot angle and velocity) to predicted final ball positions.
+    * Utilizes A* pathfinding algorithm with custom heuristics for navigation and optimization, especially effective on complex, maze-like courses.
+* **Graphical User Interface:**
+    * Built using the [Mention Graphics Library, e.g., LibGDX, if known] library.
+    * Includes menus for simulation settings (solver choice, step size), level selection, course editing, and bot configuration.
+
+## Technical Details
+
+* **Language:** Java
+* **Core Concepts:**
+    * Numerical Methods (ODE Solvers)
+    * Physics Simulation & Modeling
+    * Artificial Intelligence (Search Algorithms, Optimization)
+    * Collision Detection Algorithms
+    * Design Patterns (Visitor)
+    * Data Structures & Algorithms
+    * Runtime Code Generation/Compilation
+    * Software Engineering Principles (Modularity, Testing)
+* **Libraries:** [List main libraries used, e.g., LibGDX, Math Expression Parsers if applicable]
 
 ## Platforms
 
@@ -11,7 +57,7 @@ This project was generated with a template including simple application launcher
 
 ## Gradle
 
-This project uses [Gradle](https://gradle.org/) to manage dependencies.
+This project uses [Gradle](https://gradle.org/) to manage dependencies.aa
 The Gradle wrapper was included, so you can run Gradle tasks using `gradlew.bat` or `./gradlew` commands.
 Useful Gradle tasks and flags:
 
@@ -31,3 +77,9 @@ Useful Gradle tasks and flags:
 
 Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
 For example, `core:clean` removes `build` folder only from the `core` project.
+
+```bash
+# Example build commands (adjust as needed)
+git clone [https://github.com/yourusername/crazy-putting.git](https://www.google.com/search?q=https://github.com/yourusername/crazy-putting.git)
+cd crazy-putting
+# ./gradlew build (or similar based on your build system)
