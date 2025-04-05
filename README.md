@@ -1,6 +1,9 @@
-# Crazy Putting! - Advanced Physics Simulation & AI Project
+# Crazy Golf! - Advanced Physics Simulation & AI Project
 
-![Crazy Putting Banner Placeholder](placeholder_banner.png) This repository contains the source code for "Crazy Putting!", a university project developed for KEN1600 Project 1.2 at Maastricht University (Bachelor Data Science and Artificial Intelligence, Academic Year 2023-2024). The project focuses on creating a comprehensive physics simulator for a golf putting game, featuring advanced AI agents, complex terrain handling, and a modular design.
+This repository contains the source code for "Crazy Putting!", a university project developed for KEN1600 Project 1.2 at Maastricht University (Bachelor Data Science and Artificial Intelligence, Academic Year 2023-2024). The project focuses on creating a comprehensive physics simulator for a golf putting game, featuring advanced AI agents, complex terrain handling, and a modular design.
+
+![image](https://github.com/user-attachments/assets/675fb34b-09a3-405f-ad37-e7bb8360695f)
+
 
 ## Project Overview
 
@@ -77,9 +80,3 @@ Useful Gradle tasks and flags:
 
 Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
 For example, `core:clean` removes `build` folder only from the `core` project.
-
-```bash
-# Example build commands (adjust as needed)
-git clone [https://github.com/yourusername/crazy-putting.git](https://www.google.com/search?q=https://github.com/yourusername/crazy-putting.git)
-cd crazy-putting
-# ./gradlew build (or similar based on your build system)
