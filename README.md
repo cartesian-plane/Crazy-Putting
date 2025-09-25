@@ -4,6 +4,14 @@ This repository contains the source code for "Crazy Putting!", a university proj
 
 ![image](https://github.com/user-attachments/assets/675fb34b-09a3-405f-ad37-e7bb8360695f)
 
+## How to Run:
+The project comes with a runnable JAR located in the root of the repository. To run the game, copy the following 
+commands into your terminal (starting from the root of the repository):
+
+```bash
+cd assets
+java -jar ../crazy-putting-1.0.jar
+```
 
 ## Project Overview
 
@@ -36,7 +44,7 @@ The core objective was to build a simulator capable of modeling golf ball motion
     * AI agents map input actions (shot angle and velocity) to predicted final ball positions.
     * Utilizes A* pathfinding algorithm with custom heuristics for navigation and optimization, especially effective on complex, maze-like courses.
 * **Graphical User Interface:**
-    * Built using the [Mention Graphics Library, e.g., LibGDX, if known] library.
+    * Built using the [LibGDX] library.
     * Includes menus for simulation settings (solver choice, step size), level selection, course editing, and bot configuration.
 
 ## Technical Details
@@ -51,7 +59,7 @@ The core objective was to build a simulator capable of modeling golf ball motion
     * Data Structures & Algorithms
     * Runtime Code Generation/Compilation
     * Software Engineering Principles (Modularity, Testing)
-* **Libraries:** [List main libraries used, e.g., LibGDX, Math Expression Parsers if applicable]
+* **Libraries:** [LibGDX](https://libgdx.com/) for graphics and UI.
 
 ## Platforms
 
